@@ -98,6 +98,10 @@ LPT、古い Windows 音声 API、UI と密結合した DLL plugin、暗黙の r
 * **楽しさ:** personal best、rate trend、new multiplier、進捗 milestone を控えめに称賛する。順位や spot 利用を強要せず、集中モードで完全に隠せる。
 * **オンボーディング:** demo contest と simulated rig/cluster により、電波を出さずに一連の操作を練習できる。
 
+CQRLOGの統合的なログ運用を参考にしたcallsign card、DX cluster/band map、grayline、QSL/award、online service、
+接続センターの提案と、これらを非同期化する設計は
+[CQRLOGを参考にした機能・UI・非同期実行の提案](CQRLOG_UX_PROPOSAL.md) にまとめます。
+
 ## 6. 品質・性能目標（受入基準）
 
 測定環境は Phase 0 で最低構成 PC/Mac と fixture を固定します。

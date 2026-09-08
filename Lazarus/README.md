@@ -9,6 +9,7 @@ Windows と macOS を同じドメインモデルで支える **新規実装** �
 * [移植・再設計方針](docs/MIGRATION_POLICY.md) — 目的、設計原則、機能範囲、UX、性能、段階移行
 * [アーキテクチャ](docs/ARCHITECTURE.md) — 依存方向、コンポーネント境界、並行処理、永続化
 * [交信モード／CW・RTTYエンジン](docs/MODE_ENGINE.md) — Hamlib連携、送受信、DSP、遅延・安全性
+* [CQRLOGを参考にしたUX提案](docs/CQRLOG_UX_PROPOSAL.md) — 機能候補、画面構成、thread/process分離
 * [実施ロードマップ](docs/ROADMAP.md) — フェーズ、完了条件、リスク、意思決定ゲート
 
 ## 想定ツールチェーン

@@ -10,6 +10,7 @@ macOS 対応を最後にまとめて行いません。
 * Lazarus/FPC/LCL、package/sign/notarize、serial、audio、network、DB を両 OS で spike する。
 * Hamlib `rigctld`、CW keying、RTTY scalar/SIMD DSP を latency、BER、CPU、配布容易性で比較する。
 * 5 ペルソナの利用観察を実施し、MVP の優先順位と性能測定環境を確定する。
+* CQRLOGの参照revisionを固定し、機能、データフロー、Hamlib連携、長時間処理を`Observed / Inferred / Proposed`で棚卸しする。
 * ADR template、coding standard、CI matrix、issue taxonomy を用意する。
 
 **Exit:** 未決技術に benchmark/PoC があり、MVP acceptance criteria、互換 fixture、リスク owner が承認済み。
@@ -20,6 +21,7 @@ macOS 対応を最後にまとめて行いません。
 * empty session の作成、1 QSO の validation/log/reload/display を end-to-end で通す。
 * append-only journal、structured diagnostics、crash recovery の最小実装を作る。
 * fake rig/cluster と demo contest を用意し、実機なしで CI と練習を可能にする。
+* process supervisor、versioned local IPC、bounded queue、job/connection centerの縦割りを追加する。
 
 **Exit:** 両 OS の package を clean machine で起動し、異常終了後も 1 QSO を復旧できる。
 
@@ -90,5 +92,7 @@ Windows/macOS 差、migration impact を必須項目とします。
 10. Windows/macOS CI artifact と smoke checklist
 11. fake `rigctld` contract test と PTT safety state machine
 12. RTTY synthetic generator、scalar reference decoder、WAV golden corpus
+13. CQRLOG feature review台帳とUX usability test scenario
+14. child-process hang/crash、network flood、DB再集計中のUI responsiveness test
 
 この順序なら、UI の大量作成より先に、移植の最大リスクである正確性、保存、依存境界、両 OS 配布を検証できます。

@@ -55,6 +55,9 @@ Form/Frame は state を描画して user intent を Presenter へ通知しま�
 ViewModel は immutable snapshot とし、一方向 data flow で focus loop と event cascade を防ぎます。
 テーマは semantic token（`status.connected`, `qso.dupe` 等）から LCL 色へ変換します。
 
+CQRLOG を参考にした運用ワークスペースと、UI freezeを防ぐprocess/thread構成は
+[CQRLOG_UX_PROPOSAL.md](CQRLOG_UX_PROPOSAL.md) で定義します。
+
 ## 3. SOLID を判断可能なルールにする
 
 * **SRP:** unit 名に `And` が必要なら分割を検討。変更理由を PR に一文で書けない class は分割する。
@@ -73,6 +76,8 @@ ViewModel は immutable snapshot とし、一方向 data flow で focus loop と
 * radio command は順序付き single-writer queue とし、polling と利用者 command の競合を policy で解決する。
 * QSO commit は journal append → acknowledgement → 非同期 index/snapshot 更新とする。
 * score と dupe は event ごとの差分更新を通常経路、全再計算を検証・復旧経路にする。
+* Hamlib、modem、network jobはUIからprocess分離できるprotocol boundaryを持ち、同期応答を待たない。
+* 全queueをboundedにし、deadline、cancellation、backpressure、heartbeat/lag telemetryを共通契約に含める。
 
 イベント bus を global object の代用品にしません。message schema、producer、consumer、thread、ordering を表にしてから追加します。
 
