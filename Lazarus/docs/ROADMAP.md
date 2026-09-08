@@ -8,6 +8,7 @@ macOS 対応を最後にまとめて行いません。
 * source inventory と `retain / redesign / replace / retire` 台帳を作る。
 * 代表ログを匿名化し、既存版から dupe/point/multi/export の golden result を採取する。
 * Lazarus/FPC/LCL、package/sign/notarize、serial、audio、network、DB を両 OS で spike する。
+* Hamlib `rigctld`、CW keying、RTTY scalar/SIMD DSP を latency、BER、CPU、配布容易性で比較する。
 * 5 ペルソナの利用観察を実施し、MVP の優先順位と性能測定環境を確定する。
 * ADR template、coding standard、CI matrix、issue taxonomy を用意する。
 
@@ -33,11 +34,13 @@ macOS 対応を最後にまとめて行いません。
 
 ## Phase 3 — Station integration
 
-* CAT、CW keyer、voice、cluster、band map を port ごとに実装する。
+* Hamlib CAT、CW keyer/decoder、RTTY modem、voice、cluster、band map を port ごとに実装する。
 * capability detection、permission onboarding、disconnect/reconnect、device simulator を提供する。
 * hardware matrix と firmware/driver version を release report に残す。
+* RTTY の WAV corpus、audio loopback、FSK dummy-load を順に通し、PTT watchdog と緊急停止を検証する。
 
-**Exit:** サポート表の各構成で 24 時間 soak、通信断、sleep/resume、device replug を完走する。
+**Exit:** サポート表の各構成で 24 時間 soak、通信断、sleep/resume、device replug を完走し、CW/RTTY の
+遅延、BER、CPU、送信停止に関する受入基準を満たす。
 
 ## Phase 4 — Advanced operation
 
@@ -85,5 +88,7 @@ Windows/macOS 差、migration impact を必須項目とします。
 8. legacy importer の最小 slice と差分 report
 9. ALL JA の dupe/point/multi golden slice
 10. Windows/macOS CI artifact と smoke checklist
+11. fake `rigctld` contract test と PTT safety state machine
+12. RTTY synthetic generator、scalar reference decoder、WAV golden corpus
 
 この順序なら、UI の大量作成より先に、移植の最大リスクである正確性、保存、依存境界、両 OS 配布を検証できます。

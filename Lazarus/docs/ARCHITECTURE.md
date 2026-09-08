@@ -43,6 +43,9 @@ repository、transaction、clock、radio、keyer、cluster、notification は小
 * Windows: serial/HID/credential/audio と必要な legacy bridge
 * macOS: IOKit/CoreAudio/Keychain 等を用いる adapter（技術検証後に確定）
 
+無線機制御は Hamlib adapter を標準とし、CW/RTTY の modem、audio、keying から分離します。送受信 pipeline、
+リアルタイム制約、PTT safety、hardware acceleration の詳細は [MODE_ENGINE.md](MODE_ENGINE.md) で定義します。
+
 platform unit だけが OS conditional を持ち、呼出側は `TRigCapabilities` で能力を問い合わせます。
 「未接続」「非対応」「権限拒否」「一時障害」を別状態にし、UI へ actionable な復旧手順を返します。
 
@@ -113,5 +116,6 @@ SQLite 等の具体技術は concurrent durability benchmark と macOS 配布条
 5. packaging、code signing、notarization、auto-update
 6. plugin sandbox と署名方式
 7. localization resource format
+8. Hamlib integration、audio backend、CW/RTTY DSP と hardware acceleration
 
 PoC、代替案、判断基準、rollback を記録するまで、これらを application/domain API へ漏らしません。

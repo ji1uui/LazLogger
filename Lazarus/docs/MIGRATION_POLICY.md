@@ -64,8 +64,8 @@ zLog の既存機能と主要なコンテストロガーで一般的なワーク
 2. キーボード中心の QSO 入力、候補、重複警告、編集、取消／復元
 3. 正確で説明可能な得点・マルチ計算（「なぜ 0 点か」を表示）
 4. 自動保存、クラッシュ復旧、バックアップ、監査履歴
-5. CAT による周波数・モード追従（まず共通機種の一台運用）
-6. CW メッセージと function key、packet cluster / spot
+5. Hamlib CAT による周波数・モード追従（まず共通機種の一台運用）
+6. CW/RTTY の送受信、メッセージと function key、packet cluster / spot
 7. Cabrillo、ADIF、JARL E-Log の import/export と事前検証
 8. rate、残り時間、band/mode、接続状態を一目で把握できる dashboard
 
@@ -77,6 +77,10 @@ zLog の既存機能と主要なコンテストロガーで一般的なワーク
 * 音声録音と QSO 時刻への索引、後日の照合
 * contest definition と rig driver の署名付き拡張パッケージ
 * 任意の live score 連携（同意、送信内容、停止状態を可視化）
+
+CW/RTTY は外部アプリを呼び出す付加機能ではなく、独立した mode subsystem として実装します。特に RTTY は
+MMTTY に依存せず、scalar reference DSP と CPU SIMD を基本に、必要性を計測できた処理だけ GPU backend を追加します。
+詳細は [交信モードと CW / RTTY 送受信エンジン方針](MODE_ENGINE.md) を参照してください。
 
 ### 整理・廃止候補
 
