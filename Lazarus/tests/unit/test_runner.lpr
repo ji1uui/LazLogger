@@ -6,10 +6,59 @@ uses
   SysUtils, Classes, DateUtils, ZLog.Domain.Types, ZLog.Domain.Qso,
   ZLog.Application.LogQso, ZLog.Infrastructure.Memory,
   ZLog.Infrastructure.Deterministic, ZLog.Infrastructure.Journal,
-  ZLog.Infrastructure.Runtime;
+  ZLog.Infrastructure.Runtime, ZLog.Application.Submission,
+  ZLog.Presentation.QsoEntry;
 
 var
   TestsRun: Integer = 0;
+
+type
+  TRecordingView = class(TInterfacedObject, IQsoEntryView)
+  private
+    FRenderCount: Integer;
+    FState: TQsoEntryState;
+  public
+    procedure Render(const AState: TQsoEntryState);
+    property RenderCount: Integer read FRenderCount;
+    property State: TQsoEntryState read FState;
+  end;
+
+  TControlledSubmission = class(TInterfacedObject, IQsoSubmissionPort)
+  private
+    FSubmitCount: Integer;
+    FDraft: TQsoDraft;
+    FObserver: IQsoSubmissionObserver;
+  public
+    procedure Submit(const ADraft: TQsoDraft;
+      const AObserver: IQsoSubmissionObserver);
+    procedure Complete(const AResult: TLogQsoResult);
+    property SubmitCount: Integer read FSubmitCount;
+    property Draft: TQsoDraft read FDraft;
+  end;
+
+procedure TRecordingView.Render(const AState: TQsoEntryState);
+begin
+  Inc(FRenderCount);
+  FState := AState;
+end;
+
+procedure TControlledSubmission.Submit(const ADraft: TQsoDraft;
+  const AObserver: IQsoSubmissionObserver);
+begin
+  Inc(FSubmitCount);
+  FDraft := ADraft;
+  FObserver := AObserver;
+end;
+
+procedure TControlledSubmission.Complete(const AResult: TLogQsoResult);
+var
+  Observer: IQsoSubmissionObserver;
+begin
+  Observer := FObserver;
+  FObserver := nil;
+  if Assigned(Observer) then
+    Observer.SubmissionCompleted(AResult);
+end;
 
 procedure AssertTrue(const ACondition: Boolean; const AMessage: string);
 begin
@@ -196,6 +245,55 @@ begin
   AssertTrue(FirstId <> SecondId, 'runtime identifiers are unique');
 end;
 
+procedure TestQsoEntryPresenter;
+var
+  ViewObject: TRecordingView;
+  SubmissionObject: TControlledSubmission;
+  View: IQsoEntryView;
+  Submission: IQsoSubmissionPort;
+  Presenter: IQsoEntryPresenter;
+  Completion: TLogQsoResult;
+begin
+  ViewObject := TRecordingView.Create;
+  View := ViewObject;
+  SubmissionObject := TControlledSubmission.Create;
+  Submission := SubmissionObject;
+  Presenter := TQsoEntryPresenter.Create(View, Submission);
+  try
+    Presenter.Initialize;
+    AssertTrue(ViewObject.State.Status = qesReady, 'presenter initializes ready');
+    Presenter.UpdateDraft('ja1zlo', 7000000, emCW, '599 001', '599 002');
+    Presenter.Submit;
+    AssertTrue(ViewObject.State.Status = qesSubmitting, 'submit is non-blocking state');
+    AssertTrue(SubmissionObject.SubmitCount = 1, 'submission is enqueued once');
+    AssertTrue(SubmissionObject.Draft.Callsign = 'ja1zlo', 'draft reaches submission port');
+    Presenter.Submit;
+    AssertTrue(SubmissionObject.SubmitCount = 1, 'double submit is suppressed');
+
+    Completion.Success := False;
+    Completion.QsoId := '';
+    Completion.Error := lqeInvalidCallsign;
+    SubmissionObject.Complete(Completion);
+    AssertTrue(ViewObject.State.Status = qesRejected, 'failure is rendered');
+    AssertTrue(ViewObject.State.ErrorField = 'callsign', 'invalid field gets focus hint');
+
+    Presenter.UpdateDraft('JA1ZLO', 7000000, emCW, '599 001', '599 002');
+    Presenter.Submit;
+    Completion.Success := True;
+    Completion.QsoId := 'accepted-1';
+    Completion.Error := lqeNone;
+    SubmissionObject.Complete(Completion);
+    AssertTrue(ViewObject.State.Status = qesAccepted, 'success is rendered');
+    AssertTrue(ViewObject.State.AcceptedQsoId = 'accepted-1', 'accepted ID is rendered');
+    AssertTrue(ViewObject.State.Callsign = '', 'callsign clears after durable acceptance');
+    AssertTrue(ViewObject.State.SentExchange = '599 001', 'sent exchange remains for next QSO');
+  finally
+    Presenter := nil;
+    Submission := nil;
+    View := nil;
+  end;
+end;
+
 begin
   try
     TestCallsignNormalization;
@@ -204,6 +302,7 @@ begin
     TestInvalidDraftDoesNotPersist;
     TestJournalRoundTripAndTailRecovery;
     TestRuntimeAdapters;
+    TestQsoEntryPresenter;
     WriteLn('PASS: ', TestsRun, ' assertions');
   except
     on E: Exception do

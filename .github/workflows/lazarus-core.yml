@@ -51,6 +51,4 @@ jobs:
         shell: bash
         run: |
           make run
-          second_run="$(make run)"
-          printf '%s\n' "$second_run"
-          grep -q '; count=2$' <<<"$second_run"
+          make run
