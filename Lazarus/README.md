@@ -55,6 +55,10 @@ Lazarus/
 port、in-memory adapter、決定的なunit test、console composition rootを追加しました。LCL画面や永続journalへ進む前に、
 UIやOSへ依存しないdomain/application境界を実行可能な形で固定するためです。
 
+次のincrementとしてversion付きbinary payload、CRC32、明示的little-endian encodingを使うappend-only journal adapterを
+追加しました。各QSOはflush完了後にだけ受付済みとなり、起動時には完全なrecordだけを再生してprocess停止で残った
+末尾の不完全recordを切り詰めます。取得したQSOはrepository内部状態ではなくowned snapshotです。
+
 Free Pascalがインストール済みの環境では次を実行します。
 
 ```bash
@@ -62,4 +66,4 @@ make test
 make run
 ```
 
-次のincrementは開発実行計画のStep 1に従い、append-only journal、kill-point recovery test、最小LCL Presenterを追加します。
+次は開発実行計画のStep 1を継続し、kill-pointを全書込境界へ広げた別process recovery testと最小LCL Presenterを追加します。
