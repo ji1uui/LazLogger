@@ -3,6 +3,7 @@ BUILD_DIR := build
 UNIT_DIR := $(BUILD_DIR)/units
 SOURCE_PATHS := -Fu./src/domain -Fu./src/application -Fu./src/infrastructure
 FPC_FLAGS := -Mobjfpc -Sh -Fu. $(SOURCE_PATHS) -FU$(UNIT_DIR)
+CORE_SOURCES := $(shell find src -type f -name '*.pas')
 
 .PHONY: all test run clean check-fpc
 
@@ -16,10 +17,10 @@ check-fpc:
 $(BUILD_DIR) $(UNIT_DIR):
 	mkdir -p $@
 
-$(BUILD_DIR)/zlog-demo: check-fpc | $(BUILD_DIR) $(UNIT_DIR)
+$(BUILD_DIR)/zlog-demo: app/zlog.lpr $(CORE_SOURCES) | check-fpc $(BUILD_DIR) $(UNIT_DIR)
 	$(FPC) $(FPC_FLAGS) -o$@ app/zlog.lpr
 
-$(BUILD_DIR)/test-runner: check-fpc | $(BUILD_DIR) $(UNIT_DIR)
+$(BUILD_DIR)/test-runner: tests/unit/test_runner.lpr $(CORE_SOURCES) | check-fpc $(BUILD_DIR) $(UNIT_DIR)
 	$(FPC) $(FPC_FLAGS) -o$@ tests/unit/test_runner.lpr
 
 test: $(BUILD_DIR)/test-runner
