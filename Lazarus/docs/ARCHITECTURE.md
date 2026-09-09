@@ -112,6 +112,9 @@ SQLite 等の具体技術は concurrent durability benchmark と macOS 配布条
 
 テストのため production code に条件分岐を入れず、clock/device ports を fake に置換します。
 
+テストを実装進捗に合わせて適用するcadence、性能baseline、fault injection、step別quality gateは
+[DEVELOPMENT_PLAN.md](DEVELOPMENT_PLAN.md)で定義します。
+
 ## 8. ADR が必要な未決事項
 
 1. Lazarus/FPC の最低・推奨バージョンと CPU target

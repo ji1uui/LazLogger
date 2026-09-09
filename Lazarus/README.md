@@ -11,6 +11,7 @@ Windows と macOS を同じドメインモデルで支える **新規実装** �
 * [交信モード／CW・RTTYエンジン](docs/MODE_ENGINE.md) — Hamlib連携、送受信、DSP、遅延・安全性
 * [CQRLOGを参考にしたUX提案](docs/CQRLOG_UX_PROPOSAL.md) — 機能候補、画面構成、thread/process分離
 * [実施ロードマップ](docs/ROADMAP.md) — フェーズ、完了条件、リスク、意思決定ゲート
+* [開発実行計画](docs/DEVELOPMENT_PLAN.md) — 実装順、反復ごとの検証、品質ゲート、進捗管理
 
 ## 想定ツールチェーン
 
@@ -48,5 +49,17 @@ Lazarus/
 4. UI スレッドを通信・保存・集計でブロックしない。
 5. 一括置換や DFM→LFM 変換ではなく、縦に薄い機能単位で完成させる。
 
-現時点では設計合意用の文書のみです。動作するプロジェクトを置くのは、ロードマップ Phase 0 の
-技術検証と ADR 承認後とします。未検証のライブラリ選定を初期ソースへ固定しないためです。
+## 現在の実装
+
+最初の縦割りとして、pure Pascalのcallsign／周波数value object、QSO entity、`ILogQsoUseCase`、repository／clock／IDの
+port、in-memory adapter、決定的なunit test、console composition rootを追加しました。LCL画面や永続journalへ進む前に、
+UIやOSへ依存しないdomain/application境界を実行可能な形で固定するためです。
+
+Free Pascalがインストール済みの環境では次を実行します。
+
+```bash
+make test
+make run
+```
+
+次のincrementは開発実行計画のStep 1に従い、append-only journal、kill-point recovery test、最小LCL Presenterを追加します。

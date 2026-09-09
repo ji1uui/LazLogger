@@ -3,6 +3,10 @@
 日付ありの納期ではなく、品質ゲートで次段階へ進みます。各フェーズは Windows/macOS を同時に通し、
 macOS 対応を最後にまとめて行いません。
 
+本書は全体のフェーズを示します。iteration単位の実装順、各stepの性能・堅牢性・効率性検証、CI cadence、
+進捗管理は[開発実行計画](DEVELOPMENT_PLAN.md)に従います。フェーズのExit条件と実行計画のGateが競合する場合は、
+より厳しい条件を適用します。
+
 ## Phase 0 — Discovery / 技術検証
 
 * source inventory と `retain / redesign / replace / retire` 台帳を作る。
