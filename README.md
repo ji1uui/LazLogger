@@ -21,6 +21,10 @@ Yokobayashi Yohei, JARL Contest Committee, JR8PPG
 There is no documentation for the developer.
 開発のためのドキュメントはありません
 
+Lazarus / Free Pascal による Windows・macOS 向け新規実装の設計資料は
+[Lazarus/README.md](Lazarus/README.md) を参照してください。既存 Delphi/VCL 版の単純移植ではなく、
+ドメイン、ユースケース、OS・機器アダプター、LCL UI を分離する段階的な再設計方針です。
+
 zLog for Windowsは元東京大学アマチュア無線部JA1ZLOの横林洋平さんが開発した，
 アマチュア無線コンテストロギングソフトです．
 最後にアップデートされたのは2004年11月20日に公開されたzLog for Windows 2.2です．
