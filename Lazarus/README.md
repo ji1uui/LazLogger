@@ -59,6 +59,12 @@ UIやOSへ依存しないdomain/application境界を実行可能な形で固定�
 追加しました。各QSOはflush完了後にだけ受付済みとなり、起動時には完全なrecordだけを再生してprocess停止で残った
 末尾の不完全recordを切り詰めます。取得したQSOはrepository内部状態ではなくowned snapshotです。
 
+console composition rootは現在、実運用時刻をUnix millisecondで返すclock、GUID based ID generator、journal repositoryを
+組み立てます。このため`make run`を繰り返しても以前のQSOを再生し、一意なIDで新しいQSOを追記します。
+
+`.github/workflows/lazarus-core.yml`はUbuntu、macOS、WindowsでFree Pascalのcore testをbuildし、journal demoを2回実行して
+再起動後の追記を確認します。LCLを導入するまではpure Pascal境界を3 OSで継続検証します。
+
 Free Pascalがインストール済みの環境では次を実行します。
 
 ```bash

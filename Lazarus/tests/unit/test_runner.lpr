@@ -3,9 +3,10 @@ program ZLogUnitTests;
 {$mode objfpc}{$H+}
 
 uses
-  SysUtils, ZLog.Domain.Types, ZLog.Domain.Qso, ZLog.Application.Ports,
+  SysUtils, Classes, DateUtils, ZLog.Domain.Types, ZLog.Domain.Qso,
   ZLog.Application.LogQso, ZLog.Infrastructure.Memory,
-  ZLog.Infrastructure.Deterministic, ZLog.Infrastructure.Journal;
+  ZLog.Infrastructure.Deterministic, ZLog.Infrastructure.Journal,
+  ZLog.Infrastructure.Runtime;
 
 var
   TestsRun: Integer = 0;
@@ -171,6 +172,30 @@ begin
   end;
 end;
 
+procedure TestRuntimeAdapters;
+var
+  Clock: IClock;
+  IdGenerator: IIdGenerator;
+  FirstId: string;
+  SecondId: string;
+  BeforeMs: Int64;
+  CurrentMs: Int64;
+  AfterMs: Int64;
+begin
+  BeforeMs := DateTimeToUnix(Now, False) * 1000 - 1000;
+  Clock := TSystemClock.Create;
+  CurrentMs := Clock.UtcNowMs;
+  AfterMs := DateTimeToUnix(Now, False) * 1000 + 2000;
+  AssertTrue((CurrentMs >= BeforeMs) and (CurrentMs <= AfterMs),
+    'system clock returns a current Unix timestamp');
+
+  IdGenerator := TGuidIdGenerator.Create;
+  FirstId := IdGenerator.NextId;
+  SecondId := IdGenerator.NextId;
+  AssertTrue(Length(FirstId) = 36, 'GUID identifier has canonical length');
+  AssertTrue(FirstId <> SecondId, 'runtime identifiers are unique');
+end;
+
 begin
   try
     TestCallsignNormalization;
@@ -178,6 +203,7 @@ begin
     TestLogQso;
     TestInvalidDraftDoesNotPersist;
     TestJournalRoundTripAndTailRecovery;
+    TestRuntimeAdapters;
     WriteLn('PASS: ', TestsRun, ' assertions');
   except
     on E: Exception do

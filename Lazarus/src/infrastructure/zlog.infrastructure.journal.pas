@@ -263,16 +263,29 @@ end;
 procedure TJournalQsoRepository.AppendRecord(const AQso: TQso);
 var
   Payload: TMemoryStream;
+  RecordStart: Int64;
 begin
   Payload := SerializeQso(AQso);
   try
-    FStream.Position := FStream.Size;
-    FStream.WriteBuffer(RecordMagic, SizeOf(RecordMagic));
-    WriteUInt32LE(FStream, Payload.Size);
-    WriteUInt32LE(FStream, PayloadCrc(Payload));
-    FStream.CopyFrom(Payload, 0);
-    if not FileFlush(FStream.Handle) then
-      raise EJournalError.CreateFmt('Unable to flush journal: %s', [FFileName]);
+    RecordStart := FStream.Size;
+    try
+      FStream.Position := RecordStart;
+      FStream.WriteBuffer(RecordMagic, SizeOf(RecordMagic));
+      WriteUInt32LE(FStream, Payload.Size);
+      WriteUInt32LE(FStream, PayloadCrc(Payload));
+      FStream.CopyFrom(Payload, 0);
+      if not FileFlush(FStream.Handle) then
+        raise EJournalError.CreateFmt('Unable to flush journal: %s', [FFileName]);
+    except
+      { Keep this repository usable when an append fails before acknowledgement. }
+      try
+        FStream.Size := RecordStart;
+        FStream.Position := RecordStart;
+      except
+        { The original write exception is more useful; reopen will recover the tail. }
+      end;
+      raise;
+    end;
   finally
     Payload.Free;
   end;

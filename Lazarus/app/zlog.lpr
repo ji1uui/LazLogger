@@ -4,8 +4,8 @@ program ZLogLazarus;
 
 uses
   SysUtils, ZLog.Domain.Types, ZLog.Domain.Qso, ZLog.Application.Ports,
-  ZLog.Application.LogQso, ZLog.Infrastructure.Memory,
-  ZLog.Infrastructure.Deterministic;
+  ZLog.Application.LogQso, ZLog.Infrastructure.Journal,
+  ZLog.Infrastructure.Runtime;
 
 var
   Repository: IQsoRepository;
@@ -13,9 +13,9 @@ var
   Draft: TQsoDraft;
   LogResult: TLogQsoResult;
 begin
-  Repository := TInMemoryQsoRepository.Create;
-  UseCase := TLogQsoUseCase.Create(Repository, TFixedClock.Create(0),
-    TSequentialIdGenerator.Create('demo-'));
+  Repository := TJournalQsoRepository.Create('zlog-demo.journal');
+  UseCase := TLogQsoUseCase.Create(Repository, TSystemClock.Create,
+    TGuidIdGenerator.Create);
 
   Draft.Callsign := 'JA1ZLO';
   Draft.FrequencyHz := 7000000;
