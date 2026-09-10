@@ -12,11 +12,11 @@ type
   TQsoEntryStatus = (qesReady, qesSubmitting, qesAccepted, qesRejected);
 
   TQsoEntryState = record
-    Callsign: string;
+    Callsign: UnicodeString;
     FrequencyHz: Int64;
     Mode: TEmissionMode;
-    SentExchange: string;
-    ReceivedExchange: string;
+    SentExchange: UnicodeString;
+    ReceivedExchange: UnicodeString;
     Status: TQsoEntryStatus;
     ErrorField: string;
     ErrorCode: TLogQsoError;
@@ -31,9 +31,9 @@ type
   IQsoEntryPresenter = interface
     ['{33D6EC02-9F50-4533-AD4D-BC45BC10CA07}']
     procedure Initialize;
-    procedure UpdateDraft(const ACallsign: string; const AFrequencyHz: Int64;
-      const AMode: TEmissionMode; const ASentExchange,
-      AReceivedExchange: string);
+    procedure UpdateDraft(const ACallsign: UnicodeString;
+      const AFrequencyHz: Int64; const AMode: TEmissionMode;
+      const ASentExchange, AReceivedExchange: UnicodeString);
     procedure Submit;
   end;
 
@@ -49,9 +49,9 @@ type
     constructor Create(const AView: IQsoEntryView;
       const ASubmission: IQsoSubmissionPort);
     procedure Initialize;
-    procedure UpdateDraft(const ACallsign: string; const AFrequencyHz: Int64;
-      const AMode: TEmissionMode; const ASentExchange,
-      AReceivedExchange: string);
+    procedure UpdateDraft(const ACallsign: UnicodeString;
+      const AFrequencyHz: Int64; const AMode: TEmissionMode;
+      const ASentExchange, AReceivedExchange: UnicodeString);
     procedure Submit;
     procedure SubmissionCompleted(const AResult: TLogQsoResult);
   end;
@@ -95,9 +95,9 @@ begin
   Publish;
 end;
 
-procedure TQsoEntryPresenter.UpdateDraft(const ACallsign: string;
+procedure TQsoEntryPresenter.UpdateDraft(const ACallsign: UnicodeString;
   const AFrequencyHz: Int64; const AMode: TEmissionMode;
-  const ASentExchange, AReceivedExchange: string);
+  const ASentExchange, AReceivedExchange: UnicodeString);
 begin
   if FState.Status = qesSubmitting then
     Exit;

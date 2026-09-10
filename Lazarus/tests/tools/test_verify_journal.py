@@ -19,7 +19,7 @@ def encoded_string(value: str) -> bytes:
     return struct.pack("<I", len(encoded)) + encoded
 
 
-def journal_record() -> bytes:
+def journal_record(received_exchange: str = "599 東京都") -> bytes:
     payload = b"".join(
         (
             bytes((1,)),
@@ -27,7 +27,7 @@ def journal_record() -> bytes:
             encoded_string("JA1ZLO"),
             struct.pack("<qB", 7_000_000, 1),
             encoded_string("599 001"),
-            encoded_string("599 002"),
+            encoded_string(received_exchange),
             struct.pack("<q", 1_900_000_000_000),
         )
     )
@@ -47,6 +47,7 @@ class JournalVerifierTests(unittest.TestCase):
         self.assertEqual(1, len(records))
         self.assertEqual("JA1ZLO", records[0]["callsign"])
         self.assertEqual(7_000_000, records[0]["frequency_hz"])
+        self.assertEqual("599 東京都", records[0]["received_exchange"])
         self.assertEqual(len(journal_record()), valid_bytes)
 
     def test_reports_incomplete_tail_without_accepting_it(self) -> None:
@@ -62,6 +63,12 @@ class JournalVerifierTests(unittest.TestCase):
         corrupted[-1] ^= 0xFF
         with self.assertRaisesRegex(VERIFY_JOURNAL.JournalError, "CRC mismatch"):
             VERIFY_JOURNAL.read_journal(self.write_fixture(corrupted))
+
+    def test_decodes_multibyte_utf8_without_using_character_count_as_byte_length(self) -> None:
+        record = journal_record("599 北海道 石狩振興局")
+        records, valid_bytes = VERIFY_JOURNAL.read_journal(self.write_fixture(record))
+        self.assertEqual("599 北海道 石狩振興局", records[0]["received_exchange"])
+        self.assertEqual(len(record), valid_bytes)
 
 
 if __name__ == "__main__":

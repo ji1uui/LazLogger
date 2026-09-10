@@ -58,6 +58,8 @@ UIやOSへ依存しないdomain/application境界を実行可能な形で固定�
 次のincrementとしてversion付きbinary payload、CRC32、明示的little-endian encodingを使うappend-only journal adapterを
 追加しました。各QSOはflush完了後にだけ受付済みとなり、起動時には完全なrecordだけを再生してprocess停止で残った
 末尾の不完全recordを切り詰めます。取得したQSOはrepository内部状態ではなくowned snapshotです。
+Callsignとexchangeはdomain内で`UnicodeString`として保持し、journal境界で明示的にUTF-8へ変換するため、日本語を含む
+国内contest exchangeもOSのANSI code pageに依存せず再生できます。
 
 console composition rootは現在、実運用時刻をUnix millisecondで返すclock、GUID based ID generator、journal repositoryを
 組み立てます。このため`make run`を繰り返しても以前のQSOを再生し、一意なIDで新しいQSOを追記します。

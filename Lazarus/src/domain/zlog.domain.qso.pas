@@ -9,11 +9,11 @@ uses
 
 type
   TQsoDraft = record
-    Callsign: string;
+    Callsign: UnicodeString;
     FrequencyHz: Int64;
     Mode: TEmissionMode;
-    SentExchange: string;
-    ReceivedExchange: string;
+    SentExchange: UnicodeString;
+    ReceivedExchange: UnicodeString;
   end;
 
   TQso = class
@@ -22,21 +22,21 @@ type
     FCallsign: TCallsign;
     FFrequency: TFrequencyHz;
     FMode: TEmissionMode;
-    FSentExchange: string;
-    FReceivedExchange: string;
+    FSentExchange: UnicodeString;
+    FReceivedExchange: UnicodeString;
     FOccurredAtUtcMs: Int64;
   public
     constructor Create(const AId: string; const ACallsign: TCallsign;
       const AFrequency: TFrequencyHz; const AMode: TEmissionMode;
-      const ASentExchange, AReceivedExchange: string;
+      const ASentExchange, AReceivedExchange: UnicodeString;
       const AOccurredAtUtcMs: Int64);
     function Clone: TQso;
     property Id: string read FId;
     property Callsign: TCallsign read FCallsign;
     property Frequency: TFrequencyHz read FFrequency;
     property Mode: TEmissionMode read FMode;
-    property SentExchange: string read FSentExchange;
-    property ReceivedExchange: string read FReceivedExchange;
+    property SentExchange: UnicodeString read FSentExchange;
+    property ReceivedExchange: UnicodeString read FReceivedExchange;
     property OccurredAtUtcMs: Int64 read FOccurredAtUtcMs;
   end;
 
@@ -44,7 +44,7 @@ implementation
 
 constructor TQso.Create(const AId: string; const ACallsign: TCallsign;
   const AFrequency: TFrequencyHz; const AMode: TEmissionMode;
-  const ASentExchange, AReceivedExchange: string;
+  const ASentExchange, AReceivedExchange: UnicodeString;
   const AOccurredAtUtcMs: Int64);
 begin
   inherited Create;

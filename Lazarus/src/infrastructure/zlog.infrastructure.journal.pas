@@ -86,26 +86,30 @@ begin
   Result := Int64(Value);
 end;
 
-procedure WriteString(const AStream: TStream; const AValue: string);
+procedure WriteText(const AStream: TStream; const AValue: UnicodeString);
 var
   ByteLength: LongWord;
+  Encoded: UTF8String;
 begin
-  ByteLength := Length(AValue);
+  Encoded := UTF8Encode(AValue);
+  ByteLength := Length(Encoded);
   WriteUInt32LE(AStream, ByteLength);
   if ByteLength > 0 then
-    AStream.WriteBuffer(AValue[1], ByteLength);
+    AStream.WriteBuffer(Encoded[1], ByteLength);
 end;
 
-function ReadString(const AStream: TStream): string;
+function ReadText(const AStream: TStream): UnicodeString;
 var
   ByteLength: LongWord;
+  Encoded: UTF8String;
 begin
   ByteLength := ReadUInt32LE(AStream);
   if ByteLength > MaximumPayloadSize then
     raise EJournalCorrupt.Create('Journal string exceeds the safety limit');
-  SetLength(Result, ByteLength);
+  SetLength(Encoded, ByteLength);
   if ByteLength > 0 then
-    AStream.ReadBuffer(Result[1], ByteLength);
+    AStream.ReadBuffer(Encoded[1], ByteLength);
+  Result := UTF8Decode(Encoded);
 end;
 
 function CalculateCrc32(const ABuffer; const ALength: LongWord): LongWord;
@@ -147,13 +151,13 @@ begin
   Result := TMemoryStream.Create;
   Version := PayloadVersion;
   Result.WriteBuffer(Version, SizeOf(Version));
-  WriteString(Result, AQso.Id);
-  WriteString(Result, AQso.Callsign.ToString);
+  WriteText(Result, UnicodeString(AQso.Id));
+  WriteText(Result, AQso.Callsign.ToString);
   WriteInt64LE(Result, AQso.Frequency.ToInt64);
   ModeValue := Ord(AQso.Mode);
   Result.WriteBuffer(ModeValue, SizeOf(ModeValue));
-  WriteString(Result, AQso.SentExchange);
-  WriteString(Result, AQso.ReceivedExchange);
+  WriteText(Result, AQso.SentExchange);
+  WriteText(Result, AQso.ReceivedExchange);
   WriteInt64LE(Result, AQso.OccurredAtUtcMs);
   Result.Position := 0;
 end;
@@ -161,7 +165,8 @@ end;
 function DeserializeQso(const APayload: TMemoryStream): TQso;
 var
   Version: Byte;
-  Id, CallsignText, SentExchange, ReceivedExchange: string;
+  Id: string;
+  CallsignText, SentExchange, ReceivedExchange: UnicodeString;
   Callsign: TCallsign;
   Frequency: TFrequencyHz;
   FrequencyValue, OccurredAtUtcMs: Int64;
@@ -171,12 +176,12 @@ begin
   APayload.ReadBuffer(Version, SizeOf(Version));
   if Version <> PayloadVersion then
     raise EJournalCorrupt.CreateFmt('Unsupported journal payload version: %d', [Version]);
-  Id := ReadString(APayload);
-  CallsignText := ReadString(APayload);
+  Id := string(ReadText(APayload));
+  CallsignText := ReadText(APayload);
   FrequencyValue := ReadInt64LE(APayload);
   APayload.ReadBuffer(ModeValue, SizeOf(ModeValue));
-  SentExchange := ReadString(APayload);
-  ReceivedExchange := ReadString(APayload);
+  SentExchange := ReadText(APayload);
+  ReceivedExchange := ReadText(APayload);
   OccurredAtUtcMs := ReadInt64LE(APayload);
 
   if (Id = '') or not TCallsign.TryCreate(CallsignText, Callsign) or

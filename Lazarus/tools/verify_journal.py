@@ -20,6 +20,19 @@ class JournalError(ValueError):
     pass
 
 
+def valid_callsign(value: str) -> bool:
+    return (
+        3 <= len(value) <= 16
+        and value == value.upper()
+        and any(character.isascii() and character.isalpha() for character in value)
+        and any(character.isdigit() for character in value)
+        and all(character.isascii() and (character.isalnum() or character == "/") for character in value)
+        and not value.startswith("/")
+        and not value.endswith("/")
+        and "//" not in value
+    )
+
+
 def read_string(payload: memoryview, offset: int) -> tuple[str, int]:
     if len(payload) - offset < 4:
         raise JournalError("truncated string length")
@@ -55,7 +68,12 @@ def decode_payload(raw: bytes) -> dict[str, object]:
     offset += 8
     if offset != len(payload):
         raise JournalError("unexpected payload suffix")
-    if not qso_id or mode not in VALID_MODES or not 100_000 <= frequency_hz <= 300_000_000_000:
+    if (
+        not qso_id
+        or not valid_callsign(callsign)
+        or mode not in VALID_MODES
+        or not 100_000 <= frequency_hz <= 300_000_000_000
+    ):
         raise JournalError("invalid domain values")
     return {
         "id": qso_id,

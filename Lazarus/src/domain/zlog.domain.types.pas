@@ -13,11 +13,12 @@ type
 
   TCallsign = record
   private
-    FValue: string;
+    FValue: UnicodeString;
   public
-    class function TryCreate(const ARawValue: string; out ACallsign: TCallsign): Boolean; static;
+    class function TryCreate(const ARawValue: UnicodeString;
+      out ACallsign: TCallsign): Boolean; static;
     function IsEmpty: Boolean;
-    function ToString: string;
+    function ToString: UnicodeString;
   end;
 
   TFrequencyHz = record
@@ -30,22 +31,22 @@ type
 
 implementation
 
-function IsCallsignCharacter(const AValue: Char): Boolean;
+function IsCallsignCharacter(const AValue: WideChar): Boolean;
 begin
   Result := (AValue in ['A'..'Z']) or (AValue in ['0'..'9']) or
     (AValue = '/');
 end;
 
-class function TCallsign.TryCreate(const ARawValue: string;
+class function TCallsign.TryCreate(const ARawValue: UnicodeString;
   out ACallsign: TCallsign): Boolean;
 var
   Index: Integer;
-  Normalized: string;
+  Normalized: UnicodeString;
   HasLetter: Boolean;
   HasDigit: Boolean;
 begin
   ACallsign.FValue := '';
-  Normalized := UpperCase(Trim(ARawValue));
+  Normalized := UnicodeUpperCase(Trim(ARawValue));
   Result := (Length(Normalized) >= 3) and (Length(Normalized) <= 16);
   HasLetter := False;
   HasDigit := False;
@@ -71,7 +72,7 @@ begin
   Result := FValue = '';
 end;
 
-function TCallsign.ToString: string;
+function TCallsign.ToString: UnicodeString;
 begin
   Result := FValue;
 end;

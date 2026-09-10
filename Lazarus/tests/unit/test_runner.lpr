@@ -1,6 +1,7 @@
 program ZLogUnitTests;
 
 {$mode objfpc}{$H+}
+{$codepage utf8}
 
 uses
   SysUtils, Classes, DateUtils, ZLog.Domain.Types, ZLog.Domain.Qso,
@@ -208,7 +209,7 @@ begin
     Draft.FrequencyHz := 7030000;
     Draft.Mode := emCW;
     Draft.SentExchange := '599 001';
-    Draft.ReceivedExchange := '599 002';
+    Draft.ReceivedExchange := '599 東京都';
     LogResult := UseCase.Execute(Draft);
     AssertTrue(LogResult.Success, 'journal accepts a valid QSO');
     UseCase := nil;
@@ -224,6 +225,8 @@ begin
       AssertTrue(Assigned(Stored), 'journal record is loaded by ID');
       AssertTrue(Stored.Callsign.ToString = 'JA1ZLO/P', 'journal preserves callsign');
       AssertTrue(Stored.OccurredAtUtcMs = ExpectedTime, 'journal preserves timestamp');
+      AssertTrue(Stored.ReceivedExchange = '599 東京都',
+        'journal preserves a Unicode exchange as UTF-8');
     finally
       Stored.Free;
     end;
