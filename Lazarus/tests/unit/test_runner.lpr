@@ -7,7 +7,7 @@ uses
   ZLog.Application.LogQso, ZLog.Infrastructure.Memory,
   ZLog.Infrastructure.Deterministic, ZLog.Infrastructure.Journal,
   ZLog.Infrastructure.Runtime, ZLog.Application.Submission,
-  ZLog.Presentation.QsoEntry;
+  ZLog.Infrastructure.SubmissionQueue, ZLog.Presentation.QsoEntry;
 
 var
   TestsRun: Integer = 0;
@@ -36,6 +36,12 @@ type
     property Draft: TQsoDraft read FDraft;
   end;
 
+  TInlineDispatcher = class(TInterfacedObject, IQsoCompletionDispatcher)
+  public
+    procedure Dispatch(const AObserver: IQsoSubmissionObserver;
+      const AResult: TLogQsoResult);
+  end;
+
 procedure TRecordingView.Render(const AState: TQsoEntryState);
 begin
   Inc(FRenderCount);
@@ -58,6 +64,12 @@ begin
   FObserver := nil;
   if Assigned(Observer) then
     Observer.SubmissionCompleted(AResult);
+end;
+
+procedure TInlineDispatcher.Dispatch(const AObserver: IQsoSubmissionObserver;
+  const AResult: TLogQsoResult);
+begin
+  AObserver.SubmissionCompleted(AResult);
 end;
 
 procedure AssertTrue(const ACondition: Boolean; const AMessage: string);
@@ -294,6 +306,68 @@ begin
   end;
 end;
 
+procedure TestBoundedSubmissionQueue;
+var
+  Repository: IQsoRepository;
+  UseCase: ILogQsoUseCase;
+  Dispatcher: IQsoCompletionDispatcher;
+  Submission: IQsoSubmissionPort;
+  Pump: ISubmissionWorkPump;
+  QueueObject: TQueuedQsoSubmission;
+  FirstViewObject, SecondViewObject: TRecordingView;
+  FirstView, SecondView: IQsoEntryView;
+  FirstPresenter, SecondPresenter: IQsoEntryPresenter;
+begin
+  Repository := TInMemoryQsoRepository.Create;
+  UseCase := TLogQsoUseCase.Create(Repository, TFixedClock.Create(1),
+    TSequentialIdGenerator.Create('queued-'));
+  Dispatcher := TInlineDispatcher.Create;
+  QueueObject := TQueuedQsoSubmission.Create(UseCase, Dispatcher, 1);
+  Submission := QueueObject;
+  Pump := QueueObject;
+  FirstViewObject := TRecordingView.Create;
+  FirstView := FirstViewObject;
+  SecondViewObject := TRecordingView.Create;
+  SecondView := SecondViewObject;
+  FirstPresenter := TQsoEntryPresenter.Create(FirstView, Submission);
+  SecondPresenter := TQsoEntryPresenter.Create(SecondView, Submission);
+
+  FirstPresenter.UpdateDraft('JA1ZLO', 7000000, emCW, '599 001', '599 002');
+  FirstPresenter.Submit;
+  AssertTrue(Pump.PendingCount = 1, 'submission is queued');
+  AssertTrue(Repository.Count = 0, 'submit performs no repository I/O');
+
+  SecondPresenter.UpdateDraft('JR8PPG', 14074000, emRTTY, '599 003', '599 004');
+  SecondPresenter.Submit;
+  AssertTrue(SecondViewObject.State.Status = qesRejected, 'full queue rejects work');
+  AssertTrue(SecondViewObject.State.ErrorCode = lqeQueueFull, 'queue pressure is explicit');
+  AssertTrue(Pump.PendingCount = 1, 'rejected work does not grow queue');
+
+  AssertTrue(Pump.ProcessNext, 'worker processes queued submission');
+  AssertTrue(Repository.Count = 1, 'worker performs durable use case');
+  AssertTrue(FirstViewObject.State.Status = qesAccepted, 'completion reaches presenter');
+  AssertTrue(Pump.PendingCount = 0, 'processed work leaves queue');
+  AssertTrue(not Pump.ProcessNext, 'empty queue reports no work');
+
+  FirstPresenter.UpdateDraft('JA1ZLO', 21000000, emSSB, '59 001', '59 002');
+  FirstPresenter.Submit;
+  Pump.CancelPending;
+  AssertTrue(Pump.PendingCount = 0, 'cancel drains pending work');
+  AssertTrue(Repository.Count = 1, 'cancelled work is not persisted');
+  AssertTrue(FirstViewObject.State.Status = qesRejected, 'cancel reaches presenter');
+  AssertTrue(FirstViewObject.State.ErrorCode = lqeCancelled, 'cancel is explicit');
+
+  FirstPresenter := nil;
+  SecondPresenter := nil;
+  FirstView := nil;
+  SecondView := nil;
+  Pump := nil;
+  Submission := nil;
+  Dispatcher := nil;
+  UseCase := nil;
+  Repository := nil;
+end;
+
 begin
   try
     TestCallsignNormalization;
@@ -303,6 +377,7 @@ begin
     TestJournalRoundTripAndTailRecovery;
     TestRuntimeAdapters;
     TestQsoEntryPresenter;
+    TestBoundedSubmissionQueue;
     WriteLn('PASS: ', TestsRun, ' assertions');
   except
     on E: Exception do

@@ -24,6 +24,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Test independent verification tools
+        working-directory: Lazarus
+        shell: bash
+        run: make test-tools
+
       - name: Install Free Pascal (Ubuntu)
         if: runner.os == 'Linux'
         run: sudo apt-get update && sudo apt-get install --yes fp-compiler
@@ -52,3 +57,21 @@ jobs:
         run: |
           make run
           make run
+
+      - name: Verify journal with independent parser
+        working-directory: Lazarus
+        shell: bash
+        run: make verify-demo
+
+      - name: Measure durable append baseline
+        if: runner.os == 'Linux'
+        working-directory: Lazarus
+        shell: bash
+        run: make benchmark | tee build/journal-benchmark.json
+
+      - name: Upload benchmark result
+        if: runner.os == 'Linux'
+        uses: actions/upload-artifact@v4
+        with:
+          name: journal-benchmark
+          path: Lazarus/build/journal-benchmark.json

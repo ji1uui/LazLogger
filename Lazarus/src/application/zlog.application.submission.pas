@@ -23,6 +23,21 @@ type
       const AObserver: IQsoSubmissionObserver);
   end;
 
+  IQsoCompletionDispatcher = interface
+    ['{93817305-08FB-43B5-84BE-A0CF617F7D9D}']
+    { Enqueues completion for delivery on the UI thread. }
+    procedure Dispatch(const AObserver: IQsoSubmissionObserver;
+      const AResult: TLogQsoResult);
+  end;
+
+  ISubmissionWorkPump = interface
+    ['{019F83D2-4B15-429B-9B82-A8B55836978D}']
+    { Called by one persistence worker; never by the UI thread. }
+    function ProcessNext: Boolean;
+    procedure CancelPending;
+    function PendingCount: Integer;
+  end;
+
 implementation
 
 end.

@@ -63,18 +63,25 @@ console composition rootは現在、実運用時刻をUnix millisecondで返すc
 組み立てます。このため`make run`を繰り返しても以前のQSOを再生し、一意なIDで新しいQSOを追記します。
 
 `.github/workflows/lazarus-core.yml`はUbuntu、macOS、WindowsでFree Pascalのcore testをbuildし、journal demoを2回実行して
-再起動後の追記を確認します。LCLを導入するまではpure Pascal境界を3 OSで継続検証します。
+再起動後の追記を確認します。Pascal実装とは独立したPython parserで件数、record境界、CRC、payloadを照合し、Linuxでは
+durable appendのp95/max latencyをJSON artifactとして保存します。LCL導入まではpure Pascal境界を3 OSで継続検証します。
 
 presentationの最初のsliceとして、LCL controlを直接参照しないQSO entry Presenterとimmutable view stateを追加しました。
 Presenterはrepositoryを呼ばず、即座に戻る`IQsoSubmissionPort`へdraftを渡します。送信中の二重登録防止、field別validation
 feedback、耐久保存の完了通知を受けてからcallsignをclearする状態遷移を先に固定しています。
 
+Submissionのinfrastructure sliceとして、容量を必須指定するthread-safe queueとsingle-consumer work pumpを追加しました。
+UI側の`Submit`はmemory queueへの追加だけを行い、repository use caseはworker側の`ProcessNext`で実行します。満杯、cancel、
+worker内部障害を型付き結果としてdispatcherへ渡し、無制限queueやUI threadでのjournal flushを防止します。
+
 Free Pascalがインストール済みの環境では次を実行します。
 
 ```bash
 make test
+make test-tools
 make run
+make benchmark
 ```
 
-次は開発実行計画のStep 1を継続し、kill-pointを全書込境界へ広げた別process recovery test、bounded single-writer submission
-worker、LCL Form adapterとmain-thread dispatcherを追加します。
+次は開発実行計画のStep 1を継続し、このwork pumpを所有する停止可能なworker thread、LCL main-thread dispatcher、
+kill-pointを全書込境界へ広げた別process recovery test、LCL Form adapterを追加します。

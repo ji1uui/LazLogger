@@ -9,7 +9,8 @@ uses
 
 type
   TLogQsoError = (lqeNone, lqeInvalidCallsign, lqeInvalidFrequency,
-    lqeUnknownMode, lqeMissingIdentifier);
+    lqeUnknownMode, lqeMissingIdentifier, lqeQueueFull, lqeCancelled,
+    lqeInternalFailure);
 
   TLogQsoResult = record
     Success: Boolean;
