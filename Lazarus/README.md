@@ -76,6 +76,9 @@ Submissionのinfrastructure sliceとして、容量を必須指定するthread-s
 UI側の`Submit`はmemory queueへの追加だけを行い、repository use caseはworker側の`ProcessNext`で実行します。満杯、cancel、
 worker内部障害を型付き結果としてdispatcherへ渡し、無制限queueやUI threadでのjournal flushを防止します。
 
+repositoryのquery viewはsorted ID indexを使い、従来の全件線形探索を廃止しました。CIでは100,000 QSOの追加と10,000件の
+分散lookupを測定し、journalのdurable appendとは別のJSON baselineとして保存します。
+
 Free Pascalがインストール済みの環境では次を実行します。
 
 ```bash
@@ -83,6 +86,7 @@ make test
 make test-tools
 make run
 make benchmark
+make benchmark-memory
 ```
 
 次は開発実行計画のStep 1を継続し、このwork pumpを所有する停止可能なworker thread、LCL main-thread dispatcher、

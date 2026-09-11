@@ -10,7 +10,7 @@ uses
 type
   TInMemoryQsoRepository = class(TInterfacedObject, IQsoRepository)
   private
-    FItems: TList;
+    FItems: TStringList;
     function IndexOfId(const AId: string): Integer;
   public
     constructor Create;
@@ -25,15 +25,15 @@ implementation
 constructor TInMemoryQsoRepository.Create;
 begin
   inherited Create;
-  FItems := TList.Create;
+  FItems := TStringList.Create;
+  FItems.Sorted := True;
+  FItems.CaseSensitive := True;
+  FItems.Duplicates := dupError;
+  FItems.OwnsObjects := True;
 end;
 
 destructor TInMemoryQsoRepository.Destroy;
-var
-  Index: Integer;
 begin
-  for Index := 0 to FItems.Count - 1 do
-    TObject(FItems[Index]).Free;
   FItems.Free;
   inherited Destroy;
 end;
@@ -44,17 +44,13 @@ begin
     raise EArgumentNilException.Create('AQso');
   if IndexOfId(AQso.Id) >= 0 then
     raise EListError.CreateFmt('Duplicate QSO identifier: %s', [AQso.Id]);
-  FItems.Add(AQso.Clone);
+  FItems.AddObject(AQso.Id, AQso.Clone);
 end;
 
 function TInMemoryQsoRepository.IndexOfId(const AId: string): Integer;
-var
-  Index: Integer;
 begin
-  Result := -1;
-  for Index := 0 to FItems.Count - 1 do
-    if TQso(FItems[Index]).Id = AId then
-      Exit(Index);
+  if not FItems.Find(AId, Result) then
+    Result := -1;
 end;
 
 function TInMemoryQsoRepository.Count: Integer;
@@ -69,7 +65,7 @@ begin
   Result := nil;
   Index := IndexOfId(AId);
   if Index >= 0 then
-    Result := TQso(FItems[Index]).Clone;
+    Result := TQso(FItems.Objects[Index]).Clone;
 end;
 
 end.

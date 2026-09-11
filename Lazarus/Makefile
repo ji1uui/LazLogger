@@ -5,7 +5,7 @@ SOURCE_PATHS := -Fu./src/domain -Fu./src/application -Fu./src/infrastructure \
 	-Fu./src/presentation
 FPC_FLAGS := -Mobjfpc -Sh -Fu. $(SOURCE_PATHS) -FU$(UNIT_DIR)
 
-.PHONY: all test test-tools run benchmark verify-demo clean check-fpc
+.PHONY: all test test-tools run benchmark benchmark-memory verify-demo clean check-fpc
 
 all: $(BUILD_DIR)/zlog-demo
 
@@ -26,6 +26,9 @@ $(BUILD_DIR)/test-runner: check-fpc | $(BUILD_DIR) $(UNIT_DIR)
 $(BUILD_DIR)/journal-benchmark: check-fpc | $(BUILD_DIR) $(UNIT_DIR)
 	$(FPC) $(FPC_FLAGS) -O2 -o$@ tests/benchmark/journal_benchmark.lpr
 
+$(BUILD_DIR)/repository-benchmark: check-fpc | $(BUILD_DIR) $(UNIT_DIR)
+	$(FPC) $(FPC_FLAGS) -O2 -o$@ tests/benchmark/repository_benchmark.lpr
+
 test: $(BUILD_DIR)/test-runner
 	./$(BUILD_DIR)/test-runner
 
@@ -37,6 +40,9 @@ run: $(BUILD_DIR)/zlog-demo
 
 benchmark: $(BUILD_DIR)/journal-benchmark
 	./$(BUILD_DIR)/journal-benchmark 200
+
+benchmark-memory: $(BUILD_DIR)/repository-benchmark
+	./$(BUILD_DIR)/repository-benchmark
 
 verify-demo:
 	python3 tools/verify_journal.py --expect-count 2 --require-complete-tail zlog-demo.journal

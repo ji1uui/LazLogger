@@ -69,9 +69,17 @@ jobs:
         shell: bash
         run: make benchmark | tee build/journal-benchmark.json
 
+      - name: Measure 100k repository baseline
+        if: runner.os == 'Linux'
+        working-directory: Lazarus
+        shell: bash
+        run: make benchmark-memory | tee build/repository-benchmark.json
+
       - name: Upload benchmark result
         if: runner.os == 'Linux'
         uses: actions/upload-artifact@v4
         with:
           name: journal-benchmark
-          path: Lazarus/build/journal-benchmark.json
+          path: |
+            Lazarus/build/journal-benchmark.json
+            Lazarus/build/repository-benchmark.json

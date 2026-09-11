@@ -99,6 +99,58 @@ begin
   AssertTrue(not TFrequencyHz.TryCreate(0, Frequency), 'zero frequency is rejected');
 end;
 
+procedure TestIndexedRepository;
+const
+  Identifiers: array[0..2] of string = ('qso-z', 'qso-a', 'qso-m');
+var
+  Repository: IQsoRepository;
+  Callsign: TCallsign;
+  Frequency: TFrequencyHz;
+  Qso, Stored: TQso;
+  Index: Integer;
+  DuplicateRejected: Boolean;
+begin
+  AssertTrue(TCallsign.TryCreate('JA1ZLO', Callsign), 'repository fixture callsign');
+  AssertTrue(TFrequencyHz.TryCreate(7000000, Frequency), 'repository fixture frequency');
+  Repository := TInMemoryQsoRepository.Create;
+  for Index := Low(Identifiers) to High(Identifiers) do
+  begin
+    Qso := TQso.Create(Identifiers[Index], Callsign, Frequency, emCW,
+      '599 001', '599 002', Index);
+    try
+      Repository.Add(Qso);
+    finally
+      Qso.Free;
+    end;
+  end;
+  AssertTrue(Repository.Count = Length(Identifiers), 'out-of-order IDs are indexed');
+  for Index := Low(Identifiers) to High(Identifiers) do
+  begin
+    Stored := Repository.FindById(Identifiers[Index]);
+    try
+      AssertTrue(Assigned(Stored), 'indexed ID can be found');
+      AssertTrue(Stored.Id = Identifiers[Index], 'lookup returns requested snapshot');
+    finally
+      Stored.Free;
+    end;
+  end;
+
+  DuplicateRejected := False;
+  Qso := TQso.Create(Identifiers[0], Callsign, Frequency, emCW,
+    '599 003', '599 004', 4);
+  try
+    try
+      Repository.Add(Qso);
+    except
+      on E: EListError do DuplicateRejected := True;
+    end;
+  finally
+    Qso.Free;
+  end;
+  AssertTrue(DuplicateRejected, 'duplicate indexed ID is rejected');
+  AssertTrue(Repository.Count = Length(Identifiers), 'duplicate does not change count');
+end;
+
 procedure TestLogQso;
 const
   ExpectedTime = Int64(1777777777000);
@@ -375,6 +427,7 @@ begin
   try
     TestCallsignNormalization;
     TestFrequencyValidation;
+    TestIndexedRepository;
     TestLogQso;
     TestInvalidDraftDoesNotPersist;
     TestJournalRoundTripAndTailRecovery;
