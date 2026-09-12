@@ -79,6 +79,10 @@ worker内部障害を型付き結果としてdispatcherへ渡し、無制限queu
 repositoryのquery viewはsorted ID indexを使い、従来の全件線形探索を廃止しました。CIでは100,000 QSOの追加と10,000件の
 分散lookupを測定し、journalのdurable appendとは別のJSON baselineとして保存します。
 
+single-consumer work pumpを所有する停止・join可能なworker threadと、完了通知を蓄えてUI threadから件数制限付きで
+drainするcompletion dispatcherを追加しました。workerはrepository処理中にLCL/Viewへ触れず、UI側は1 frameで処理する
+completion数を制限できます。shutdownは新規受付停止、worker join、未開始itemのcancelの順に実行します。
+
 Free Pascalがインストール済みの環境では次を実行します。
 
 ```bash
@@ -89,5 +93,5 @@ make benchmark
 make benchmark-memory
 ```
 
-次は開発実行計画のStep 1を継続し、このwork pumpを所有する停止可能なworker thread、LCL main-thread dispatcher、
-kill-pointを全書込境界へ広げた別process recovery test、LCL Form adapterを追加します。
+次は開発実行計画のStep 1を継続し、completion queueのbackpressure/telemetry、kill-pointを全書込境界へ広げた別process
+recovery test、LCL `Application.QueueAsyncCall` adapterと最小QSO Entry Formを追加します。

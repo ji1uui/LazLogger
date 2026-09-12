@@ -4,11 +4,13 @@ program ZLogUnitTests;
 {$codepage utf8}
 
 uses
+  {$IFDEF UNIX}cthreads,{$ENDIF}
   SysUtils, Classes, DateUtils, ZLog.Domain.Types, ZLog.Domain.Qso,
   ZLog.Application.LogQso, ZLog.Infrastructure.Memory,
   ZLog.Infrastructure.Deterministic, ZLog.Infrastructure.Journal,
   ZLog.Infrastructure.Runtime, ZLog.Application.Submission,
-  ZLog.Infrastructure.SubmissionQueue, ZLog.Presentation.QsoEntry;
+  ZLog.Infrastructure.SubmissionQueue, ZLog.Infrastructure.CompletionQueue,
+  ZLog.Infrastructure.SubmissionWorker, ZLog.Presentation.QsoEntry;
 
 var
   TestsRun: Integer = 0;
@@ -423,6 +425,68 @@ begin
   Repository := nil;
 end;
 
+procedure TestSubmissionWorkerAndMainThreadCompletion;
+const
+  CompletionTimeoutMs = 2000;
+var
+  Repository: IQsoRepository;
+  UseCase: ILogQsoUseCase;
+  Dispatcher: IQsoCompletionDispatcher;
+  CompletionPump: ICompletionPump;
+  QueueSubmission: IQsoSubmissionPort;
+  WorkPump: ISubmissionWorkPump;
+  ManagedSubmission: IManagedQsoSubmissionPort;
+  Submission: IQsoSubmissionPort;
+  View: IQsoEntryView;
+  Presenter: IQsoEntryPresenter;
+  QueueObject: TQueuedQsoSubmission;
+  DispatcherObject: TQueuedCompletionDispatcher;
+  ViewObject: TRecordingView;
+  Deadline: QWord;
+begin
+  Repository := TInMemoryQsoRepository.Create;
+  UseCase := TLogQsoUseCase.Create(Repository, TFixedClock.Create(2),
+    TSequentialIdGenerator.Create('worker-'));
+  DispatcherObject := TQueuedCompletionDispatcher.Create;
+  Dispatcher := DispatcherObject;
+  CompletionPump := DispatcherObject;
+  QueueObject := TQueuedQsoSubmission.Create(UseCase, Dispatcher, 4);
+  QueueSubmission := QueueObject;
+  WorkPump := QueueObject;
+  ManagedSubmission := TSubmissionWorkerService.Create(QueueSubmission, WorkPump);
+  Submission := ManagedSubmission;
+  ViewObject := TRecordingView.Create;
+  View := ViewObject;
+  Presenter := TQsoEntryPresenter.Create(View, Submission);
+
+  Presenter.UpdateDraft('JA1ZLO', 7000000, emCW, '599 001', '599 002');
+  Presenter.Submit;
+  AssertTrue(ViewObject.State.Status = qesSubmitting,
+    'worker submission returns before completion is rendered');
+  Deadline := GetTickCount64 + CompletionTimeoutMs;
+  while (CompletionPump.PendingCount = 0) and (GetTickCount64 < Deadline) do
+    Sleep(1);
+  AssertTrue(CompletionPump.PendingCount = 1, 'worker produces one completion');
+  AssertTrue(ViewObject.State.Status = qesSubmitting,
+    'worker never renders view from its thread');
+  AssertTrue(CompletionPump.Drain(16) = 1, 'main thread drains completion');
+  AssertTrue(ViewObject.State.Status = qesAccepted,
+    'main-thread completion accepts QSO');
+  AssertTrue(Repository.Count = 1, 'worker persists one QSO');
+
+  ManagedSubmission.Shutdown;
+  Presenter := nil;
+  View := nil;
+  Submission := nil;
+  ManagedSubmission := nil;
+  WorkPump := nil;
+  QueueSubmission := nil;
+  CompletionPump := nil;
+  Dispatcher := nil;
+  UseCase := nil;
+  Repository := nil;
+end;
+
 begin
   try
     TestCallsignNormalization;
@@ -434,6 +498,7 @@ begin
     TestRuntimeAdapters;
     TestQsoEntryPresenter;
     TestBoundedSubmissionQueue;
+    TestSubmissionWorkerAndMainThreadCompletion;
     WriteLn('PASS: ', TestsRun, ' assertions');
   except
     on E: Exception do

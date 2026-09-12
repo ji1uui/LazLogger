@@ -38,6 +38,19 @@ type
     function PendingCount: Integer;
   end;
 
+  IManagedQsoSubmissionPort = interface(IQsoSubmissionPort)
+    ['{119B83C5-771D-4D22-A5C5-C09EC0F089B8}']
+    { Stops and joins the worker, then cancels work that never started. }
+    procedure Shutdown;
+  end;
+
+  ICompletionPump = interface
+    ['{EB47605B-C069-47C4-8025-3DF9E0D41301}']
+    { Called only by the UI thread. Returns the number of callbacks delivered. }
+    function Drain(const AMaximumItems: Integer): Integer;
+    function PendingCount: Integer;
+  end;
+
 implementation
 
 end.
