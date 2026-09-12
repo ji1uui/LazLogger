@@ -5,13 +5,18 @@ SOURCE_PATHS := -Fu./src/domain -Fu./src/application -Fu./src/infrastructure \
 	-Fu./src/presentation
 FPC_FLAGS := -Mobjfpc -Sh -Fu. $(SOURCE_PATHS) -FU$(UNIT_DIR)
 
-.PHONY: all test test-tools run benchmark benchmark-memory verify-demo clean check-fpc
+.PHONY: all test test-tools run gui benchmark benchmark-memory verify-demo clean check-fpc check-lazarus
 
 all: $(BUILD_DIR)/zlog-demo
 
 check-fpc:
 	@command -v $(FPC) >/dev/null 2>&1 || { \
 		echo "Free Pascal compiler not found: $(FPC)" >&2; exit 127; \
+	}
+
+check-lazarus:
+	@command -v lazbuild >/dev/null 2>&1 || { \
+		echo "Lazarus build tool not found: lazbuild" >&2; exit 127; \
 	}
 
 $(BUILD_DIR) $(UNIT_DIR):
@@ -37,6 +42,9 @@ test-tools:
 
 run: $(BUILD_DIR)/zlog-demo
 	./$(BUILD_DIR)/zlog-demo
+
+gui: check-lazarus | $(BUILD_DIR)
+	lazbuild app/zlog_gui.lpi
 
 benchmark: $(BUILD_DIR)/journal-benchmark
 	./$(BUILD_DIR)/journal-benchmark 200

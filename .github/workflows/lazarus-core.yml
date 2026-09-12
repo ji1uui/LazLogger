@@ -31,7 +31,7 @@ jobs:
 
       - name: Install Free Pascal (Ubuntu)
         if: runner.os == 'Linux'
-        run: sudo apt-get update && sudo apt-get install --yes fp-compiler
+        run: sudo apt-get update && sudo apt-get install --yes fp-compiler lazarus
 
       - name: Install Free Pascal (macOS)
         if: runner.os == 'macOS'
@@ -50,6 +50,12 @@ jobs:
         working-directory: Lazarus
         shell: bash
         run: make clean test
+
+      - name: Build LCL walking skeleton
+        if: runner.os == 'Linux'
+        working-directory: Lazarus
+        shell: bash
+        run: make gui
 
       - name: Run durable journal demo twice
         working-directory: Lazarus

@@ -22,9 +22,10 @@ type
   private
     FQueue: TList;
     FLock: TCriticalSection;
+    FNotifier: ICompletionAvailableNotifier;
     function ExtractFirst: TCompletionItem;
   public
-    constructor Create;
+    constructor Create(const ANotifier: ICompletionAvailableNotifier = nil);
     destructor Destroy; override;
     procedure Dispatch(const AObserver: IQsoSubmissionObserver;
       const AResult: TLogQsoResult);
@@ -42,11 +43,13 @@ begin
   LogResult := AResult;
 end;
 
-constructor TQueuedCompletionDispatcher.Create;
+constructor TQueuedCompletionDispatcher.Create(
+  const ANotifier: ICompletionAvailableNotifier);
 begin
   inherited Create;
   FQueue := TList.Create;
   FLock := TCriticalSection.Create;
+  FNotifier := ANotifier;
 end;
 
 destructor TQueuedCompletionDispatcher.Destroy;
@@ -59,6 +62,7 @@ begin
   until not Assigned(Item);
   FLock.Free;
   FQueue.Free;
+  FNotifier := nil;
   inherited Destroy;
 end;
 
@@ -66,12 +70,14 @@ procedure TQueuedCompletionDispatcher.Dispatch(
   const AObserver: IQsoSubmissionObserver; const AResult: TLogQsoResult);
 var
   Item: TCompletionItem;
+  MustNotify: Boolean;
 begin
   if not Assigned(AObserver) then
     raise EArgumentNilException.Create('AObserver');
   Item := TCompletionItem.Create(AObserver, AResult);
   FLock.Acquire;
   try
+    MustNotify := FQueue.Count = 0;
     FQueue.Add(Item);
   except
     Item.Free;
@@ -79,6 +85,8 @@ begin
   finally
     FLock.Release;
   end;
+  if MustNotify and Assigned(FNotifier) then
+    FNotifier.NotifyCompletionAvailable;
 end;
 
 function TQueuedCompletionDispatcher.ExtractFirst: TCompletionItem;

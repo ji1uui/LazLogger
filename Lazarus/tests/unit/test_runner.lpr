@@ -45,6 +45,24 @@ type
       const AResult: TLogQsoResult);
   end;
 
+  TCountingCompletionNotifier = class(TInterfacedObject,
+    ICompletionAvailableNotifier)
+  private
+    FCount: Integer;
+  public
+    procedure NotifyCompletionAvailable;
+    property Count: Integer read FCount;
+  end;
+
+  TRecordingSubmissionObserver = class(TInterfacedObject,
+    IQsoSubmissionObserver)
+  private
+    FCount: Integer;
+  public
+    procedure SubmissionCompleted(const AResult: TLogQsoResult);
+    property Count: Integer read FCount;
+  end;
+
 procedure TRecordingView.Render(const AState: TQsoEntryState);
 begin
   Inc(FRenderCount);
@@ -73,6 +91,17 @@ procedure TInlineDispatcher.Dispatch(const AObserver: IQsoSubmissionObserver;
   const AResult: TLogQsoResult);
 begin
   AObserver.SubmissionCompleted(AResult);
+end;
+
+procedure TCountingCompletionNotifier.NotifyCompletionAvailable;
+begin
+  Inc(FCount);
+end;
+
+procedure TRecordingSubmissionObserver.SubmissionCompleted(
+  const AResult: TLogQsoResult);
+begin
+  Inc(FCount);
 end;
 
 procedure AssertTrue(const ACondition: Boolean; const AMessage: string);
@@ -487,6 +516,46 @@ begin
   Repository := nil;
 end;
 
+procedure TestCompletionNotificationCoalescing;
+var
+  NotifierObject: TCountingCompletionNotifier;
+  ObserverObject: TRecordingSubmissionObserver;
+  Notifier: ICompletionAvailableNotifier;
+  Observer: IQsoSubmissionObserver;
+  Dispatcher: IQsoCompletionDispatcher;
+  Pump: ICompletionPump;
+  DispatcherObject: TQueuedCompletionDispatcher;
+  Completion: TLogQsoResult;
+begin
+  NotifierObject := TCountingCompletionNotifier.Create;
+  Notifier := NotifierObject;
+  ObserverObject := TRecordingSubmissionObserver.Create;
+  Observer := ObserverObject;
+  DispatcherObject := TQueuedCompletionDispatcher.Create(Notifier);
+  Dispatcher := DispatcherObject;
+  Pump := DispatcherObject;
+  Completion.Success := True;
+  Completion.QsoId := 'notification-test';
+  Completion.Error := lqeNone;
+
+  Dispatcher.Dispatch(Observer, Completion);
+  Dispatcher.Dispatch(Observer, Completion);
+  AssertTrue(NotifierObject.Count = 1, 'empty-to-nonempty transition notifies once');
+  AssertTrue(Pump.Drain(1) = 1, 'bounded drain handles one completion');
+  Dispatcher.Dispatch(Observer, Completion);
+  AssertTrue(NotifierObject.Count = 1, 'nonempty queue does not notify again');
+  AssertTrue(Pump.Drain(16) = 2, 'remaining completions are drained');
+  Dispatcher.Dispatch(Observer, Completion);
+  AssertTrue(NotifierObject.Count = 2, 'next empty transition notifies again');
+  AssertTrue(Pump.Drain(16) = 1, 'final completion is delivered');
+  AssertTrue(ObserverObject.Count = 4, 'every completion is delivered exactly once');
+
+  Pump := nil;
+  Dispatcher := nil;
+  Observer := nil;
+  Notifier := nil;
+end;
+
 begin
   try
     TestCallsignNormalization;
@@ -499,6 +568,7 @@ begin
     TestQsoEntryPresenter;
     TestBoundedSubmissionQueue;
     TestSubmissionWorkerAndMainThreadCompletion;
+    TestCompletionNotificationCoalescing;
     WriteLn('PASS: ', TestsRun, ' assertions');
   except
     on E: Exception do

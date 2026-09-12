@@ -51,6 +51,12 @@ type
     function PendingCount: Integer;
   end;
 
+  ICompletionAvailableNotifier = interface
+    ['{64BE74D5-E8B7-4DCF-A301-E95AB3CE21F5}']
+    { May be called by a worker thread; implementation must return immediately. }
+    procedure NotifyCompletionAvailable;
+  end;
+
 implementation
 
 end.

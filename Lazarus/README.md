@@ -91,7 +91,13 @@ make test-tools
 make run
 make benchmark
 make benchmark-memory
+make gui
 ```
 
+`make gui`はLazarus/LCLが導入済みの環境で、最小QSO Entry画面をbuildします。画面はcode-created LCL controlだけを持ち、
+Presenterへ入力を渡します。Journal flushはworker threadで実行し、空だったcompletion queueへ結果が入った時だけ
+`Application.QueueAsyncCall`を予約します。UI callbackは最大16件ずつ処理し、未処理分だけ次のcallbackを予約するため、
+定期pollingによる不要なwake-upと一度の大量描画を避けます。
+
 次は開発実行計画のStep 1を継続し、completion queueのbackpressure/telemetry、kill-pointを全書込境界へ広げた別process
-recovery test、LCL `Application.QueueAsyncCall` adapterと最小QSO Entry Formを追加します。
+recovery test、QSO Entryのkeyboard/high-DPI/accessibility testを追加します。
