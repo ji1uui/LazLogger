@@ -1,0 +1,85 @@
+name: Lazarus core
+
+on:
+  push:
+    paths:
+      - "Lazarus/**"
+      - ".github/workflows/lazarus-core.yml"
+  pull_request:
+    paths:
+      - "Lazarus/**"
+      - ".github/workflows/lazarus-core.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  core-tests:
+    name: Free Pascal core (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, macos-15, windows-2025]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Test independent verification tools
+        working-directory: Lazarus
+        shell: bash
+        run: make test-tools
+
+      - name: Install Free Pascal (Ubuntu)
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install --yes fp-compiler
+
+      - name: Install Free Pascal (macOS)
+        if: runner.os == 'macOS'
+        run: brew install fpc
+
+      - name: Install Free Pascal (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          choco install freepascal --yes --no-progress
+          Import-Module "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1"
+          Update-SessionEnvironment
+          (Split-Path (Get-Command fpc).Source) | Out-File $env:GITHUB_PATH -Append
+
+      - name: Build and test
+        working-directory: Lazarus
+        shell: bash
+        run: make clean test
+
+      - name: Run durable journal demo twice
+        working-directory: Lazarus
+        shell: bash
+        run: |
+          make run
+          make run
+
+      - name: Verify journal with independent parser
+        working-directory: Lazarus
+        shell: bash
+        run: make verify-demo
+
+      - name: Measure durable append baseline
+        if: runner.os == 'Linux'
+        working-directory: Lazarus
+        shell: bash
+        run: make benchmark | tee build/journal-benchmark.json
+
+      - name: Measure 100k repository baseline
+        if: runner.os == 'Linux'
+        working-directory: Lazarus
+        shell: bash
+        run: make benchmark-memory | tee build/repository-benchmark.json
+
+      - name: Upload benchmark result
+        if: runner.os == 'Linux'
+        uses: actions/upload-artifact@v4
+        with:
+          name: journal-benchmark
+          path: |
+            Lazarus/build/journal-benchmark.json
+            Lazarus/build/repository-benchmark.json
