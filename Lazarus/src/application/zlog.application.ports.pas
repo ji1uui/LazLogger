@@ -18,12 +18,18 @@ type
     function NextId: string;
   end;
 
-  IQsoRepository = interface
+  IQsoReadRepository = interface
     ['{0178B14D-76E5-4A49-B227-7C59FF4F36CB}']
-    procedure Add(const AQso: TQso);
     function Count: Integer;
     { Returns an owned snapshot. The caller must free a non-nil result. }
     function FindById(const AId: string): TQso;
+    { Returns newest first. Records contain no repository-owned references. }
+    function GetRecent(const AMaximumCount: Integer): TQsoSnapshotArray;
+  end;
+
+  IQsoRepository = interface(IQsoReadRepository)
+    ['{C6E595E5-F629-42C2-BB51-82D9D6EE66E8}']
+    procedure Add(const AQso: TQso);
   end;
 
 implementation

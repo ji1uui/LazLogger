@@ -6,7 +6,8 @@ program ZLogUnitTests;
 uses
   {$IFDEF UNIX}cthreads,{$ENDIF}
   SysUtils, Classes, DateUtils, ZLog.Domain.Types, ZLog.Domain.Qso,
-  ZLog.Application.LogQso, ZLog.Infrastructure.Memory,
+  ZLog.Application.LogQso, ZLog.Application.QueryQsos,
+  ZLog.Infrastructure.Memory,
   ZLog.Infrastructure.Deterministic, ZLog.Infrastructure.Journal,
   ZLog.Infrastructure.Runtime, ZLog.Application.Submission,
   ZLog.Infrastructure.SubmissionQueue, ZLog.Infrastructure.CompletionQueue,
@@ -147,6 +148,8 @@ var
   Qso, Stored: TQso;
   Index: Integer;
   DuplicateRejected: Boolean;
+  Recent: TQsoSnapshotArray;
+  InvalidLimitRejected: Boolean;
 begin
   AssertTrue(TCallsign.TryCreate('JA1ZLO', Callsign), 'repository fixture callsign');
   AssertTrue(TFrequencyHz.TryCreate(7000000, Frequency), 'repository fixture frequency');
@@ -162,6 +165,12 @@ begin
     end;
   end;
   AssertTrue(Repository.Count = Length(Identifiers), 'out-of-order IDs are indexed');
+  Recent := Repository.GetRecent(2);
+  AssertTrue(Length(Recent) = 2, 'recent query honors its limit');
+  AssertTrue(Recent[0].Id = 'qso-m', 'recent query returns newest first');
+  AssertTrue(Recent[1].Id = 'qso-a', 'recent query preserves insertion order');
+  Recent := Repository.GetRecent(0);
+  AssertTrue(Length(Recent) = 0, 'zero recent limit returns an empty page');
   for Index := Low(Identifiers) to High(Identifiers) do
   begin
     Stored := Repository.FindById(Identifiers[Index]);
@@ -187,6 +196,13 @@ begin
   end;
   AssertTrue(DuplicateRejected, 'duplicate indexed ID is rejected');
   AssertTrue(Repository.Count = Length(Identifiers), 'duplicate does not change count');
+  InvalidLimitRejected := False;
+  try
+    Recent := Repository.GetRecent(-1);
+  except
+    on E: EArgumentOutOfRangeException do InvalidLimitRejected := True;
+  end;
+  AssertTrue(InvalidLimitRejected, 'negative recent limit is rejected');
 end;
 
 procedure TestLogQso;
@@ -221,6 +237,39 @@ begin
   finally
     Stored.Free;
   end;
+end;
+
+procedure TestRecentQsoQueryUseCase;
+var
+  Repository: IQsoRepository;
+  LogUseCase: ILogQsoUseCase;
+  QueryUseCase: IGetRecentQsosUseCase;
+  Draft: TQsoDraft;
+  LogResult: TLogQsoResult;
+  QueryResult: TRecentQsoQueryResult;
+begin
+  Repository := TInMemoryQsoRepository.Create;
+  LogUseCase := TLogQsoUseCase.Create(Repository, TFixedClock.Create(3),
+    TSequentialIdGenerator.Create('query-'));
+  Draft.Callsign := 'JA1ZLO';
+  Draft.FrequencyHz := 7000000;
+  Draft.Mode := emCW;
+  Draft.SentExchange := '599 001';
+  Draft.ReceivedExchange := '599 002';
+  LogResult := LogUseCase.Execute(Draft);
+  AssertTrue(LogResult.Success, 'query fixture QSO is logged');
+  Draft.Callsign := 'JR8PPG';
+  LogResult := LogUseCase.Execute(Draft);
+  AssertTrue(LogResult.Success, 'second query fixture is logged');
+
+  QueryUseCase := TGetRecentQsosUseCase.Create(Repository);
+  QueryResult := QueryUseCase.Execute(1);
+  AssertTrue(QueryResult.Success, 'recent QSO query succeeds');
+  AssertTrue(Length(QueryResult.Items) = 1, 'query limit is applied');
+  AssertTrue(QueryResult.Items[0].Callsign = 'JR8PPG', 'newest QSO is returned');
+  QueryResult := QueryUseCase.Execute(501);
+  AssertTrue(not QueryResult.Success, 'oversized query is rejected');
+  AssertTrue(QueryResult.Error = rqeInvalidLimit, 'query validation is typed');
 end;
 
 procedure TestInvalidDraftDoesNotPersist;
@@ -574,6 +623,7 @@ begin
     TestFrequencyValidation;
     TestIndexedRepository;
     TestLogQso;
+    TestRecentQsoQueryUseCase;
     TestInvalidDraftDoesNotPersist;
     TestJournalRoundTripAndTailRecovery;
     TestRuntimeAdapters;

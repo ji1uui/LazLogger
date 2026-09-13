@@ -26,6 +26,7 @@ type
     procedure Add(const AQso: TQso);
     function Count: Integer;
     function FindById(const AId: string): TQso;
+    function GetRecent(const AMaximumCount: Integer): TQsoSnapshotArray;
     property FileName: string read FFileName;
   end;
 
@@ -321,6 +322,12 @@ end;
 function TJournalQsoRepository.FindById(const AId: string): TQso;
 begin
   Result := FMemory.FindById(AId);
+end;
+
+function TJournalQsoRepository.GetRecent(
+  const AMaximumCount: Integer): TQsoSnapshotArray;
+begin
+  Result := FMemory.GetRecent(AMaximumCount);
 end;
 
 end.

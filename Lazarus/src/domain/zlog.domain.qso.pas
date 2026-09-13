@@ -8,6 +8,18 @@ uses
   ZLog.Domain.Types;
 
 type
+  TQsoSnapshot = record
+    Id: string;
+    Callsign: UnicodeString;
+    FrequencyHz: Int64;
+    Mode: TEmissionMode;
+    SentExchange: UnicodeString;
+    ReceivedExchange: UnicodeString;
+    OccurredAtUtcMs: Int64;
+  end;
+
+  TQsoSnapshotArray = array of TQsoSnapshot;
+
   TQsoDraft = record
     Callsign: UnicodeString;
     FrequencyHz: Int64;
@@ -31,6 +43,7 @@ type
       const ASentExchange, AReceivedExchange: UnicodeString;
       const AOccurredAtUtcMs: Int64);
     function Clone: TQso;
+    function ToSnapshot: TQsoSnapshot;
     property Id: string read FId;
     property Callsign: TCallsign read FCallsign;
     property Frequency: TFrequencyHz read FFrequency;
@@ -61,6 +74,17 @@ function TQso.Clone: TQso;
 begin
   Result := TQso.Create(FId, FCallsign, FFrequency, FMode, FSentExchange,
     FReceivedExchange, FOccurredAtUtcMs);
+end;
+
+function TQso.ToSnapshot: TQsoSnapshot;
+begin
+  Result.Id := FId;
+  Result.Callsign := FCallsign.ToString;
+  Result.FrequencyHz := FFrequency.ToInt64;
+  Result.Mode := FMode;
+  Result.SentExchange := FSentExchange;
+  Result.ReceivedExchange := FReceivedExchange;
+  Result.OccurredAtUtcMs := FOccurredAtUtcMs;
 end;
 
 end.

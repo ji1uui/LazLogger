@@ -78,6 +78,9 @@ worker内部障害を型付き結果としてdispatcherへ渡し、無制限queu
 
 repositoryのquery viewはsorted ID indexを使い、従来の全件線形探索を廃止しました。CIでは100,000 QSOの追加と10,000件の
 分散lookupを測定し、journalのdurable appendとは別のJSON baselineとして保存します。
+Step 2の最初のread modelとして、追加順をID indexとは別に保持し、LCLや将来のpaging presenterがrepository-owned objectへ
+触れずに使える`TQsoSnapshot`の件数制限付きrecent queryを追加しました。結果は常に新しいQSO順です。Query use caseは
+最大500件を受け付け、書込を含むrepositoryではなく分離した`IQsoReadRepository`だけに依存します。
 
 single-consumer work pumpを所有する停止・join可能なworker threadと、完了通知を蓄えてUI threadから件数制限付きで
 drainするcompletion dispatcherを追加しました。workerはrepository処理中にLCL/Viewへ触れず、UI側は1 frameで処理する
