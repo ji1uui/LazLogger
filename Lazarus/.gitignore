@@ -1,0 +1,6 @@
+/build/
+*.o
+*.ppu
+/zlog-demo.journal
+__pycache__/
+*.pyc
