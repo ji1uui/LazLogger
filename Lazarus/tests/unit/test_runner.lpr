@@ -41,8 +41,9 @@ type
 
   TInlineDispatcher = class(TInterfacedObject, IQsoCompletionDispatcher)
   public
-    procedure Dispatch(const AObserver: IQsoSubmissionObserver;
-      const AResult: TLogQsoResult);
+    function TryDispatch(const AObserver: IQsoSubmissionObserver;
+      const AResult: TLogQsoResult): Boolean;
+    function HasCapacity: Boolean;
   end;
 
   TCountingCompletionNotifier = class(TInterfacedObject,
@@ -87,10 +88,16 @@ begin
     Observer.SubmissionCompleted(AResult);
 end;
 
-procedure TInlineDispatcher.Dispatch(const AObserver: IQsoSubmissionObserver;
-  const AResult: TLogQsoResult);
+function TInlineDispatcher.TryDispatch(const AObserver: IQsoSubmissionObserver;
+  const AResult: TLogQsoResult): Boolean;
 begin
   AObserver.SubmissionCompleted(AResult);
+  Result := True;
+end;
+
+function TInlineDispatcher.HasCapacity: Boolean;
+begin
+  Result := True;
 end;
 
 procedure TCountingCompletionNotifier.NotifyCompletionAvailable;
@@ -531,21 +538,26 @@ begin
   Notifier := NotifierObject;
   ObserverObject := TRecordingSubmissionObserver.Create;
   Observer := ObserverObject;
-  DispatcherObject := TQueuedCompletionDispatcher.Create(Notifier);
+  DispatcherObject := TQueuedCompletionDispatcher.Create(Notifier, 2);
   Dispatcher := DispatcherObject;
   Pump := DispatcherObject;
   Completion.Success := True;
   Completion.QsoId := 'notification-test';
   Completion.Error := lqeNone;
 
-  Dispatcher.Dispatch(Observer, Completion);
-  Dispatcher.Dispatch(Observer, Completion);
+  AssertTrue(Dispatcher.TryDispatch(Observer, Completion), 'first completion fits');
+  AssertTrue(Dispatcher.TryDispatch(Observer, Completion), 'second completion fits');
   AssertTrue(NotifierObject.Count = 1, 'empty-to-nonempty transition notifies once');
+  AssertTrue(not Dispatcher.HasCapacity, 'completion capacity is observable');
+  AssertTrue(not Dispatcher.TryDispatch(Observer, Completion),
+    'full completion queue applies backpressure');
+  AssertTrue(Pump.Capacity = 2, 'configured completion capacity is reported');
+  AssertTrue(Pump.HighWaterMark = 2, 'completion high-water mark is recorded');
   AssertTrue(Pump.Drain(1) = 1, 'bounded drain handles one completion');
-  Dispatcher.Dispatch(Observer, Completion);
+  AssertTrue(Dispatcher.TryDispatch(Observer, Completion), 'third completion fits');
   AssertTrue(NotifierObject.Count = 1, 'nonempty queue does not notify again');
   AssertTrue(Pump.Drain(16) = 2, 'remaining completions are drained');
-  Dispatcher.Dispatch(Observer, Completion);
+  AssertTrue(Dispatcher.TryDispatch(Observer, Completion), 'fourth completion fits');
   AssertTrue(NotifierObject.Count = 2, 'next empty transition notifies again');
   AssertTrue(Pump.Drain(16) = 1, 'final completion is delivered');
   AssertTrue(ObserverObject.Count = 4, 'every completion is delivered exactly once');

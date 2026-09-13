@@ -104,7 +104,8 @@ begin
     FLock.Release;
   end;
   if not Accepted then
-    FDispatcher.Dispatch(AObserver, Failure(lqeQueueFull));
+    { Submit is a UI-thread port; avoid consuming worker completion capacity. }
+    AObserver.SubmissionCompleted(Failure(lqeQueueFull));
 end;
 
 function TQueuedQsoSubmission.ExtractFirst: TWorkItem;
@@ -127,6 +128,8 @@ var
   Item: TWorkItem;
   LogResult: TLogQsoResult;
 begin
+  if not FDispatcher.HasCapacity then
+    Exit(False);
   Item := ExtractFirst;
   Result := Assigned(Item);
   if not Result then
@@ -138,7 +141,8 @@ begin
       on E: Exception do
         LogResult := Failure(lqeInternalFailure);
     end;
-    FDispatcher.Dispatch(Item.Observer, LogResult);
+    if not FDispatcher.TryDispatch(Item.Observer, LogResult) then
+      raise EInvalidOperation.Create('Completion capacity changed unexpectedly');
   finally
     Item.Free;
   end;
@@ -152,7 +156,8 @@ begin
     Item := ExtractFirst;
     if Assigned(Item) then
       try
-        FDispatcher.Dispatch(Item.Observer, Failure(lqeCancelled));
+        if not FDispatcher.TryDispatch(Item.Observer, Failure(lqeCancelled)) then
+          Item.Observer.SubmissionCompleted(Failure(lqeCancelled));
       finally
         Item.Free;
       end;

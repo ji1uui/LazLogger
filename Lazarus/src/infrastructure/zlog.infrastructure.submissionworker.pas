@@ -62,7 +62,10 @@ begin
   begin
     if FPump.ProcessNext then
       Continue;
-    FWakeEvent.WaitFor(1000);
+    if FPump.PendingCount > 0 then
+      FWakeEvent.WaitFor(16)
+    else
+      FWakeEvent.WaitFor(1000);
   end;
 end;
 

@@ -82,6 +82,8 @@ repositoryのquery viewはsorted ID indexを使い、従来の全件線形探索
 single-consumer work pumpを所有する停止・join可能なworker threadと、完了通知を蓄えてUI threadから件数制限付きで
 drainするcompletion dispatcherを追加しました。workerはrepository処理中にLCL/Viewへ触れず、UI側は1 frameで処理する
 completion数を制限できます。shutdownは新規受付停止、worker join、未開始itemのcancelの順に実行します。
+completion queueにも容量上限を設け、workerは空きがない間QSOをdequeueしません。UIがdrainすると最大16 msで処理を再開し、
+現在件数、容量、high-water markを診断用に公開するため、遅い描画でもmemoryが無制限に増えません。
 
 Free Pascalがインストール済みの環境では次を実行します。
 
@@ -99,5 +101,5 @@ Presenterへ入力を渡します。Journal flushはworker threadで実行し、
 `Application.QueueAsyncCall`を予約します。UI callbackは最大16件ずつ処理し、未処理分だけ次のcallbackを予約するため、
 定期pollingによる不要なwake-upと一度の大量描画を避けます。
 
-次は開発実行計画のStep 1を継続し、completion queueのbackpressure/telemetry、kill-pointを全書込境界へ広げた別process
-recovery test、QSO Entryのkeyboard/high-DPI/accessibility testを追加します。
+次は開発実行計画のStep 1を継続し、kill-pointを全書込境界へ広げた別process recovery test、QSO Entryの
+keyboard/high-DPI/accessibility test、queue/worker telemetryの接続状態表示を追加します。
