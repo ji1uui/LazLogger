@@ -5,7 +5,7 @@ unit ZLog.Infrastructure.Journal;
 interface
 
 uses
-  SysUtils, Classes, ZLog.Domain.Types, ZLog.Domain.Qso,
+  SysUtils, Classes, SyncObjs, ZLog.Domain.Types, ZLog.Domain.Qso,
   ZLog.Application.Ports, ZLog.Infrastructure.Memory;
 
 type
@@ -18,6 +18,7 @@ type
     FFileName: string;
     FMemory: IQsoRepository;
     FStream: TFileStream;
+    FLock: TCriticalSection;
     procedure LoadAndRecover;
     procedure AppendRecord(const AQso: TQso);
   public
@@ -207,6 +208,7 @@ begin
     not ForceDirectories(DirectoryName) then
     raise EJournalError.CreateFmt('Cannot create journal directory: %s', [DirectoryName]);
   FMemory := TInMemoryQsoRepository.Create;
+  FLock := TCriticalSection.Create;
   if FileExists(FFileName) then
     FStream := TFileStream.Create(FFileName, fmOpenReadWrite or fmShareDenyWrite)
   else
@@ -218,6 +220,7 @@ destructor TJournalQsoRepository.Destroy;
 begin
   FStream.Free;
   FMemory := nil;
+  FLock.Free;
   inherited Destroy;
 end;
 
@@ -273,6 +276,9 @@ var
 begin
   Payload := SerializeQso(AQso);
   try
+    if Payload.Size > MaximumPayloadSize then
+      raise EJournalError.CreateFmt('QSO payload exceeds %d bytes',
+        [MaximumPayloadSize]);
     RecordStart := FStream.Size;
     try
       FStream.Position := RecordStart;
@@ -303,15 +309,20 @@ var
 begin
   if not Assigned(AQso) then
     raise EArgumentNilException.Create('AQso');
-  Existing := FMemory.FindById(AQso.Id);
+  FLock.Acquire;
   try
-    if Assigned(Existing) then
-      raise EJournalError.CreateFmt('Duplicate QSO identifier: %s', [AQso.Id]);
+    Existing := FMemory.FindById(AQso.Id);
+    try
+      if Assigned(Existing) then
+        raise EJournalError.CreateFmt('Duplicate QSO identifier: %s', [AQso.Id]);
+    finally
+      Existing.Free;
+    end;
+    AppendRecord(AQso);
+    FMemory.Add(AQso);
   finally
-    Existing.Free;
+    FLock.Release;
   end;
-  AppendRecord(AQso);
-  FMemory.Add(AQso);
 end;
 
 function TJournalQsoRepository.Count: Integer;

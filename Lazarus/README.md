@@ -12,6 +12,7 @@ Windows と macOS を同じドメインモデルで支える **新規実装** �
 * [CQRLOGを参考にしたUX提案](docs/CQRLOG_UX_PROPOSAL.md) — 機能候補、画面構成、thread/process分離
 * [実施ロードマップ](docs/ROADMAP.md) — フェーズ、完了条件、リスク、意思決定ゲート
 * [開発実行計画](docs/DEVELOPMENT_PLAN.md) — 実装順、反復ごとの検証、品質ゲート、進捗管理
+* [実装品質レビュー](docs/QUALITY_REVIEW.md) — 堅牢性、効率性、保守性の監査結果と次段階の品質ゲート
 
 ## 想定ツールチェーン
 

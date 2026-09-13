@@ -5,13 +5,14 @@ unit ZLog.Infrastructure.Memory;
 interface
 
 uses
-  SysUtils, Classes, ZLog.Domain.Qso, ZLog.Application.Ports;
+  SysUtils, Classes, SyncObjs, ZLog.Domain.Qso, ZLog.Application.Ports;
 
 type
   TInMemoryQsoRepository = class(TInterfacedObject, IQsoRepository)
   private
     FItems: TList;
     FIndex: TStringList;
+    FLock: TCriticalSection;
     function IndexOfId(const AId: string): Integer;
   public
     constructor Create;
@@ -29,6 +30,7 @@ begin
   inherited Create;
   FItems := TList.Create;
   FIndex := TStringList.Create;
+  FLock := TCriticalSection.Create;
   FIndex.Sorted := True;
   FIndex.CaseSensitive := True;
   FIndex.Duplicates := dupError;
@@ -44,6 +46,7 @@ begin
   end;
   FIndex.Free;
   FItems.Free;
+  FLock.Free;
   inherited Destroy;
 end;
 
@@ -53,20 +56,25 @@ var
 begin
   if not Assigned(AQso) then
     raise EArgumentNilException.Create('AQso');
-  if IndexOfId(AQso.Id) >= 0 then
-    raise EListError.CreateFmt('Duplicate QSO identifier: %s', [AQso.Id]);
-  Stored := AQso.Clone;
+  FLock.Acquire;
   try
-    FItems.Add(Stored);
+    if IndexOfId(AQso.Id) >= 0 then
+      raise EListError.CreateFmt('Duplicate QSO identifier: %s', [AQso.Id]);
+    Stored := AQso.Clone;
     try
-      FIndex.AddObject(Stored.Id, Stored);
+      FItems.Add(Stored);
+      try
+        FIndex.AddObject(Stored.Id, Stored);
+      except
+        FItems.Delete(FItems.Count - 1);
+        raise;
+      end;
     except
-      FItems.Delete(FItems.Count - 1);
+      Stored.Free;
       raise;
     end;
-  except
-    Stored.Free;
-    raise;
+  finally
+    FLock.Release;
   end;
 end;
 
@@ -78,7 +86,12 @@ end;
 
 function TInMemoryQsoRepository.Count: Integer;
 begin
-  Result := FItems.Count;
+  FLock.Acquire;
+  try
+    Result := FItems.Count;
+  finally
+    FLock.Release;
+  end;
 end;
 
 function TInMemoryQsoRepository.FindById(const AId: string): TQso;
@@ -86,9 +99,14 @@ var
   Index: Integer;
 begin
   Result := nil;
-  Index := IndexOfId(AId);
-  if Index >= 0 then
-    Result := TQso(FIndex.Objects[Index]).Clone;
+  FLock.Acquire;
+  try
+    Index := IndexOfId(AId);
+    if Index >= 0 then
+      Result := TQso(FIndex.Objects[Index]).Clone;
+  finally
+    FLock.Release;
+  end;
 end;
 
 function TInMemoryQsoRepository.GetRecent(
@@ -100,14 +118,19 @@ var
 begin
   if AMaximumCount < 0 then
     raise EArgumentOutOfRangeException.Create('AMaximumCount must not be negative');
-  ResultCount := AMaximumCount;
-  if ResultCount > FItems.Count then
-    ResultCount := FItems.Count;
-  SetLength(Result, ResultCount);
-  for ResultIndex := 0 to ResultCount - 1 do
-  begin
-    SourceIndex := FItems.Count - 1 - ResultIndex;
-    Result[ResultIndex] := TQso(FItems[SourceIndex]).ToSnapshot;
+  FLock.Acquire;
+  try
+    ResultCount := AMaximumCount;
+    if ResultCount > FItems.Count then
+      ResultCount := FItems.Count;
+    SetLength(Result, ResultCount);
+    for ResultIndex := 0 to ResultCount - 1 do
+    begin
+      SourceIndex := FItems.Count - 1 - ResultIndex;
+      Result[ResultIndex] := TQso(FItems[SourceIndex]).ToSnapshot;
+    end;
+  finally
+    FLock.Release;
   end;
 end;
 

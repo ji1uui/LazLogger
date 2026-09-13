@@ -3,6 +3,7 @@ program ZLogJournalBenchmark;
 {$mode objfpc}{$H+}
 
 uses
+  {$IFDEF UNIX}cthreads,{$ENDIF}
   SysUtils, ZLog.Domain.Types, ZLog.Domain.Qso, ZLog.Application.Ports,
   ZLog.Application.LogQso, ZLog.Infrastructure.Journal,
   ZLog.Infrastructure.Deterministic;

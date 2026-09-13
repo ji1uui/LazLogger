@@ -375,6 +375,49 @@ begin
   end;
 end;
 
+procedure TestJournalRejectsOversizedRecordWithoutDamage;
+var
+  FileName: string;
+  Repository: IQsoRepository;
+  Callsign: TCallsign;
+  Frequency: TFrequencyHz;
+  Qso: TQso;
+  Rejected: Boolean;
+begin
+  FileName := TemporaryJournalName('oversized-record');
+  try
+    Repository := TJournalQsoRepository.Create(FileName);
+    AssertTrue(TCallsign.TryCreate('JA1ZLO', Callsign),
+      'oversized fixture callsign is valid');
+    AssertTrue(TFrequencyHz.TryCreate(7000000, Frequency),
+      'oversized fixture frequency is valid');
+    Qso := TQso.Create('oversized-1', Callsign, Frequency, emRTTY,
+      UnicodeString(StringOfChar('A', 1024 * 1024)), '599 001', 1);
+    try
+      Rejected := False;
+      try
+        Repository.Add(Qso);
+      except
+        on E: EJournalError do Rejected := True;
+      end;
+      AssertTrue(Rejected, 'oversized journal record is rejected');
+      AssertTrue(Repository.Count = 0,
+        'rejected oversized record is not visible in memory');
+      AssertTrue(SizeOfFile(FileName) = 0,
+        'rejected oversized record writes no journal bytes');
+    finally
+      Qso.Free;
+    end;
+    Repository := nil;
+    Repository := TJournalQsoRepository.Create(FileName);
+    AssertTrue(Repository.Count = 0,
+      'journal remains reopenable after oversized rejection');
+    Repository := nil;
+  finally
+    DeleteFile(FileName);
+  end;
+end;
+
 procedure TestRuntimeAdapters;
 var
   Clock: IClock;
@@ -626,6 +669,7 @@ begin
     TestRecentQsoQueryUseCase;
     TestInvalidDraftDoesNotPersist;
     TestJournalRoundTripAndTailRecovery;
+    TestJournalRejectsOversizedRecordWithoutDamage;
     TestRuntimeAdapters;
     TestQsoEntryPresenter;
     TestBoundedSubmissionQueue;
