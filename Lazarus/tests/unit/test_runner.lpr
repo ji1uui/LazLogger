@@ -11,7 +11,8 @@ uses
   ZLog.Infrastructure.Deterministic, ZLog.Infrastructure.Journal,
   ZLog.Infrastructure.Runtime, ZLog.Application.Submission,
   ZLog.Infrastructure.SubmissionQueue, ZLog.Infrastructure.CompletionQueue,
-  ZLog.Infrastructure.SubmissionWorker, ZLog.Presentation.QsoEntry;
+  ZLog.Infrastructure.SubmissionWorker, ZLog.Presentation.QsoEntry,
+  ZLog.Presentation.RecentQsos;
 
 var
   TestsRun: Integer = 0;
@@ -65,6 +66,16 @@ type
     property Count: Integer read FCount;
   end;
 
+  TRecordingRecentQsosView = class(TInterfacedObject, IRecentQsosView)
+  private
+    FRenderCount: Integer;
+    FState: TRecentQsosState;
+  public
+    procedure RenderRecentQsos(const AState: TRecentQsosState);
+    property RenderCount: Integer read FRenderCount;
+    property State: TRecentQsosState read FState;
+  end;
+
 procedure TRecordingView.Render(const AState: TQsoEntryState);
 begin
   Inc(FRenderCount);
@@ -110,6 +121,13 @@ procedure TRecordingSubmissionObserver.SubmissionCompleted(
   const AResult: TLogQsoResult);
 begin
   Inc(FCount);
+end;
+
+procedure TRecordingRecentQsosView.RenderRecentQsos(
+  const AState: TRecentQsosState);
+begin
+  Inc(FRenderCount);
+  FState := AState;
 end;
 
 procedure AssertTrue(const ACondition: Boolean; const AMessage: string);
@@ -270,6 +288,50 @@ begin
   QueryResult := QueryUseCase.Execute(501);
   AssertTrue(not QueryResult.Success, 'oversized query is rejected');
   AssertTrue(QueryResult.Error = rqeInvalidLimit, 'query validation is typed');
+end;
+
+procedure TestRecentQsosPresenter;
+var
+  Repository: IQsoRepository;
+  LogUseCase: ILogQsoUseCase;
+  QueryUseCase: IGetRecentQsosUseCase;
+  ViewObject: TRecordingRecentQsosView;
+  View: IRecentQsosView;
+  Presenter: IRecentQsosPresenter;
+  Draft: TQsoDraft;
+begin
+  Repository := TInMemoryQsoRepository.Create;
+  LogUseCase := TLogQsoUseCase.Create(Repository,
+    TFixedClock.Create(1777777777000), TSequentialIdGenerator.Create('recent-'));
+  Draft.Callsign := 'JA1ZLO';
+  Draft.FrequencyHz := 7030000;
+  Draft.Mode := emCW;
+  Draft.SentExchange := '599 001';
+  Draft.ReceivedExchange := '599 002';
+  AssertTrue(LogUseCase.Execute(Draft).Success, 'recent presenter fixture is logged');
+
+  ViewObject := TRecordingRecentQsosView.Create;
+  View := ViewObject;
+  QueryUseCase := TGetRecentQsosUseCase.Create(Repository);
+  Presenter := TRecentQsosPresenter.Create(View, QueryUseCase, 50);
+  Presenter.Initialize;
+  AssertTrue(ViewObject.RenderCount = 2,
+    'recent presenter renders loading and loaded states');
+  AssertTrue(ViewObject.State.Status = rqsLoaded, 'recent presenter reports loaded');
+  AssertTrue(Length(ViewObject.State.Rows) = 1, 'recent presenter supplies one row');
+  AssertTrue(ViewObject.State.Rows[0].Callsign = 'JA1ZLO',
+    'recent row preserves normalized callsign');
+  AssertTrue(ViewObject.State.Rows[0].Mode = 'CW', 'recent row formats mode');
+  AssertTrue(ViewObject.State.Rows[0].Frequency = '7.030',
+    'recent row formats frequency in MHz');
+  AssertTrue(ViewObject.State.Rows[0].TimeUtc = '2026-05-03 03:09:37Z',
+    'recent row formats a deterministic UTC timestamp');
+
+  Presenter := nil;
+  QueryUseCase := nil;
+  View := nil;
+  LogUseCase := nil;
+  Repository := nil;
 end;
 
 procedure TestInvalidDraftDoesNotPersist;
@@ -667,6 +729,7 @@ begin
     TestIndexedRepository;
     TestLogQso;
     TestRecentQsoQueryUseCase;
+    TestRecentQsosPresenter;
     TestInvalidDraftDoesNotPersist;
     TestJournalRoundTripAndTailRecovery;
     TestJournalRejectsOversizedRecordWithoutDamage;

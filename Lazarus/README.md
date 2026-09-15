@@ -105,5 +105,9 @@ Presenterへ入力を渡します。Journal flushはworker threadで実行し、
 `Application.QueueAsyncCall`を予約します。UI callbackは最大16件ずつ処理し、未処理分だけ次のcallbackを予約するため、
 定期pollingによる不要なwake-upと一度の大量描画を避けます。
 
-次は開発実行計画のStep 1を継続し、kill-pointを全書込境界へ広げた別process recovery test、QSO Entryの
+Recent QSO Presenterはread-only query use caseから最大50件のsnapshotを取得し、UTC、MHz、modeを表示専用rowへ
+変換します。LCL画面は起動時とdurable保存完了時に一覧を更新します。journal fileはUIから読まず、thread-safeな
+memory read modelだけを短時間参照するため、保存中のfile I/OによるUI停止を避けます。
+
+次は品質レビューの順序に従い、kill-pointを全書込境界へ広げた別process recovery test、QSO Entryの
 keyboard/high-DPI/accessibility test、queue/worker telemetryの接続状態表示を追加します。

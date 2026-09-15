@@ -37,7 +37,7 @@ LCL composition root、テスト、CI である。評価軸は次のとおり。
 |Medium|入力|exchange 長、ID 長、timestamp 範囲の domain 制約がない|未完。contest ごとの制約と journal 全体の安全上限を分ける|
 |Medium|性能|journal 起動時は全 record を object として再生するため、大規模 log で起動時間と RAM が線形増加する|未完。測定後に snapshot/checkpoint または SQLite read model を選定する|
 |Medium|queue|FIFO 先頭削除に `TList.Delete(0)` を使い、queue 長に対して O(n)|容量 32/64 では許容。CAT/decoder event queue には ring buffer を使う|
-|Medium|UI|LCL 画面は入力フォームのみで Recent QSO read model が未接続|次 step。非同期 query と virtualized grid を追加する|
+|Medium|UI|LCL 画面は入力フォームのみで Recent QSO read model が未接続|対応済み。永続化済み snapshot の最新50件を grid へ表示する|
 |Medium|アクセシビリティ|キーボード操作、screen reader 名、配色、DPI の検証がない|LCL UI 受入試験へ追加する|
 |Low|テスト構造|単一 test runner が肥大化している|FPCUnit 導入時に domain/application/infrastructure contract suite へ分割する|
 
@@ -74,7 +74,7 @@ benchmark の閾値はハードウェア差が大きいため、まず CI artifa
 
 ## 6. 次の実装順序
 
-1. thread-safe read model を利用した Recent QSO presenter と LCL grid を追加する。
+1. thread-safe read model を利用した Recent QSO presenter と LCL grid を追加する。（完了）
 2. journal fault injection を導入し、write/flush 失敗と全 tail 切断位置を自動検証する。
 3. structured diagnostics、health state、利用者が再試行可能なエラー分類を追加する。
 4. Hamlib adapter は別 process 境界を基本とし、timeout、再接続、最新値優先 queue を実装する。

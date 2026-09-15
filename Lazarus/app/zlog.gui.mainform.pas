@@ -6,12 +6,13 @@ unit ZLog.Gui.MainForm;
 interface
 
 uses
-  Classes, SysUtils, Forms, Controls, StdCtrls, SyncObjs,
+  Classes, SysUtils, Forms, Controls, StdCtrls, Grids, SyncObjs,
   ZLog.Domain.Types, ZLog.Application.Ports, ZLog.Application.LogQso,
-  ZLog.Application.Submission, ZLog.Infrastructure.Runtime,
+  ZLog.Application.QueryQsos, ZLog.Application.Submission,
+  ZLog.Infrastructure.Runtime,
   ZLog.Infrastructure.Journal, ZLog.Infrastructure.SubmissionQueue,
   ZLog.Infrastructure.SubmissionWorker, ZLog.Infrastructure.CompletionQueue,
-  ZLog.Presentation.QsoEntry;
+  ZLog.Presentation.QsoEntry, ZLog.Presentation.RecentQsos;
 
 type
   TMainForm = class;
@@ -39,6 +40,15 @@ type
     procedure Render(const AState: TQsoEntryState);
   end;
 
+  TRecentQsosViewAdapter = class(TInterfacedObject, IRecentQsosView)
+  private
+    FForm: TMainForm;
+  public
+    constructor Create(const AForm: TMainForm);
+    procedure Detach;
+    procedure RenderRecentQsos(const AState: TRecentQsosState);
+  end;
+
   TMainForm = class(TForm)
   private
     FCallsignEdit: TEdit;
@@ -48,12 +58,16 @@ type
     FReceivedEdit: TEdit;
     FLogButton: TButton;
     FStatusLabel: TLabel;
+    FRecentGrid: TStringGrid;
     FRepository: IQsoRepository;
     FManagedSubmission: IManagedQsoSubmissionPort;
     FCompletionPump: ICompletionPump;
     FPresenter: IQsoEntryPresenter;
+    FRecentPresenter: IRecentQsosPresenter;
     FViewAdapter: TQsoEntryViewAdapter;
     FView: IQsoEntryView;
+    FRecentViewAdapter: TRecentQsosViewAdapter;
+    FRecentView: IRecentQsosView;
     FCompletionNotifier: TLclCompletionNotifier;
     FNotifier: ICompletionAvailableNotifier;
     procedure BuildControls;
@@ -61,6 +75,7 @@ type
     procedure LogButtonClick(Sender: TObject);
     procedure DrainCompletions;
     procedure UpdateFromState(const AState: TQsoEntryState);
+    procedure UpdateRecentQsos(const AState: TRecentQsosState);
     function SelectedMode: TEmissionMode;
   public
     constructor Create(TheOwner: TComponent); override;
@@ -171,15 +186,33 @@ begin
     FForm.UpdateFromState(AState);
 end;
 
+constructor TRecentQsosViewAdapter.Create(const AForm: TMainForm);
+begin
+  inherited Create;
+  FForm := AForm;
+end;
+
+procedure TRecentQsosViewAdapter.Detach;
+begin
+  FForm := nil;
+end;
+
+procedure TRecentQsosViewAdapter.RenderRecentQsos(
+  const AState: TRecentQsosState);
+begin
+  if Assigned(FForm) then
+    FForm.UpdateRecentQsos(AState);
+end;
+
 constructor TMainForm.Create(TheOwner: TComponent);
 begin
   inherited CreateNew(TheOwner, 1);
   Caption := 'zLog Lazarus Edition';
   Width := 520;
-  Height := 330;
+  Height := 590;
   Position := poScreenCenter;
   Constraints.MinWidth := 500;
-  Constraints.MinHeight := 300;
+  Constraints.MinHeight := 500;
   BuildControls;
   ComposeApplication;
 end;
@@ -188,6 +221,8 @@ destructor TMainForm.Destroy;
 begin
   if Assigned(FViewAdapter) then
     FViewAdapter.Detach;
+  if Assigned(FRecentViewAdapter) then
+    FRecentViewAdapter.Detach;
   if Assigned(FCompletionNotifier) then
     FCompletionNotifier.Disable;
   if Assigned(FManagedSubmission) then
@@ -196,7 +231,9 @@ begin
     while FCompletionPump.PendingCount > 0 do
       FCompletionPump.Drain(16);
   FPresenter := nil;
+  FRecentPresenter := nil;
   FView := nil;
+  FRecentView := nil;
   FManagedSubmission := nil;
   FCompletionPump := nil;
   FNotifier := nil;
@@ -258,6 +295,33 @@ begin
   FStatusLabel.AutoSize := True;
   FStatusLabel.ShowHint := True;
 
+  Inc(TopPosition, RowHeight + 16);
+  NewLabel(Self, Self, 'Recent QSOs (UTC / MHz)', TopPosition);
+  FRecentGrid := TStringGrid.Create(Self);
+  FRecentGrid.Parent := Self;
+  FRecentGrid.Left := Margin;
+  FRecentGrid.Top := TopPosition + 28;
+  FRecentGrid.Width := ClientWidth - (Margin * 2);
+  FRecentGrid.Height := 210;
+  FRecentGrid.Anchors := [akLeft, akTop, akRight, akBottom];
+  FRecentGrid.ColCount := 6;
+  FRecentGrid.RowCount := 2;
+  FRecentGrid.FixedRows := 1;
+  FRecentGrid.FixedCols := 0;
+  FRecentGrid.Options := FRecentGrid.Options + [goRowSelect];
+  FRecentGrid.Cells[0, 0] := 'UTC';
+  FRecentGrid.Cells[1, 0] := 'Callsign';
+  FRecentGrid.Cells[2, 0] := 'MHz';
+  FRecentGrid.Cells[3, 0] := 'Mode';
+  FRecentGrid.Cells[4, 0] := 'Sent';
+  FRecentGrid.Cells[5, 0] := 'Received';
+  FRecentGrid.ColWidths[0] := 125;
+  FRecentGrid.ColWidths[1] := 90;
+  FRecentGrid.ColWidths[2] := 70;
+  FRecentGrid.ColWidths[3] := 50;
+  FRecentGrid.ColWidths[4] := 80;
+  FRecentGrid.ColWidths[5] := 100;
+
 end;
 
 procedure TMainForm.ComposeApplication;
@@ -269,6 +333,7 @@ var
   WorkPump: ISubmissionWorkPump;
   QueueObject: TQueuedQsoSubmission;
   DispatcherObject: TQueuedCompletionDispatcher;
+  RecentQuery: IGetRecentQsosUseCase;
 begin
   JournalPath := IncludeTrailingPathDelimiter(GetAppConfigDir(False)) +
     'qso.journal';
@@ -287,7 +352,12 @@ begin
   FViewAdapter := TQsoEntryViewAdapter.Create(Self);
   FView := FViewAdapter;
   FPresenter := TQsoEntryPresenter.Create(FView, FManagedSubmission);
+  FRecentViewAdapter := TRecentQsosViewAdapter.Create(Self);
+  FRecentView := FRecentViewAdapter;
+  RecentQuery := TGetRecentQsosUseCase.Create(FRepository);
+  FRecentPresenter := TRecentQsosPresenter.Create(FRecentView, RecentQuery, 50);
   FPresenter.Initialize;
+  FRecentPresenter.Initialize;
 end;
 
 function TMainForm.SelectedMode: TEmissionMode;
@@ -339,12 +409,46 @@ begin
     FCallsignEdit.Text := UTF8Encode(AState.Callsign);
     FReceivedEdit.Text := UTF8Encode(AState.ReceivedExchange);
     FCallsignEdit.SetFocus;
+    FRecentPresenter.Refresh;
   end
   else if AState.Status = qesRejected then
   begin
     if AState.ErrorField = 'callsign' then FCallsignEdit.SetFocus
     else if AState.ErrorField = 'frequency' then FFrequencyEdit.SetFocus
     else if AState.ErrorField = 'mode' then FModeCombo.SetFocus;
+  end;
+end;
+
+procedure TMainForm.UpdateRecentQsos(const AState: TRecentQsosState);
+var
+  Index: Integer;
+begin
+  if AState.Status = rqsLoading then
+    Exit;
+  if AState.Status = rqsFailed then
+  begin
+    FRecentGrid.RowCount := 2;
+    FRecentGrid.Rows[1].Clear;
+    FRecentGrid.Cells[0, 1] := 'Unable to load QSOs';
+    FRecentGrid.Hint := AState.ErrorMessage;
+    FRecentGrid.ShowHint := True;
+    Exit;
+  end;
+
+  FRecentGrid.ShowHint := False;
+  if Length(AState.Rows) = 0 then
+    FRecentGrid.RowCount := 2
+  else
+    FRecentGrid.RowCount := Length(AState.Rows) + 1;
+  FRecentGrid.Rows[1].Clear;
+  for Index := 0 to High(AState.Rows) do
+  begin
+    FRecentGrid.Cells[0, Index + 1] := AState.Rows[Index].TimeUtc;
+    FRecentGrid.Cells[1, Index + 1] := UTF8Encode(AState.Rows[Index].Callsign);
+    FRecentGrid.Cells[2, Index + 1] := AState.Rows[Index].Frequency;
+    FRecentGrid.Cells[3, Index + 1] := AState.Rows[Index].Mode;
+    FRecentGrid.Cells[4, Index + 1] := UTF8Encode(AState.Rows[Index].SentExchange);
+    FRecentGrid.Cells[5, Index + 1] := UTF8Encode(AState.Rows[Index].ReceivedExchange);
   end;
 end;
 
