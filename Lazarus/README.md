@@ -113,5 +113,9 @@ journal appendにはproductionでは未設定のfault injection portを設け、
 元のfile境界へrollbackし、未acknowledged QSOがmemoryへ現れないことを検証します。さらに2 recordの全byte位置を
 切断して再起動し、最後の完全なrecord境界だけを保持することをPascalと独立Python parserの双方で検証します。
 
-次は品質レビューの順序に従い、structured diagnosticsとhealth stateを追加したうえで、OS別の強制終了試験、
-QSO Entryのkeyboard/high-DPI/accessibility test、queue/worker telemetryの接続状態表示を追加します。
+submission workerはrepository例外を再試行可能な`lqePersistenceUnavailable`へ変換し、UIには内部例外文を表示しません。
+同時にthread-safeかつ固定長のhealth monitorへcomponent、diagnostic code、severity、例外classを記録します。LCL画面は
+Healthy／Degraded／Failedを表示し、正常なdurable保存後はHealthyへ復帰しますが、累積error counterは保持します。
+
+次はHamlib process adapterの前提となる接続health state machine、timeout、再接続backoff、最新値優先のbounded queueを
+fake `rigctld` contract testから実装します。OS別強制終了試験とUI accessibility検証も並行せず順次品質ゲートへ追加します。

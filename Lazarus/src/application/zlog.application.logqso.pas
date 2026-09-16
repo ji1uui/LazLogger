@@ -10,12 +10,13 @@ uses
 type
   TLogQsoError = (lqeNone, lqeInvalidCallsign, lqeInvalidFrequency,
     lqeUnknownMode, lqeMissingIdentifier, lqeQueueFull, lqeCancelled,
-    lqeInternalFailure);
+    lqePersistenceUnavailable, lqeInternalFailure);
 
   TLogQsoResult = record
     Success: Boolean;
     QsoId: string;
     Error: TLogQsoError;
+    Retryable: Boolean;
   end;
 
   ILogQsoUseCase = interface
@@ -57,6 +58,7 @@ begin
   Result.Success := False;
   Result.QsoId := '';
   Result.Error := AError;
+  Result.Retryable := False;
 end;
 
 function TLogQsoUseCase.Execute(const ADraft: TQsoDraft): TLogQsoResult;
@@ -86,6 +88,7 @@ begin
 
   Result.Success := True;
   Result.Error := lqeNone;
+  Result.Retryable := False;
 end;
 
 end.

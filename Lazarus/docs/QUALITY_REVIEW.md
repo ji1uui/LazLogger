@@ -31,7 +31,7 @@ LCL composition root、テスト、CI である。評価軸は次のとおり。
 |Critical|並行性|memory repository の一覧・索引へ worker と UI が同時アクセスできた|修正済み。全公開操作を critical section で保護し、clone/snapshot も lock 内で生成する|
 |Critical|永続化|writer に payload 上限がなく、reader が拒否する journal を生成できた|修正済み。serialize 後、書き込み前に 1 MiB 上限を検証する|
 |High|永続化|OS/process crash を模した kill 試験がなく、`FileFlush` の媒体保証は OS 依存|一部対応。append各段階のfault injectionと全tail切断位置を検証済み。Windows/macOS実機の強制終了・電源断相当試験は未完|
-|High|エラー処理|repository 例外は worker で `lqeInternalFailure` へ集約され、診断 ID や原因分類がない|未完。利用者向けエラーと構造化診断イベントを分離する|
+|High|エラー処理|repository例外が単一の内部エラーへ集約され、原因分類がなかった|対応済み。利用者には再試行可能なstorage分類、診断にはboundedな例外classとcomponent/codeを渡す|
 |High|ライフサイクル|worker service の `Submit` と `Shutdown` を複数 thread から同時実行する契約がない|制約を維持。当面 UI owner のみが呼ぶ。CAT/network producer 導入前に状態 machine と同期を追加する|
 |High|データモデル|contest、band、operator、station、serial、dupe/multiplier 情報が QSO にない|計画済み。contest rule model 確定後に versioned migration として追加する|
 |Medium|入力|exchange 長、ID 長、timestamp 範囲の domain 制約がない|未完。contest ごとの制約と journal 全体の安全上限を分ける|
@@ -76,7 +76,7 @@ benchmark の閾値はハードウェア差が大きいため、まず CI artifa
 
 1. thread-safe read model を利用した Recent QSO presenter と LCL grid を追加する。（完了）
 2. journal fault injection を導入し、write/flush 失敗と全 tail 切断位置を自動検証する。（完了）
-3. structured diagnostics、health state、利用者が再試行可能なエラー分類を追加する。
+3. structured diagnostics、health state、利用者が再試行可能なエラー分類を追加する。（完了）
 4. Hamlib adapter は別 process 境界を基本とし、timeout、再接続、最新値優先 queue を実装する。
 5. CW/RTTY engine は audio/device thread と DSP worker を UI から分離し、固定長 buffer pool と
    lock-free または bounded ring buffer を技術検証してから統合する。
