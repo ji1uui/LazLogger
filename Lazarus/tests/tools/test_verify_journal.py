@@ -58,6 +58,20 @@ class JournalVerifierTests(unittest.TestCase):
         self.assertEqual(1, len(records))
         self.assertEqual(len(complete), valid_bytes)
 
+    def test_reports_last_complete_boundary_at_every_tail_cut(self) -> None:
+        first = journal_record("599 FIRST")
+        second = journal_record("599 SECOND")
+        complete = first + second
+        for cut in range(len(complete)):
+            with self.subTest(cut=cut):
+                records, valid_bytes = VERIFY_JOURNAL.read_journal(
+                    self.write_fixture(complete[:cut])
+                )
+                expected_count = 1 if cut >= len(first) else 0
+                expected_bytes = len(first) if expected_count else 0
+                self.assertEqual(expected_count, len(records))
+                self.assertEqual(expected_bytes, valid_bytes)
+
     def test_rejects_crc_corruption(self) -> None:
         corrupted = bytearray(journal_record())
         corrupted[-1] ^= 0xFF

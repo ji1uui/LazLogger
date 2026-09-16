@@ -109,5 +109,9 @@ Recent QSO Presenterはread-only query use caseから最大50件のsnapshotを�
 変換します。LCL画面は起動時とdurable保存完了時に一覧を更新します。journal fileはUIから読まず、thread-safeな
 memory read modelだけを短時間参照するため、保存中のfile I/OによるUI停止を避けます。
 
-次は品質レビューの順序に従い、kill-pointを全書込境界へ広げた別process recovery test、QSO Entryの
-keyboard/high-DPI/accessibility test、queue/worker telemetryの接続状態表示を追加します。
+journal appendにはproductionでは未設定のfault injection portを設け、header、payload、flush直前の各失敗で
+元のfile境界へrollbackし、未acknowledged QSOがmemoryへ現れないことを検証します。さらに2 recordの全byte位置を
+切断して再起動し、最後の完全なrecord境界だけを保持することをPascalと独立Python parserの双方で検証します。
+
+次は品質レビューの順序に従い、structured diagnosticsとhealth stateを追加したうえで、OS別の強制終了試験、
+QSO Entryのkeyboard/high-DPI/accessibility test、queue/worker telemetryの接続状態表示を追加します。

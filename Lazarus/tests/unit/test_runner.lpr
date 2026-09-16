@@ -76,6 +76,14 @@ type
     property State: TRecentQsosState read FState;
   end;
 
+  TStageFaultInjector = class(TInterfacedObject, IJournalFaultInjector)
+  private
+    FFailureStage: TJournalAppendStage;
+  public
+    constructor Create(const AFailureStage: TJournalAppendStage);
+    procedure BeforeStage(const AStage: TJournalAppendStage);
+  end;
+
 procedure TRecordingView.Render(const AState: TQsoEntryState);
 begin
   Inc(FRenderCount);
@@ -128,6 +136,19 @@ procedure TRecordingRecentQsosView.RenderRecentQsos(
 begin
   Inc(FRenderCount);
   FState := AState;
+end;
+
+constructor TStageFaultInjector.Create(const AFailureStage: TJournalAppendStage);
+begin
+  inherited Create;
+  FFailureStage := AFailureStage;
+end;
+
+procedure TStageFaultInjector.BeforeStage(const AStage: TJournalAppendStage);
+begin
+  if AStage = FFailureStage then
+    raise EJournalError.CreateFmt('Injected journal failure at stage %d',
+      [Ord(AStage)]);
 end;
 
 procedure AssertTrue(const ACondition: Boolean; const AMessage: string);
@@ -372,6 +393,27 @@ begin
   end;
 end;
 
+procedure CopyFilePrefix(const ASourceFileName, ADestinationFileName: string;
+  const ALength: Int64);
+var
+  Source: TFileStream;
+  Destination: TFileStream;
+begin
+  Source := TFileStream.Create(ASourceFileName, fmOpenRead or fmShareDenyNone);
+  try
+    if (ALength < 0) or (ALength > Source.Size) then
+      raise EArgumentOutOfRangeException.Create('Invalid file prefix length');
+    Destination := TFileStream.Create(ADestinationFileName, fmCreate);
+    try
+      Destination.CopyFrom(Source, ALength);
+    finally
+      Destination.Free;
+    end;
+  finally
+    Source.Free;
+  end;
+end;
+
 procedure AppendIncompleteHeader(const AFileName: string);
 var
   Stream: TFileStream;
@@ -477,6 +519,118 @@ begin
     Repository := nil;
   finally
     DeleteFile(FileName);
+  end;
+end;
+
+procedure TestJournalAppendFaultInjection;
+var
+  FileName: string;
+  Repository: IQsoRepository;
+  Injector: IJournalFaultInjector;
+  Callsign: TCallsign;
+  Frequency: TFrequencyHz;
+  Qso: TQso;
+  Stage: TJournalAppendStage;
+  Rejected: Boolean;
+begin
+  AssertTrue(TCallsign.TryCreate('JA1ZLO', Callsign),
+    'fault injection fixture callsign is valid');
+  AssertTrue(TFrequencyHz.TryCreate(7000000, Frequency),
+    'fault injection fixture frequency is valid');
+  Qso := TQso.Create('fault-1', Callsign, Frequency, emCW,
+    '599 001', '599 002', 1);
+  try
+    for Stage := Low(TJournalAppendStage) to High(TJournalAppendStage) do
+    begin
+      FileName := TemporaryJournalName('fault-' + IntToStr(Ord(Stage)));
+      try
+        Injector := TStageFaultInjector.Create(Stage);
+        Repository := TJournalQsoRepository.Create(FileName, Injector);
+        Rejected := False;
+        try
+          Repository.Add(Qso);
+        except
+          on E: EJournalError do Rejected := True;
+        end;
+        AssertTrue(Rejected, 'injected append failure is reported');
+        AssertTrue(Repository.Count = 0,
+          'failed append is not acknowledged in memory');
+        AssertTrue(SizeOfFile(FileName) = 0,
+          'failed append rolls the journal back to its original size');
+        Repository := nil;
+        Injector := nil;
+        Repository := TJournalQsoRepository.Create(FileName);
+        AssertTrue(Repository.Count = 0,
+          'journal reopens after an injected append failure');
+        Repository := nil;
+      finally
+        Repository := nil;
+        Injector := nil;
+        DeleteFile(FileName);
+      end;
+    end;
+  finally
+    Qso.Free;
+  end;
+end;
+
+procedure TestJournalRecoveryAtEveryTailPosition;
+var
+  BaselineFileName: string;
+  TruncatedFileName: string;
+  Repository: IQsoRepository;
+  UseCase: ILogQsoUseCase;
+  Draft: TQsoDraft;
+  FirstRecordSize: Int64;
+  CompleteSize: Int64;
+  CutPosition: Int64;
+  ExpectedCount: Integer;
+  ExpectedSize: Int64;
+begin
+  BaselineFileName := TemporaryJournalName('all-tail-source');
+  TruncatedFileName := TemporaryJournalName('all-tail-cut');
+  try
+    Repository := TJournalQsoRepository.Create(BaselineFileName);
+    UseCase := TLogQsoUseCase.Create(Repository, TFixedClock.Create(10),
+      TSequentialIdGenerator.Create('tail-'));
+    Draft.Callsign := 'JA1ZLO';
+    Draft.FrequencyHz := 7000000;
+    Draft.Mode := emCW;
+    Draft.SentExchange := '599 001';
+    Draft.ReceivedExchange := '599 002';
+    AssertTrue(UseCase.Execute(Draft).Success, 'first tail fixture is logged');
+    FirstRecordSize := SizeOfFile(BaselineFileName);
+    Draft.Callsign := 'JR8PPG';
+    AssertTrue(UseCase.Execute(Draft).Success, 'second tail fixture is logged');
+    Repository := nil;
+    UseCase := nil;
+    CompleteSize := SizeOfFile(BaselineFileName);
+
+    for CutPosition := 0 to CompleteSize - 1 do
+    begin
+      CopyFilePrefix(BaselineFileName, TruncatedFileName, CutPosition);
+      Repository := TJournalQsoRepository.Create(TruncatedFileName);
+      if CutPosition >= FirstRecordSize then
+      begin
+        ExpectedCount := 1;
+        ExpectedSize := FirstRecordSize;
+      end
+      else
+      begin
+        ExpectedCount := 0;
+        ExpectedSize := 0;
+      end;
+      AssertTrue(Repository.Count = ExpectedCount,
+        'tail recovery preserves only complete records');
+      Repository := nil;
+      AssertTrue(SizeOfFile(TruncatedFileName) = ExpectedSize,
+        'tail recovery truncates to the last complete boundary');
+    end;
+  finally
+    Repository := nil;
+    UseCase := nil;
+    DeleteFile(BaselineFileName);
+    DeleteFile(TruncatedFileName);
   end;
 end;
 
@@ -733,6 +887,8 @@ begin
     TestInvalidDraftDoesNotPersist;
     TestJournalRoundTripAndTailRecovery;
     TestJournalRejectsOversizedRecordWithoutDamage;
+    TestJournalAppendFaultInjection;
+    TestJournalRecoveryAtEveryTailPosition;
     TestRuntimeAdapters;
     TestQsoEntryPresenter;
     TestBoundedSubmissionQueue;

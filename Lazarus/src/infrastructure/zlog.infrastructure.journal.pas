@@ -12,6 +12,14 @@ type
   EJournalError = class(Exception);
   EJournalCorrupt = class(EJournalError);
 
+  TJournalAppendStage = (jasBeforeHeader, jasBeforePayload, jasBeforeFlush);
+
+  { Test/fault-injection seam. Production composition leaves this unassigned. }
+  IJournalFaultInjector = interface
+    ['{93C5F90A-958A-4EE4-882B-07D073B13917}']
+    procedure BeforeStage(const AStage: TJournalAppendStage);
+  end;
+
   { Add returns only after the append-only record has been flushed. }
   TJournalQsoRepository = class(TInterfacedObject, IQsoRepository)
   private
@@ -19,10 +27,12 @@ type
     FMemory: IQsoRepository;
     FStream: TFileStream;
     FLock: TCriticalSection;
+    FFaultInjector: IJournalFaultInjector;
     procedure LoadAndRecover;
     procedure AppendRecord(const AQso: TQso);
   public
-    constructor Create(const AFileName: string);
+    constructor Create(const AFileName: string;
+      const AFaultInjector: IJournalFaultInjector = nil);
     destructor Destroy; override;
     procedure Add(const AQso: TQso);
     function Count: Integer;
@@ -195,7 +205,8 @@ begin
     SentExchange, ReceivedExchange, OccurredAtUtcMs);
 end;
 
-constructor TJournalQsoRepository.Create(const AFileName: string);
+constructor TJournalQsoRepository.Create(const AFileName: string;
+  const AFaultInjector: IJournalFaultInjector);
 var
   DirectoryName: string;
 begin
@@ -203,6 +214,7 @@ begin
   if Trim(AFileName) = '' then
     raise EArgumentException.Create('Journal filename must not be empty');
   FFileName := ExpandFileName(AFileName);
+  FFaultInjector := AFaultInjector;
   DirectoryName := ExtractFileDir(FFileName);
   if (DirectoryName <> '') and not DirectoryExists(DirectoryName) and
     not ForceDirectories(DirectoryName) then
@@ -220,6 +232,7 @@ destructor TJournalQsoRepository.Destroy;
 begin
   FStream.Free;
   FMemory := nil;
+  FFaultInjector := nil;
   FLock.Free;
   inherited Destroy;
 end;
@@ -282,10 +295,16 @@ begin
     RecordStart := FStream.Size;
     try
       FStream.Position := RecordStart;
+      if Assigned(FFaultInjector) then
+        FFaultInjector.BeforeStage(jasBeforeHeader);
       FStream.WriteBuffer(RecordMagic, SizeOf(RecordMagic));
       WriteUInt32LE(FStream, Payload.Size);
       WriteUInt32LE(FStream, PayloadCrc(Payload));
+      if Assigned(FFaultInjector) then
+        FFaultInjector.BeforeStage(jasBeforePayload);
       FStream.CopyFrom(Payload, 0);
+      if Assigned(FFaultInjector) then
+        FFaultInjector.BeforeStage(jasBeforeFlush);
       if not FileFlush(FStream.Handle) then
         raise EJournalError.CreateFmt('Unable to flush journal: %s', [FFileName]);
     except
