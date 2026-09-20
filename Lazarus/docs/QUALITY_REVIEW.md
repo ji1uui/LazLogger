@@ -77,7 +77,7 @@ benchmark の閾値はハードウェア差が大きいため、まず CI artifa
 1. thread-safe read model を利用した Recent QSO presenter と LCL grid を追加する。（完了）
 2. journal fault injection を導入し、write/flush 失敗と全 tail 切断位置を自動検証する。（完了）
 3. structured diagnostics、health state、利用者が再試行可能なエラー分類を追加する。（完了）
-4. Hamlib adapter は別 process 境界を基本とし、timeout、再接続、最新値優先 queue を実装する。
+4. Hamlib adapter は別 process 境界を基本とし、timeout、再接続、最新値優先 queue を実装する。（protocol clientとfake transport完了、OS別process transportは未完）
 5. CW/RTTY engine は audio/device thread と DSP worker を UI から分離し、固定長 buffer pool と
    lock-free または bounded ring buffer を技術検証してから統合する。
 

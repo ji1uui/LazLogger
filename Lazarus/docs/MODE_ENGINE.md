@@ -24,6 +24,13 @@ User intent ---------->| Mode session       |<-------- QSO / macro / contest con
 
 この分離により、Hamlib の更新、sound device、DSP 実装、keyer を独立に交換・試験できます。
 
+### 現在の実装状況
+
+`IRigCommandPort` / `IRigWorkPump` と `rigctld` protocol clientまでを実装済みです。UI側の要求は
+transport I/Oを行わず、未送信周波数を最新値で置換します。protocol clientはtimeout、指数backoff、
+connection snapshot、structured diagnosticsを提供します。実際に`rigctld`を起動・監視する
+Windows/macOS child-process transportは次のsliceであり、現時点ではfake transportによるcontract testだけです。
+
 ## 2. モードモデル
 
 `TMode` 一つへ UI、ADIF、CAT の数値を詰め込まず、以下を別の value object とします。

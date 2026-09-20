@@ -117,5 +117,7 @@ submission workerはrepository例外を再試行可能な`lqePersistenceUnavaila
 同時にthread-safeかつ固定長のhealth monitorへcomponent、diagnostic code、severity、例外classを記録します。LCL画面は
 Healthy／Degraded／Failedを表示し、正常なdurable保存後はHealthyへ復帰しますが、累積error counterは保持します。
 
-次はHamlib process adapterの前提となる接続health state machine、timeout、再接続backoff、最新値優先のbounded queueを
-fake `rigctld` contract testから実装します。OS別強制終了試験とUI accessibility検証も並行せず順次品質ゲートへ追加します。
+Hamlibの最初のsliceとして、UIから即時に戻る`IRigCommandPort`と専用worker用`IRigWorkPump`、`rigctld` protocol clientを
+追加しました。周波数変更は未送信の古い値を最新値で置換するためqueue growthを起こさず、timeout時は250 msから8秒までの
+指数backoffで同じcommandを保持します。応答成功時だけread modelを更新し、接続状態とdiagnostics healthを復旧します。
+現在のtransportはfake contractであり、次はWindows/macOS共通のchild-process lifecycle、標準入出力、kill/restartを実装します。

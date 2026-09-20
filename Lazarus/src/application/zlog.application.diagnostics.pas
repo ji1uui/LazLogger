@@ -7,7 +7,7 @@ interface
 type
   TDiagnosticSeverity = (dsInfo, dsWarning, dsError, dsCritical);
   TDiagnosticCode = (dcNone, dcQsoPersistenceFailed,
-    dcCompletionDispatchFailed);
+    dcCompletionDispatchFailed, dcRigTransportFailed);
   THealthStatus = (hsHealthy, hsDegraded, hsFailed);
 
   THealthSnapshot = record

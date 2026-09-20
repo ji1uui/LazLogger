@@ -8,11 +8,13 @@ uses
   SysUtils, Classes, DateUtils, ZLog.Domain.Types, ZLog.Domain.Qso,
   ZLog.Application.LogQso, ZLog.Application.QueryQsos,
   ZLog.Application.Diagnostics,
+  ZLog.Application.Rig,
   ZLog.Infrastructure.Memory,
   ZLog.Infrastructure.Deterministic, ZLog.Infrastructure.Journal,
   ZLog.Infrastructure.Runtime, ZLog.Application.Submission,
   ZLog.Infrastructure.SubmissionQueue, ZLog.Infrastructure.CompletionQueue,
   ZLog.Infrastructure.SubmissionWorker, ZLog.Infrastructure.Health,
+  ZLog.Infrastructure.Rigctld,
   ZLog.Presentation.QsoEntry,
   ZLog.Presentation.RecentQsos;
 
@@ -73,6 +75,23 @@ type
   TFailingLogQsoUseCase = class(TInterfacedObject, ILogQsoUseCase)
   public
     function Execute(const ADraft: TQsoDraft): TLogQsoResult;
+  end;
+
+  TFakeRigctldTransport = class(TInterfacedObject, IRigctldTransport)
+  private
+    FCallCount: Integer;
+    FLastCommand: string;
+    FLastTimeoutMs: Integer;
+    FNextResult: TRigctldTransportResult;
+    FNextResponse: string;
+  public
+    function Execute(const ACommand: string; const ATimeoutMs: Integer;
+      out AResponse: string): TRigctldTransportResult;
+    procedure Configure(const AResult: TRigctldTransportResult;
+      const AResponse: string);
+    property CallCount: Integer read FCallCount;
+    property LastCommand: string read FLastCommand;
+    property LastTimeoutMs: Integer read FLastTimeoutMs;
   end;
 
   TRecordingRecentQsosView = class(TInterfacedObject, IRecentQsosView)
@@ -141,10 +160,28 @@ begin
   raise EWriteError.Create('simulated storage detail');
 end;
 
+function TFakeRigctldTransport.Execute(const ACommand: string;
+  const ATimeoutMs: Integer; out AResponse: string): TRigctldTransportResult;
+begin
+  Inc(FCallCount);
+  FLastCommand := ACommand;
+  FLastTimeoutMs := ATimeoutMs;
+  AResponse := FNextResponse;
+  Result := FNextResult;
+end;
+
+procedure TFakeRigctldTransport.Configure(
+  const AResult: TRigctldTransportResult; const AResponse: string);
+begin
+  FNextResult := AResult;
+  FNextResponse := AResponse;
+end;
+
 procedure TRecordingSubmissionObserver.SubmissionCompleted(
   const AResult: TLogQsoResult);
 begin
   Inc(FCount);
+  FResult := AResult;
 end;
 
 procedure TRecordingRecentQsosView.RenderRecentQsos(
@@ -957,6 +994,83 @@ begin
   HealthQuery := nil;
 end;
 
+procedure TestRigctldContractAndBackoff;
+var
+  TransportObject: TFakeRigctldTransport;
+  Transport: IRigctldTransport;
+  MonitorObject: TInMemoryHealthMonitor;
+  Diagnostics: IDiagnosticSink;
+  HealthQuery: IHealthQuery;
+  CommandPort: IRigCommandPort;
+  WorkPump: IRigWorkPump;
+  ClientObject: TRigctldClient;
+  Rig: TRigSnapshot;
+  Health: THealthSnapshot;
+begin
+  TransportObject := TFakeRigctldTransport.Create;
+  Transport := TransportObject;
+  MonitorObject := TInMemoryHealthMonitor.Create;
+  Diagnostics := MonitorObject;
+  HealthQuery := MonitorObject;
+  ClientObject := TRigctldClient.Create(Transport, Diagnostics, 321);
+  CommandPort := ClientObject;
+  WorkPump := ClientObject;
+
+  AssertTrue(not CommandPort.RequestFrequency(0),
+    'rig rejects an invalid frequency without transport I/O');
+  AssertTrue(CommandPort.RequestFrequency(7000000),
+    'rig accepts a valid frequency');
+  AssertTrue(CommandPort.RequestFrequency(14000000),
+    'newer frequency replaces pending work');
+  TransportObject.Configure(rtrTimeout, '');
+  AssertTrue(WorkPump.ProcessNext(0), 'rig worker attempts pending command');
+  AssertTrue(TransportObject.LastCommand = 'F 14000000',
+    'latest frequency wins before transport I/O');
+  AssertTrue(TransportObject.LastTimeoutMs = 321,
+    'rig transport receives the configured timeout');
+  Rig := CommandPort.Snapshot;
+  AssertTrue(Rig.State = rcsDegraded, 'timeout degrades rig state');
+  AssertTrue(Rig.HasPendingFrequency, 'failed command remains pending');
+  AssertTrue(Rig.NextRetryAtMs = 250, 'first retry uses bounded backoff');
+  AssertTrue(not WorkPump.ProcessNext(249), 'backoff prevents an early retry');
+  AssertTrue(TransportObject.CallCount = 1, 'early retry performs no I/O');
+  Health := HealthQuery.Snapshot;
+  AssertTrue(Health.LastCode = dcRigTransportFailed,
+    'rig timeout emits a structured diagnostic');
+
+  TransportObject.Configure(rtrDisconnected, '');
+  AssertTrue(WorkPump.ProcessNext(250), 'rig retries at the first deadline');
+  Rig := CommandPort.Snapshot;
+  AssertTrue(Rig.ConsecutiveFailures = 2, 'repeated failures are counted');
+  AssertTrue(Rig.NextRetryAtMs = 750, 'retry delay grows exponentially');
+  AssertTrue(not WorkPump.ProcessNext(749), 'second backoff prevents early I/O');
+
+  TransportObject.Configure(rtrSuccess, 'RPRT 0');
+  AssertTrue(WorkPump.ProcessNext(750), 'rig retries at the second deadline');
+  Rig := CommandPort.Snapshot;
+  AssertTrue(Rig.State = rcsReady, 'successful retry restores rig state');
+  AssertTrue(Rig.FrequencyHz = 14000000, 'successful set updates snapshot');
+  AssertTrue(not Rig.HasPendingFrequency, 'acknowledged command is removed');
+  AssertTrue(Rig.ConsecutiveFailures = 0, 'success resets backoff');
+  AssertTrue(HealthQuery.Snapshot.Status = hsHealthy,
+    'successful rig command restores component health');
+
+  CommandPort.RequestRefresh;
+  TransportObject.Configure(rtrSuccess, '21000000');
+  AssertTrue(WorkPump.ProcessNext(751), 'frequency refresh is processed');
+  AssertTrue(TransportObject.LastCommand = 'f',
+    'refresh uses the rigctld frequency command');
+  Rig := CommandPort.Snapshot;
+  AssertTrue(Rig.FrequencyHz = 21000000,
+    'rigctld response updates the read model');
+
+  WorkPump := nil;
+  CommandPort := nil;
+  Transport := nil;
+  Diagnostics := nil;
+  HealthQuery := nil;
+end;
+
 begin
   try
     TestCallsignNormalization;
@@ -976,6 +1090,7 @@ begin
     TestSubmissionWorkerAndMainThreadCompletion;
     TestCompletionNotificationCoalescing;
     TestStructuredDiagnosticsAndHealth;
+    TestRigctldContractAndBackoff;
     WriteLn('PASS: ', TestsRun, ' assertions');
   except
     on E: Exception do
