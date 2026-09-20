@@ -151,6 +151,7 @@ end;
 procedure TCountingCompletionNotifier.NotifyCompletionAvailable;
 begin
   Inc(FCount);
+  FResult := AResult;
 end;
 
 function TFailingLogQsoUseCase.Execute(
