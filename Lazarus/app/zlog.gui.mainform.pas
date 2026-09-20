@@ -9,9 +9,11 @@ uses
   Classes, SysUtils, Forms, Controls, StdCtrls, Grids, SyncObjs,
   ZLog.Domain.Types, ZLog.Application.Ports, ZLog.Application.LogQso,
   ZLog.Application.QueryQsos, ZLog.Application.Submission,
+  ZLog.Application.Diagnostics,
   ZLog.Infrastructure.Runtime,
   ZLog.Infrastructure.Journal, ZLog.Infrastructure.SubmissionQueue,
   ZLog.Infrastructure.SubmissionWorker, ZLog.Infrastructure.CompletionQueue,
+  ZLog.Infrastructure.Health,
   ZLog.Presentation.QsoEntry, ZLog.Presentation.RecentQsos;
 
 type
@@ -58,10 +60,12 @@ type
     FReceivedEdit: TEdit;
     FLogButton: TButton;
     FStatusLabel: TLabel;
+    FHealthLabel: TLabel;
     FRecentGrid: TStringGrid;
     FRepository: IQsoRepository;
     FManagedSubmission: IManagedQsoSubmissionPort;
     FCompletionPump: ICompletionPump;
+    FHealthQuery: IHealthQuery;
     FPresenter: IQsoEntryPresenter;
     FRecentPresenter: IRecentQsosPresenter;
     FViewAdapter: TQsoEntryViewAdapter;
@@ -76,6 +80,7 @@ type
     procedure DrainCompletions;
     procedure UpdateFromState(const AState: TQsoEntryState);
     procedure UpdateRecentQsos(const AState: TRecentQsosState);
+    procedure UpdateHealth;
     function SelectedMode: TEmissionMode;
   public
     constructor Create(TheOwner: TComponent); override;
@@ -236,6 +241,7 @@ begin
   FRecentView := nil;
   FManagedSubmission := nil;
   FCompletionPump := nil;
+  FHealthQuery := nil;
   FNotifier := nil;
   FRepository := nil;
   inherited Destroy;
@@ -295,6 +301,14 @@ begin
   FStatusLabel.AutoSize := True;
   FStatusLabel.ShowHint := True;
 
+  FHealthLabel := TLabel.Create(Self);
+  FHealthLabel.Parent := Self;
+  FHealthLabel.Left := Margin;
+  FHealthLabel.Top := TopPosition + 7;
+  FHealthLabel.Caption := 'Health: OK';
+  FHealthLabel.AutoSize := True;
+  FHealthLabel.ShowHint := True;
+
   Inc(TopPosition, RowHeight + 16);
   NewLabel(Self, Self, 'Recent QSOs (UTC / MHz)', TopPosition);
   FRecentGrid := TStringGrid.Create(Self);
@@ -334,6 +348,8 @@ var
   QueueObject: TQueuedQsoSubmission;
   DispatcherObject: TQueuedCompletionDispatcher;
   RecentQuery: IGetRecentQsosUseCase;
+  Diagnostics: IDiagnosticSink;
+  HealthObject: TInMemoryHealthMonitor;
 begin
   JournalPath := IncludeTrailingPathDelimiter(GetAppConfigDir(False)) +
     'qso.journal';
@@ -345,7 +361,11 @@ begin
   DispatcherObject := TQueuedCompletionDispatcher.Create(FNotifier);
   Dispatcher := DispatcherObject;
   FCompletionPump := DispatcherObject;
-  QueueObject := TQueuedQsoSubmission.Create(UseCase, Dispatcher, 32);
+  HealthObject := TInMemoryHealthMonitor.Create;
+  Diagnostics := HealthObject;
+  FHealthQuery := HealthObject;
+  QueueObject := TQueuedQsoSubmission.Create(UseCase, Dispatcher, 32,
+    Diagnostics);
   QueueSubmission := QueueObject;
   WorkPump := QueueObject;
   FManagedSubmission := TSubmissionWorkerService.Create(QueueSubmission, WorkPump);
@@ -358,6 +378,7 @@ begin
   FRecentPresenter := TRecentQsosPresenter.Create(FRecentView, RecentQuery, 50);
   FPresenter.Initialize;
   FRecentPresenter.Initialize;
+  UpdateHealth;
 end;
 
 function TMainForm.SelectedMode: TEmissionMode;
@@ -388,6 +409,7 @@ end;
 
 procedure TMainForm.UpdateFromState(const AState: TQsoEntryState);
 begin
+  UpdateHealth;
   FLogButton.Enabled := AState.Status <> qesSubmitting;
   case AState.Status of
     qesReady: FStatusLabel.Caption := 'Ready';
@@ -400,6 +422,8 @@ begin
         lqeUnknownMode: FStatusLabel.Caption := 'Select a mode';
         lqeQueueFull: FStatusLabel.Caption := 'Save queue is full; retry';
         lqeCancelled: FStatusLabel.Caption := 'Save cancelled';
+        lqePersistenceUnavailable:
+          FStatusLabel.Caption := 'Storage unavailable; retry';
       else
         FStatusLabel.Caption := 'QSO was not saved';
       end;
@@ -417,6 +441,24 @@ begin
     else if AState.ErrorField = 'frequency' then FFrequencyEdit.SetFocus
     else if AState.ErrorField = 'mode' then FModeCombo.SetFocus;
   end;
+end;
+
+procedure TMainForm.UpdateHealth;
+var
+  Health: THealthSnapshot;
+begin
+  if not Assigned(FHealthQuery) then
+    Exit;
+  Health := FHealthQuery.Snapshot;
+  case Health.Status of
+    hsHealthy: FHealthLabel.Caption := 'Health: OK';
+    hsDegraded: FHealthLabel.Caption := 'Health: Degraded';
+    hsFailed: FHealthLabel.Caption := 'Health: Failed';
+  end;
+  if Health.LastCode = dcNone then
+    FHealthLabel.Hint := ''
+  else
+    FHealthLabel.Hint := Health.LastComponent + ': ' + Health.LastMessage;
 end;
 
 procedure TMainForm.UpdateRecentQsos(const AState: TRecentQsosState);

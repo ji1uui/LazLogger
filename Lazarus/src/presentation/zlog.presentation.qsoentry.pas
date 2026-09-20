@@ -20,6 +20,7 @@ type
     Status: TQsoEntryStatus;
     ErrorField: string;
     ErrorCode: TLogQsoError;
+    Retryable: Boolean;
     AcceptedQsoId: string;
   end;
 
@@ -71,6 +72,7 @@ begin
   FState.Mode := emCW;
   FState.Status := qesReady;
   FState.ErrorCode := lqeNone;
+  FState.Retryable := False;
 end;
 
 procedure TQsoEntryPresenter.Publish;
@@ -109,6 +111,7 @@ begin
   FState.Status := qesReady;
   FState.ErrorField := '';
   FState.ErrorCode := lqeNone;
+  FState.Retryable := False;
   FState.AcceptedQsoId := '';
   Publish;
 end;
@@ -127,6 +130,7 @@ begin
   FState.Status := qesSubmitting;
   FState.ErrorField := '';
   FState.ErrorCode := lqeNone;
+  FState.Retryable := False;
   Publish;
   FSubmission.Submit(Draft, Self);
 end;
@@ -137,6 +141,7 @@ begin
   if FState.Status <> qesSubmitting then
     Exit;
   FState.ErrorCode := AResult.Error;
+  FState.Retryable := AResult.Retryable;
   if AResult.Success then
   begin
     FState.Status := qesAccepted;

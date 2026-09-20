@@ -6,7 +6,7 @@ interface
 
 uses
   SysUtils, Classes, SyncObjs, ZLog.Domain.Qso, ZLog.Application.LogQso,
-  ZLog.Application.Submission;
+  ZLog.Application.Submission, ZLog.Application.Diagnostics;
 
 type
   TQueuedQsoSubmission = class(TInterfacedObject, IQsoSubmissionPort,
@@ -22,14 +22,18 @@ type
   private
     FUseCase: ILogQsoUseCase;
     FDispatcher: IQsoCompletionDispatcher;
+    FDiagnostics: IDiagnosticSink;
     FCapacity: Integer;
     FQueue: TList;
     FLock: TCriticalSection;
     class function Failure(const AError: TLogQsoError): TLogQsoResult; static;
+    class function RetryableFailure(
+      const AError: TLogQsoError): TLogQsoResult; static;
     function ExtractFirst: TWorkItem;
   public
     constructor Create(const AUseCase: ILogQsoUseCase;
-      const ADispatcher: IQsoCompletionDispatcher; const ACapacity: Integer);
+      const ADispatcher: IQsoCompletionDispatcher; const ACapacity: Integer;
+      const ADiagnostics: IDiagnosticSink = nil);
     destructor Destroy; override;
     procedure Submit(const ADraft: TQsoDraft;
       const AObserver: IQsoSubmissionObserver);
@@ -49,7 +53,8 @@ begin
 end;
 
 constructor TQueuedQsoSubmission.Create(const AUseCase: ILogQsoUseCase;
-  const ADispatcher: IQsoCompletionDispatcher; const ACapacity: Integer);
+  const ADispatcher: IQsoCompletionDispatcher; const ACapacity: Integer;
+  const ADiagnostics: IDiagnosticSink);
 begin
   inherited Create;
   if not Assigned(AUseCase) then
@@ -60,6 +65,7 @@ begin
     raise EArgumentOutOfRangeException.Create('ACapacity must be positive');
   FUseCase := AUseCase;
   FDispatcher := ADispatcher;
+  FDiagnostics := ADiagnostics;
   FCapacity := ACapacity;
   FQueue := TList.Create;
   FLock := TCriticalSection.Create;
@@ -71,6 +77,7 @@ begin
   FLock.Free;
   FQueue.Free;
   FDispatcher := nil;
+  FDiagnostics := nil;
   FUseCase := nil;
   inherited Destroy;
 end;
@@ -81,6 +88,14 @@ begin
   Result.Success := False;
   Result.QsoId := '';
   Result.Error := AError;
+  Result.Retryable := False;
+end;
+
+class function TQueuedQsoSubmission.RetryableFailure(
+  const AError: TLogQsoError): TLogQsoResult;
+begin
+  Result := Failure(AError);
+  Result.Retryable := True;
 end;
 
 procedure TQueuedQsoSubmission.Submit(const ADraft: TQsoDraft;
@@ -105,7 +120,7 @@ begin
   end;
   if not Accepted then
     { Submit is a UI-thread port; avoid consuming worker completion capacity. }
-    AObserver.SubmissionCompleted(Failure(lqeQueueFull));
+    AObserver.SubmissionCompleted(RetryableFailure(lqeQueueFull));
 end;
 
 function TQueuedQsoSubmission.ExtractFirst: TWorkItem;
@@ -137,12 +152,24 @@ begin
   try
     try
       LogResult := FUseCase.Execute(Item.Draft);
+      if LogResult.Success and Assigned(FDiagnostics) then
+        FDiagnostics.ReportHealthy('qso-persistence');
     except
       on E: Exception do
-        LogResult := Failure(lqeInternalFailure);
+      begin
+        if Assigned(FDiagnostics) then
+          FDiagnostics.Report(dcQsoPersistenceFailed, dsError,
+            'qso-persistence', E.ClassName);
+        LogResult := RetryableFailure(lqePersistenceUnavailable);
+      end;
     end;
     if not FDispatcher.TryDispatch(Item.Observer, LogResult) then
+    begin
+      if Assigned(FDiagnostics) then
+        FDiagnostics.Report(dcCompletionDispatchFailed, dsCritical,
+          'completion-dispatch', 'Completion queue capacity changed');
       raise EInvalidOperation.Create('Completion capacity changed unexpectedly');
+    end;
   finally
     Item.Free;
   end;

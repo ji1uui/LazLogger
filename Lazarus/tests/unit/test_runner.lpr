@@ -7,11 +7,13 @@ uses
   {$IFDEF UNIX}cthreads,{$ENDIF}
   SysUtils, Classes, DateUtils, ZLog.Domain.Types, ZLog.Domain.Qso,
   ZLog.Application.LogQso, ZLog.Application.QueryQsos,
+  ZLog.Application.Diagnostics,
   ZLog.Infrastructure.Memory,
   ZLog.Infrastructure.Deterministic, ZLog.Infrastructure.Journal,
   ZLog.Infrastructure.Runtime, ZLog.Application.Submission,
   ZLog.Infrastructure.SubmissionQueue, ZLog.Infrastructure.CompletionQueue,
-  ZLog.Infrastructure.SubmissionWorker, ZLog.Presentation.QsoEntry,
+  ZLog.Infrastructure.SubmissionWorker, ZLog.Infrastructure.Health,
+  ZLog.Presentation.QsoEntry,
   ZLog.Presentation.RecentQsos;
 
 var
@@ -61,9 +63,16 @@ type
     IQsoSubmissionObserver)
   private
     FCount: Integer;
+    FResult: TLogQsoResult;
   public
     procedure SubmissionCompleted(const AResult: TLogQsoResult);
     property Count: Integer read FCount;
+    property LastResult: TLogQsoResult read FResult;
+  end;
+
+  TFailingLogQsoUseCase = class(TInterfacedObject, ILogQsoUseCase)
+  public
+    function Execute(const ADraft: TQsoDraft): TLogQsoResult;
   end;
 
   TRecordingRecentQsosView = class(TInterfacedObject, IRecentQsosView)
@@ -123,6 +132,13 @@ end;
 procedure TCountingCompletionNotifier.NotifyCompletionAvailable;
 begin
   Inc(FCount);
+  FResult := AResult;
+end;
+
+function TFailingLogQsoUseCase.Execute(
+  const ADraft: TQsoDraft): TLogQsoResult;
+begin
+  raise EWriteError.Create('simulated storage detail');
 end;
 
 procedure TRecordingSubmissionObserver.SubmissionCompleted(
@@ -686,6 +702,7 @@ begin
     Completion.Success := False;
     Completion.QsoId := '';
     Completion.Error := lqeInvalidCallsign;
+    Completion.Retryable := False;
     SubmissionObject.Complete(Completion);
     AssertTrue(ViewObject.State.Status = qesRejected, 'failure is rendered');
     AssertTrue(ViewObject.State.ErrorField = 'callsign', 'invalid field gets focus hint');
@@ -695,6 +712,7 @@ begin
     Completion.Success := True;
     Completion.QsoId := 'accepted-1';
     Completion.Error := lqeNone;
+    Completion.Retryable := False;
     SubmissionObject.Complete(Completion);
     AssertTrue(ViewObject.State.Status = qesAccepted, 'success is rendered');
     AssertTrue(ViewObject.State.AcceptedQsoId = 'accepted-1', 'accepted ID is rendered');
@@ -742,6 +760,7 @@ begin
   SecondPresenter.Submit;
   AssertTrue(SecondViewObject.State.Status = qesRejected, 'full queue rejects work');
   AssertTrue(SecondViewObject.State.ErrorCode = lqeQueueFull, 'queue pressure is explicit');
+  AssertTrue(SecondViewObject.State.Retryable, 'queue pressure is retryable');
   AssertTrue(Pump.PendingCount = 1, 'rejected work does not grow queue');
 
   AssertTrue(Pump.ProcessNext, 'worker processes queued submission');
@@ -852,6 +871,7 @@ begin
   Completion.Success := True;
   Completion.QsoId := 'notification-test';
   Completion.Error := lqeNone;
+  Completion.Retryable := False;
 
   AssertTrue(Dispatcher.TryDispatch(Observer, Completion), 'first completion fits');
   AssertTrue(Dispatcher.TryDispatch(Observer, Completion), 'second completion fits');
@@ -876,6 +896,67 @@ begin
   Notifier := nil;
 end;
 
+procedure TestStructuredDiagnosticsAndHealth;
+var
+  MonitorObject: TInMemoryHealthMonitor;
+  Diagnostics: IDiagnosticSink;
+  HealthQuery: IHealthQuery;
+  Health: THealthSnapshot;
+  UseCase: ILogQsoUseCase;
+  Dispatcher: IQsoCompletionDispatcher;
+  Submission: IQsoSubmissionPort;
+  Pump: ISubmissionWorkPump;
+  QueueObject: TQueuedQsoSubmission;
+  ObserverObject: TRecordingSubmissionObserver;
+  Observer: IQsoSubmissionObserver;
+  Draft: TQsoDraft;
+begin
+  MonitorObject := TInMemoryHealthMonitor.Create;
+  Diagnostics := MonitorObject;
+  HealthQuery := MonitorObject;
+  Health := HealthQuery.Snapshot;
+  AssertTrue(Health.Status = hsHealthy, 'health starts healthy');
+
+  UseCase := TFailingLogQsoUseCase.Create;
+  Dispatcher := TInlineDispatcher.Create;
+  QueueObject := TQueuedQsoSubmission.Create(UseCase, Dispatcher, 2,
+    Diagnostics);
+  Submission := QueueObject;
+  Pump := QueueObject;
+  ObserverObject := TRecordingSubmissionObserver.Create;
+  Observer := ObserverObject;
+  Draft.Callsign := 'JA1ZLO';
+  Submission.Submit(Draft, Observer);
+  AssertTrue(Pump.ProcessNext, 'failing persistence work is processed');
+  AssertTrue(ObserverObject.Count = 1, 'failure completes exactly once');
+  AssertTrue(ObserverObject.LastResult.Error = lqePersistenceUnavailable,
+    'storage exception is mapped to a user-facing category');
+  AssertTrue(ObserverObject.LastResult.Retryable,
+    'persistence unavailability is explicitly retryable');
+  Health := HealthQuery.Snapshot;
+  AssertTrue(Health.Status = hsDegraded, 'storage failure degrades health');
+  AssertTrue(Health.ErrorCount = 1, 'health counts the storage error');
+  AssertTrue(Health.LastCode = dcQsoPersistenceFailed,
+    'health exposes a structured diagnostic code');
+  AssertTrue(Health.LastComponent = 'qso-persistence',
+    'health identifies the failing component');
+  AssertTrue(Health.LastMessage = 'EWriteError',
+    'diagnostics retain the exception class without sensitive details');
+
+  Diagnostics.ReportHealthy('qso-persistence');
+  Health := HealthQuery.Snapshot;
+  AssertTrue(Health.Status = hsHealthy, 'successful recovery restores health');
+  AssertTrue(Health.ErrorCount = 1, 'recovery preserves cumulative counters');
+
+  Pump := nil;
+  Submission := nil;
+  Dispatcher := nil;
+  UseCase := nil;
+  Observer := nil;
+  Diagnostics := nil;
+  HealthQuery := nil;
+end;
+
 begin
   try
     TestCallsignNormalization;
@@ -894,6 +975,7 @@ begin
     TestBoundedSubmissionQueue;
     TestSubmissionWorkerAndMainThreadCompletion;
     TestCompletionNotificationCoalescing;
+    TestStructuredDiagnosticsAndHealth;
     WriteLn('PASS: ', TestsRun, ' assertions');
   except
     on E: Exception do
