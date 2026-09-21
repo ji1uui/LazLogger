@@ -65,6 +65,13 @@ destructor TQueuedCompletionDispatcher.Destroy;
 var
   Item: TCompletionItem;
 begin
+  if Assigned(FLock) and Assigned(FQueue) then
+    repeat
+      Item := ExtractFirst;
+      Item.Free;
+    until not Assigned(Item);
+  FreeAndNil(FLock);
+  FreeAndNil(FQueue);
   repeat
     Item := ExtractFirst;
     Item.Free;
@@ -105,6 +112,12 @@ begin
     FLock.Release;
   end;
   if Result and MustNotify and Assigned(FNotifier) then
+    try
+      FNotifier.NotifyCompletionAvailable;
+    except
+      { The completion is already owned by this queue. A UI wake-up failure
+        must not terminate the worker or make it retry the durable command. }
+    end;
     FNotifier.NotifyCompletionAvailable;
 end;
 

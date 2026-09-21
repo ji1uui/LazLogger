@@ -59,6 +59,17 @@ type
     function HasCapacity: Boolean;
   end;
 
+  TCapacityRaceDispatcher = class(TInterfacedObject,
+    IQsoCompletionDispatcher)
+  private
+    FDispatchCount: Integer;
+  public
+    function TryDispatch(const AObserver: IQsoSubmissionObserver;
+      const AResult: TLogQsoResult): Boolean;
+    function HasCapacity: Boolean;
+    property DispatchCount: Integer read FDispatchCount;
+  end;
+
   TCountingCompletionNotifier = class(TInterfacedObject,
     ICompletionAvailableNotifier)
   private
@@ -179,6 +190,24 @@ begin
   Result := True;
 end;
 
+function TCapacityRaceDispatcher.TryDispatch(
+  const AObserver: IQsoSubmissionObserver;
+  const AResult: TLogQsoResult): Boolean;
+begin
+  Inc(FDispatchCount);
+  Result := FDispatchCount > 1;
+  if Result then
+    AObserver.SubmissionCompleted(AResult);
+end;
+
+function TCapacityRaceDispatcher.HasCapacity: Boolean;
+begin
+  Result := True;
+end;
+
+procedure TCountingCompletionNotifier.NotifyCompletionAvailable;
+begin
+  Inc(FCount);
 procedure TCountingCompletionNotifier.NotifyCompletionAvailable;
 begin
   Inc(FCount);
@@ -889,6 +918,75 @@ begin
   Repository := nil;
 end;
 
+procedure TestCompletionCapacityRaceDoesNotDuplicateQso;
+var
+  Repository: IQsoRepository;
+  UseCase: ILogQsoUseCase;
+  Dispatcher: IQsoCompletionDispatcher;
+  DispatcherObject: TCapacityRaceDispatcher;
+  Submission: IQsoSubmissionPort;
+  Pump: ISubmissionWorkPump;
+  QueueObject: TQueuedQsoSubmission;
+  Observer: IQsoSubmissionObserver;
+  ObserverObject: TRecordingSubmissionObserver;
+  RejectedObserver: IQsoSubmissionObserver;
+  RejectedObserverObject: TRecordingSubmissionObserver;
+  Draft: TQsoDraft;
+begin
+  Repository := TInMemoryQsoRepository.Create;
+  UseCase := TLogQsoUseCase.Create(Repository, TFixedClock.Create(1),
+    TSequentialIdGenerator.Create('race-'));
+  DispatcherObject := TCapacityRaceDispatcher.Create;
+  Dispatcher := DispatcherObject;
+  QueueObject := TQueuedQsoSubmission.Create(UseCase, Dispatcher, 1);
+  Submission := QueueObject;
+  Pump := QueueObject;
+  ObserverObject := TRecordingSubmissionObserver.Create;
+  Observer := ObserverObject;
+  Draft.Callsign := 'JA1ZLO';
+  Draft.FrequencyHz := 7000000;
+  Draft.Mode := emCW;
+  Draft.SentExchange := '599 001';
+  Draft.ReceivedExchange := '599 002';
+
+  Submission.Submit(Draft, Observer);
+  AssertTrue(Pump.ProcessNext,
+    'capacity race retains a completion after persistence');
+  AssertTrue(Repository.Count = 1,
+    'capacity race persists the QSO exactly once');
+  AssertTrue(Pump.PendingCount = 1,
+    'undelivered completion remains visible as pending work');
+  AssertTrue(ObserverObject.Count = 0,
+    'observer is not called until dispatch succeeds');
+  RejectedObserverObject := TRecordingSubmissionObserver.Create;
+  RejectedObserver := RejectedObserverObject;
+  Submission.Submit(Draft, RejectedObserver);
+  AssertTrue(RejectedObserverObject.Count = 1,
+    'retained completion continues to consume bounded capacity');
+  AssertTrue(RejectedObserverObject.LastResult.Error = lqeQueueFull,
+    'capacity reservation rejects new work explicitly');
+
+  AssertTrue(Pump.ProcessNext, 'retained completion is retried');
+  AssertTrue(Repository.Count = 1,
+    'completion retry never repeats the durable use case');
+  AssertTrue(Pump.PendingCount = 0,
+    'successful retry removes retained completion');
+  AssertTrue(ObserverObject.Count = 1,
+    'observer receives exactly one completion');
+  AssertTrue(ObserverObject.LastResult.Success,
+    'retained successful result is preserved');
+  AssertTrue(DispatcherObject.DispatchCount = 2,
+    'dispatcher observes the failed and successful attempts');
+
+  Observer := nil;
+  RejectedObserver := nil;
+  Pump := nil;
+  Submission := nil;
+  Dispatcher := nil;
+  UseCase := nil;
+  Repository := nil;
+end;
+
 procedure TestSubmissionWorkerAndMainThreadCompletion;
 const
   CompletionTimeoutMs = 2000;
@@ -1355,6 +1453,7 @@ begin
     TestRuntimeAdapters;
     TestQsoEntryPresenter;
     TestBoundedSubmissionQueue;
+    TestCompletionCapacityRaceDoesNotDuplicateQso;
     TestSubmissionWorkerAndMainThreadCompletion;
     TestCompletionNotificationCoalescing;
     TestStructuredDiagnosticsAndHealth;

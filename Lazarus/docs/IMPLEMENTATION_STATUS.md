@@ -39,12 +39,24 @@ Free Pascalを実行できない場合はAcceptedと判定しない。
 |CW|Not started|設計文書のみ|keying、sidetone、decoder、latency/PTT safety testがない|
 |Contest logging|Not started|なし|dupe/point/multi/serial/score/export互換がない|
 
+## 4. コード監査で修正した事項
 ## 4. 今回のコード監査で修正した事項
 
 scalar RTTY generatorはbit境界を `ceil(bit * sample_rate / baud)` で切り替える。一方、decoderは従来
 `floor`を使っていたため、fractional baudでは各window先頭へ直前bitのsampleを1個含める場合があった。
 clean signalでは相関利得に隠れていたが、低SNRや短いsymbolではBER悪化要因になる。この境界をgeneratorと同じ
 `ceil`へ統一した。
+
+submission worker は completion queue の空きを確認してから永続化していたが、確認と投入は
+atomic ではない。別 producer が間へ投入すると、QSO は永続化済みなのに completion を失い、
+UI が `submitting` のまま残る可能性があった。さらに単純な再試行は QSO を二重登録する。
+永続化結果を submission queue 内に保持し、completion 投入だけを再試行する状態へ変更した。
+保持中の completion と worker が取り出した in-flight item も queue 容量と `PendingCount` に含め、
+取り出し直後に新規 submit が割り込んでも bounded queue 契約を維持する。
+
+completion notifier は queue 投入後に UI wake-up を行う。notifier の例外が worker まで伝播すると、
+completion 自体は queue にあるにもかかわらず worker が異常終了し得たため、wake-up を best-effort
+境界とし、投入済み completion の所有権を変えないようにした。
 
 ## 5. 性能に関する結論
 

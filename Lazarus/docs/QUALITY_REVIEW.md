@@ -1,5 +1,6 @@
 # 実装品質レビュー
 
+最終更新: 2026-09-21
 最終更新: 2026-09-13
 
 ## 1. レビュー範囲と判断基準
@@ -31,10 +32,12 @@ LCL composition root、テスト、CI である。評価軸は次のとおり。
 |Critical|並行性|memory repository の一覧・索引へ worker と UI が同時アクセスできた|修正済み。全公開操作を critical section で保護し、clone/snapshot も lock 内で生成する|
 |Critical|永続化|writer に payload 上限がなく、reader が拒否する journal を生成できた|修正済み。serialize 後、書き込み前に 1 MiB 上限を検証する|
 |Critical|health|単一のlast componentだけを保持していたため、別componentの復旧が未解決障害を隠す可能性があった|修正済み。固定上限のcomponent別状態を保持し、最も重い未解決状態を集約する|
+|Critical|完了通知|capacity確認後にqueueが満杯になると、永続化済みQSOの完了通知を失い、再実行では二重登録となる|修正済み。永続化結果を保持し、use caseを再実行せず通知だけを再試行する。競合を再現するcontract testを追加|
 |High|永続化|OS/process crash を模した kill 試験がなく、`FileFlush` の媒体保証は OS 依存|一部対応。append各段階のfault injectionと全tail切断位置を検証済み。Windows/macOS実機の強制終了・電源断相当試験は未完|
 |High|エラー処理|repository例外が単一の内部エラーへ集約され、原因分類がなかった|対応済み。利用者には再試行可能なstorage分類、診断にはboundedな例外classとcomponent/codeを渡す|
 |High|ライフサイクル|worker service の `Submit` と `Shutdown` を複数 thread から同時実行する契約がない|制約を維持。当面 UI owner のみが呼ぶ。CAT/network producer 導入前に状態 machine と同期を追加する|
 |High|例外安全|worker thread constructor失敗時に部分構築objectのdestructorがnil workerをjoinする可能性があった|修正済み。shutdownはworker/pumpの割当を確認し、部分構築からも安全に解放する|
+|High|例外安全|queue投入後のUI notifier例外がworkerを停止させ得た|修正済み。wake-upはbest-effortとし、投入済みcompletionはdrain可能なまま維持する|
 |High|データモデル|contest、band、operator、station、serial、dupe/multiplier 情報が QSO にない|計画済み。contest rule model 確定後に versioned migration として追加する|
 |Medium|入力|exchange 長、ID 長、timestamp 範囲の domain 制約がない|未完。contest ごとの制約と journal 全体の安全上限を分ける|
 |Medium|性能|journal 起動時は全 record を object として再生するため、大規模 log で起動時間と RAM が線形増加する|未完。測定後に snapshot/checkpoint または SQLite read model を選定する|
