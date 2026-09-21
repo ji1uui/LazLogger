@@ -32,6 +32,9 @@ connection snapshot、structured diagnosticsを提供します。実際に`rigct
 child-processのlazy start、再利用、timeout時stop、次回restartを行うlifecycle controllerと、Free Pascal
 `TProcess`を用いたWindows/macOS共通のstdin/stdout pipe sessionまで実装済みです。fake executableとの
 実process contractをCIで検証し、次のsliceでは実際の`rigctld` version/support matrixと終了不能processのkill policyを固定します。
+child-processのlazy start、再利用、timeout時stop、次回restartを行うlifecycle controllerまで実装済みです。
+Windows/macOSで実際にprocessとpipeを生成するsession adapterは次のsliceです。
+Windows/macOS child-process transportは次のsliceであり、現時点ではfake transportによるcontract testだけです。
 
 ## 2. モードモデル
 
