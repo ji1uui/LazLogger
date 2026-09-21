@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectOptions>
+    <Version Value="12"/>
+    <General>
+      <Flags>
+        <MainUnitHasCreateFormStatements Value="True"/>
+        <MainUnitHasTitleStatement Value="False"/>
+      </Flags>
+      <SessionStorage Value="InProjectDir"/>
+      <Title Value="zLog Lazarus Edition"/>
+      <UseAppBundle Value="True"/>
+    </General>
+    <BuildModes Count="1">
+      <Item1 Name="Default" Default="True"/>
+    </BuildModes>
+    <SearchPaths>
+      <IncludeFiles Value="$(ProjOutDir)"/>
+      <OtherUnitFiles Value="../src/domain;../src/application;../src/infrastructure;../src/presentation"/>
+      <UnitOutputDirectory Value="../build/lcl/$(TargetCPU)-$(TargetOS)"/>
+    </SearchPaths>
+    <Linking>
+      <Options>
+        <Win32>
+          <GraphicApplication Value="True"/>
+        </Win32>
+      </Options>
+    </Linking>
+  </ProjectOptions>
+  <CompilerOptions>
+    <Version Value="11"/>
+    <Target>
+      <Filename Value="../build/zlog-gui"/>
+    </Target>
+    <SearchPaths>
+      <IncludeFiles Value="$(ProjOutDir)"/>
+      <OtherUnitFiles Value="../src/domain;../src/application;../src/infrastructure;../src/presentation"/>
+      <UnitOutputDirectory Value="../build/lcl/$(TargetCPU)-$(TargetOS)"/>
+    </SearchPaths>
+    <Parsing>
+      <SyntaxOptions>
+        <SyntaxMode Value="ObjFPC"/>
+      </SyntaxOptions>
+    </Parsing>
+    <CodeGeneration>
+      <SmartLinkUnit Value="True"/>
+    </CodeGeneration>
+    <Linking>
+      <Debugging>
+        <GenerateDebugInfo Value="True"/>
+      </Debugging>
+      <LinkSmart Value="True"/>
+    </Linking>
+  </CompilerOptions>
+  <Debugging>
+    <Exceptions Count="3">
+      <Item1 Name="EAbort"/>
+      <Item2 Name="ECodetoolError"/>
+      <Item3 Name="EFOpenError"/>
+    </Exceptions>
+  </Debugging>
+  <Units Count="2">
+    <Unit0>
+      <Filename Value="zlog_gui.lpr"/>
+      <IsPartOfProject Value="True"/>
+      <UnitName Value="ZLogLazarusGui"/>
+    </Unit0>
+    <Unit1>
+      <Filename Value="zlog.gui.mainform.pas"/>
+      <IsPartOfProject Value="True"/>
+      <UnitName Value="ZLog.Gui.MainForm"/>
+    </Unit1>
+  </Units>
+</CONFIG>
