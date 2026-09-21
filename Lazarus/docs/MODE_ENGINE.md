@@ -155,6 +155,12 @@ producer/consumerが所有するindexはinterlocked operationでpublishし、hot
 overflowはblock全体をrejectして既存sampleを保持し、high-water markとoverrun countをsnapshotで取得できます。
 実audio callbackへ接続する前にCI benchmarkと長時間SPSC stress testのbaselineを固定します。
 
+RTTYのscalar referenceとして、phase-continuous AFSK generatorとmark/space相関検波器を追加済みです。
+sample境界は`sample_rate / baud`を整数へ丸めて固定せず、bitごとにfractional boundaryを計算するため、標準45.45 baudを
+長時間生成してもsymbol clockの丸め誤差が累積しません。clean synthetic waveformのbit完全一致、confidence、truncation、
+Nyquist validationをunit testで固定し、10,000 bitのBERとscalar throughputをCI artifactへ保存します。
+これはtiming既知の基準実装であり、実受信向けclock recovery、AFC、filter、ITA2 framingは次のsliceです。
+
 ## 7. Audio とリアルタイム設計
 
 `IAudioInput` / `IAudioOutput` は timestamp 付き frame を扱い、Windows/macOS の具体 API を platform adapter に隔離します。

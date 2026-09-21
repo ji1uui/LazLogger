@@ -87,6 +87,12 @@ jobs:
         shell: bash
         run: make benchmark-audio | tee build/audio-ring-benchmark.json
 
+      - name: Measure scalar RTTY reference baseline
+        if: runner.os == 'Linux'
+        working-directory: Lazarus
+        shell: bash
+        run: make benchmark-rtty | tee build/rtty-reference-benchmark.json
+
       - name: Upload benchmark result
         if: runner.os == 'Linux'
         uses: actions/upload-artifact@v4
@@ -96,3 +102,4 @@ jobs:
             Lazarus/build/journal-benchmark.json
             Lazarus/build/repository-benchmark.json
             Lazarus/build/audio-ring-benchmark.json
+            Lazarus/build/rtty-reference-benchmark.json

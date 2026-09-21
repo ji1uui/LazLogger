@@ -5,11 +5,13 @@ program ZLogUnitTests;
 
 uses
   {$IFDEF UNIX}cthreads,{$ENDIF}
+  SysUtils, Classes, DateUtils, Math, ZLog.Domain.Types, ZLog.Domain.Qso,
   SysUtils, Classes, DateUtils, ZLog.Domain.Types, ZLog.Domain.Qso,
   ZLog.Application.LogQso, ZLog.Application.QueryQsos,
   ZLog.Application.Diagnostics,
   ZLog.Application.Rig,
   ZLog.Application.Audio,
+  ZLog.Application.Rtty,
   ZLog.Infrastructure.Memory,
   ZLog.Infrastructure.Deterministic, ZLog.Infrastructure.Journal,
   ZLog.Infrastructure.Runtime, ZLog.Application.Submission,
@@ -19,6 +21,7 @@ uses
   ZLog.Infrastructure.RigctldProcess,
   ZLog.Infrastructure.RigWorker,
   ZLog.Infrastructure.AudioRing,
+  ZLog.Infrastructure.RttyReference,
   ZLog.Presentation.QsoEntry,
   ZLog.Presentation.RecentQsos;
 
@@ -1221,6 +1224,44 @@ begin
   Queue := nil;
 end;
 
+procedure TestScalarRttyReference;
+const
+  SourceBits: array[0..15] of Byte =
+    (1, 0, 1, 1, 0, 0, 1, 0, 1, 0, 0, 1, 1, 1, 0, 1);
+var
+  Profile: TRttyProfile;
+  Generator: IRttyWaveformGenerator;
+  Demodulator: IRttyBitDemodulator;
+  Samples: TSingleArray;
+  Decoded: TByteArray;
+  Confidence: TSingleArray;
+  Index: Integer;
+begin
+  AssertTrue(TRttyProfile.TryCreate(8000, 45.45, 2125, 2295, False,
+    Profile), 'standard fractional-baud RTTY profile is valid');
+  Generator := TScalarRttyWaveformGenerator.Create(Profile);
+  Demodulator := TScalarRttyBitDemodulator.Create(Profile);
+  Samples := Generator.Generate(SourceBits);
+  AssertTrue(Length(Samples) = Ceil(Length(SourceBits) * 8000 / 45.45),
+    'RTTY generator uses a fractional symbol accumulator');
+  AssertTrue(Demodulator.Decode(Samples, Length(SourceBits), Decoded,
+    Confidence), 'scalar RTTY detector accepts the generated waveform');
+  AssertTrue(Length(Decoded) = Length(SourceBits),
+    'RTTY detector returns every expected bit');
+  for Index := Low(SourceBits) to High(SourceBits) do
+  begin
+    AssertTrue(Decoded[Index] = SourceBits[Index],
+      'clean RTTY waveform decodes without bit errors');
+    AssertTrue(Confidence[Index] > 0.5,
+      'clean RTTY bit has useful normalized confidence');
+  end;
+  AssertTrue(not Demodulator.Decode(Slice(Samples, Length(Samples) - 1),
+    Length(SourceBits), Decoded, Confidence),
+    'RTTY detector rejects a truncated waveform');
+  AssertTrue(not TRttyProfile.TryCreate(8000, 45.45, 5000, 5170, False,
+    Profile), 'RTTY profile rejects tones above Nyquist');
+end;
+
 procedure TestRigctldContractAndBackoff;
 var
   TransportObject: TFakeRigctldTransport;
@@ -1322,6 +1363,7 @@ begin
     TestRealRigctldProcessSession;
     TestRigWorkerKeepsIoOffCaller;
     TestBoundedAudioRing;
+    TestScalarRttyReference;
     WriteLn('PASS: ', TestsRun, ' assertions');
   except
     on E: Exception do

@@ -132,6 +132,12 @@ retry deadlineまではevent waitするためbusy pollingせず、shutdownはwor
 CW/RTTY engineの最初の性能sliceとして、audio callbackとDSP workerの間にpreallocatedなlock-free SPSC ringを
 追加しました。block単位のpush/popではallocationとlockを行わず、容量超過は部分書込せずrejectしてoverrun counterへ
 記録します。wrap-around、FIFO、overflow不変条件をunit testで固定し、256 sample blockを100,000回往復する
+`make benchmark-audio`のJSONをCI artifactへ追加しました。
+
+RTTY reference sliceでは45.45 baudのfractional symbol boundaryを扱うphase-continuous AFSK generatorと、mark/spaceを
+直接相関するscalar bit detectorを追加しました。profileはsample rate、baud、tones、reverseを検証し、巨大waveformには
+16 Mi sampleの安全上限を適用します。clean synthetic 10,000 bitのBER、throughput、confidenceを`make benchmark-rtty`で
+計測します。次はAWGN/frequency offset corpus、timing recovery、AFC、ITA2 encoder/decoderです。
 `make benchmark-audio`のJSONをCI artifactへ追加しました。次はsynthetic RTTY generatorとscalar reference demodulatorです。
 OS固有のprocess APIと標準入出力pipeを包むsessionは未実装であり、次のsliceでWindows/macOS adapterを追加します。
 現在のtransportはfake contractであり、次はWindows/macOS共通のchild-process lifecycle、標準入出力、kill/restartを実装します。

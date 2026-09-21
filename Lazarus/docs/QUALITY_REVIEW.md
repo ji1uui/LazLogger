@@ -81,6 +81,7 @@ benchmark の閾値はハードウェア差が大きいため、まず CI artifa
 3. structured diagnostics、health state、利用者が再試行可能なエラー分類を追加する。（完了）
 4. Hamlib adapter は別 process 境界を基本とし、timeout、再接続、最新値優先 queue を実装する。（protocol、process/pipe session、fake executable contract完了。実rigctld matrixは未完）
 5. CW/RTTY engine は audio/device thread と DSP worker を UI から分離し、固定長 buffer pool と
+   lock-free または bounded ring buffer を技術検証してから統合する。（SPSC ring、fractional-baud AFSK generator、scalar detector完了。device/ITA2/timing recovery未完）
    lock-free または bounded ring buffer を技術検証してから統合する。（SPSC audio ringとbenchmark完了、device/DSP未完）
 4. Hamlib adapter は別 process 境界を基本とし、timeout、再接続、最新値優先 queue を実装する。（protocol clientとprocess lifecycle controller完了、OS別pipe sessionは未完）
 4. Hamlib adapter は別 process 境界を基本とし、timeout、再接続、最新値優先 queue を実装する。（protocol clientとfake transport完了、OS別process transportは未完）
