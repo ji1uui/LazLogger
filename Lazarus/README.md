@@ -138,3 +138,6 @@ RTTY reference sliceでは45.45 baudのfractional symbol boundaryを扱うphase-
 直接相関するscalar bit detectorを追加しました。profileはsample rate、baud、tones、reverseを検証し、巨大waveformには
 16 Mi sampleの安全上限を適用します。clean synthetic 10,000 bitのBER、throughput、confidenceを`make benchmark-rtty`で
 計測します。次はAWGN/frequency offset corpus、timing recovery、AFC、ITA2 encoder/decoderです。
+`make benchmark-audio`のJSONをCI artifactへ追加しました。次はsynthetic RTTY generatorとscalar reference demodulatorです。
+OS固有のprocess APIと標準入出力pipeを包むsessionは未実装であり、次のsliceでWindows/macOS adapterを追加します。
+現在のtransportはfake contractであり、次はWindows/macOS共通のchild-process lifecycle、標準入出力、kill/restartを実装します。

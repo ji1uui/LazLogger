@@ -6,6 +6,7 @@ program ZLogUnitTests;
 uses
   {$IFDEF UNIX}cthreads,{$ENDIF}
   SysUtils, Classes, DateUtils, Math, ZLog.Domain.Types, ZLog.Domain.Qso,
+  SysUtils, Classes, DateUtils, ZLog.Domain.Types, ZLog.Domain.Qso,
   ZLog.Application.LogQso, ZLog.Application.QueryQsos,
   ZLog.Application.Diagnostics,
   ZLog.Application.Rig,
@@ -181,6 +182,7 @@ end;
 procedure TCountingCompletionNotifier.NotifyCompletionAvailable;
 begin
   Inc(FCount);
+  FResult := AResult;
 end;
 
 function TFailingLogQsoUseCase.Execute(
