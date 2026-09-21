@@ -149,6 +149,9 @@ begin
   SetLength(AConfidence, AExpectedBitCount);
   for BitIndex := 0 to AExpectedBitCount - 1 do
   begin
+    FirstSample := Ceil((Double(BitIndex) * FProfile.SampleRate) /
+      FProfile.Baud);
+    EndSample := Ceil((Double(BitIndex + 1) * FProfile.SampleRate) /
     FirstSample := Floor((Double(BitIndex) * FProfile.SampleRate) /
       FProfile.Baud);
     EndSample := Floor((Double(BitIndex + 1) * FProfile.SampleRate) /

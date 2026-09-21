@@ -13,6 +13,7 @@ Windows と macOS を同じドメインモデルで支える **新規実装** �
 * [実施ロードマップ](docs/ROADMAP.md) — フェーズ、完了条件、リスク、意思決定ゲート
 * [開発実行計画](docs/DEVELOPMENT_PLAN.md) — 実装順、反復ごとの検証、品質ゲート、進捗管理
 * [実装品質レビュー](docs/QUALITY_REVIEW.md) — 堅牢性、効率性、保守性の監査結果と次段階の品質ゲート
+* [実装進捗監査](docs/IMPLEMENTATION_STATUS.md) — 実装済み範囲、検証証跡、未達ゲート、次の優先順位
 
 ## 想定ツールチェーン
 
