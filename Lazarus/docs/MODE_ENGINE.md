@@ -33,6 +33,9 @@ child-processのlazy start、再利用、timeout時stop、次回restartを行う
 `TProcess`を用いたWindows/macOS共通のstdin/stdout pipe sessionまで実装済みです。fake executableとの
 実process contractをCIで検証し、次のsliceでは実際の`rigctld` version/support matrixと終了不能processのkill policyを固定します。
 protocol clientは`TRigWorkerService`の専用threadで駆動し、UI threadはcommandの最新値更新とevent通知だけを行います。
+child-processのlazy start、再利用、timeout時stop、次回restartを行うlifecycle controllerまで実装済みです。
+Windows/macOSで実際にprocessとpipeを生成するsession adapterは次のsliceです。
+Windows/macOS child-process transportは次のsliceであり、現時点ではfake transportによるcontract testだけです。
 
 ## 2. モードモデル
 

@@ -1,6 +1,7 @@
 # 実装品質レビュー
 
 最終更新: 2026-09-21
+最終更新: 2026-09-13
 
 ## 1. レビュー範囲と判断基準
 
@@ -84,6 +85,11 @@ benchmark の閾値はハードウェア差が大きいため、まず CI artifa
 4. Hamlib adapter は別 process 境界を基本とし、timeout、再接続、最新値優先 queue を実装する。（protocol、process/pipe session、fake executable contract完了。実rigctld matrixは未完）
 5. CW/RTTY engine は audio/device thread と DSP worker を UI から分離し、固定長 buffer pool と
    lock-free または bounded ring buffer を技術検証してから統合する。（SPSC ring、fractional-baud AFSK generator、scalar detector完了。device/ITA2/timing recovery未完）
+   lock-free または bounded ring buffer を技術検証してから統合する。（SPSC audio ringとbenchmark完了、device/DSP未完）
+4. Hamlib adapter は別 process 境界を基本とし、timeout、再接続、最新値優先 queue を実装する。（protocol clientとprocess lifecycle controller完了、OS別pipe sessionは未完）
+4. Hamlib adapter は別 process 境界を基本とし、timeout、再接続、最新値優先 queue を実装する。（protocol clientとfake transport完了、OS別process transportは未完）
+5. CW/RTTY engine は audio/device thread と DSP worker を UI から分離し、固定長 buffer pool と
+   lock-free または bounded ring buffer を技術検証してから統合する。
 
 Hamlib/CW/RTTY を先に GUI へ直結すると、device 停止が UI 停止へ波及する。したがって、上記の
 fault injection と health model を先に確立することを次 phase への必須条件とする。

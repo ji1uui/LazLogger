@@ -26,6 +26,10 @@ type
     function FindComponent(const AComponent: string;
       const ACreate: Boolean): Integer;
     procedure RecalculateStatus;
+  private
+    FLock: TCriticalSection;
+    FState: THealthSnapshot;
+    class function BoundedText(const AValue: string): string; static;
   public
     constructor Create;
     destructor Destroy; override;
@@ -115,18 +119,23 @@ begin
   FLock.Acquire;
   try
     ComponentIndex := FindComponent(AComponent, True);
+begin
+  FLock.Acquire;
+  try
     case ASeverity of
       dsWarning:
         begin
           Inc(FState.WarningCount);
           if ComponentIndex >= 0 then
             FComponents[ComponentIndex].Status := hsDegraded;
+          FState.Status := hsDegraded;
         end;
       dsError:
         begin
           Inc(FState.ErrorCount);
           if ComponentIndex >= 0 then
             FComponents[ComponentIndex].Status := hsDegraded;
+          FState.Status := hsDegraded;
         end;
       dsCritical:
         begin
@@ -141,6 +150,12 @@ begin
       FComponents[ComponentIndex].Message := BoundedText(AMessage);
     end;
     RecalculateStatus;
+          FState.Status := hsFailed;
+        end;
+    end;
+    FState.LastCode := ACode;
+    FState.LastComponent := BoundedText(AComponent);
+    FState.LastMessage := BoundedText(AMessage);
   finally
     FLock.Release;
   end;
@@ -159,6 +174,16 @@ begin
     FComponents[ComponentIndex].Code := dcNone;
     FComponents[ComponentIndex].Message := '';
     RecalculateStatus;
+begin
+  FLock.Acquire;
+  try
+    if (FState.Status <> hsHealthy) and
+      (FState.LastComponent <> BoundedText(AComponent)) then
+      Exit;
+    FState.Status := hsHealthy;
+    FState.LastCode := dcNone;
+    FState.LastComponent := BoundedText(AComponent);
+    FState.LastMessage := '';
   finally
     FLock.Release;
   end;

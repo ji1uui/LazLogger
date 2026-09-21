@@ -72,6 +72,12 @@ begin
     until not Assigned(Item);
   FreeAndNil(FLock);
   FreeAndNil(FQueue);
+  repeat
+    Item := ExtractFirst;
+    Item.Free;
+  until not Assigned(Item);
+  FLock.Free;
+  FQueue.Free;
   FNotifier := nil;
   inherited Destroy;
 end;
@@ -112,6 +118,7 @@ begin
       { The completion is already owned by this queue. A UI wake-up failure
         must not terminate the worker or make it retry the durable command. }
     end;
+    FNotifier.NotifyCompletionAvailable;
 end;
 
 function TQueuedCompletionDispatcher.HasCapacity: Boolean;

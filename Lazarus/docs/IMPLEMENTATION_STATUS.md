@@ -40,6 +40,7 @@ Free Pascalを実行できない場合はAcceptedと判定しない。
 |Contest logging|Not started|なし|dupe/point/multi/serial/score/export互換がない|
 
 ## 4. コード監査で修正した事項
+## 4. 今回のコード監査で修正した事項
 
 scalar RTTY generatorはbit境界を `ceil(bit * sample_rate / baud)` で切り替える。一方、decoderは従来
 `floor`を使っていたため、fractional baudでは各window先頭へ直前bitのsampleを1個含める場合があった。
