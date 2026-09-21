@@ -29,6 +29,8 @@ User intent ---------->| Mode session       |<-------- QSO / macro / contest con
 `IRigCommandPort` / `IRigWorkPump` と `rigctld` protocol clientまでを実装済みです。UI側の要求は
 transport I/Oを行わず、未送信周波数を最新値で置換します。protocol clientはtimeout、指数backoff、
 connection snapshot、structured diagnosticsを提供します。実際に`rigctld`を起動・監視する
+child-processのlazy start、再利用、timeout時stop、次回restartを行うlifecycle controllerまで実装済みです。
+Windows/macOSで実際にprocessとpipeを生成するsession adapterは次のsliceです。
 Windows/macOS child-process transportは次のsliceであり、現時点ではfake transportによるcontract testだけです。
 
 ## 2. モードモデル

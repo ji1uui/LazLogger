@@ -18,6 +18,26 @@ type
       out AResponse: string): TRigctldTransportResult;
   end;
 
+  IRigctldProcessSession = interface
+    ['{21717A04-B1E8-45B6-865A-E120C8E92966}']
+    { OS adapter owns the child process and its stdin/stdout pipes. }
+    function Start: Boolean;
+    procedure Stop;
+    function IsRunning: Boolean;
+    function Exchange(const ACommand: string; const ATimeoutMs: Integer;
+      out AResponse: string): TRigctldTransportResult;
+  end;
+
+  TRigctldProcessTransport = class(TInterfacedObject, IRigctldTransport)
+  private
+    FSession: IRigctldProcessSession;
+  public
+    constructor Create(const ASession: IRigctldProcessSession);
+    destructor Destroy; override;
+    function Execute(const ACommand: string; const ATimeoutMs: Integer;
+      out AResponse: string): TRigctldTransportResult;
+  end;
+
   TRigctldClient = class(TInterfacedObject, IRigCommandPort, IRigWorkPump)
   private
     FTransport: IRigctldTransport;
@@ -52,6 +72,34 @@ const
   MaximumFrequencyHz = Int64(300000000000);
   InitialRetryDelayMs = 250;
   MaximumRetryDelayMs = 8000;
+
+constructor TRigctldProcessTransport.Create(
+  const ASession: IRigctldProcessSession);
+begin
+  inherited Create;
+  if not Assigned(ASession) then
+    raise EArgumentNilException.Create('ASession');
+  FSession := ASession;
+end;
+
+destructor TRigctldProcessTransport.Destroy;
+begin
+  if Assigned(FSession) and FSession.IsRunning then
+    FSession.Stop;
+  FSession := nil;
+  inherited Destroy;
+end;
+
+function TRigctldProcessTransport.Execute(const ACommand: string;
+  const ATimeoutMs: Integer; out AResponse: string): TRigctldTransportResult;
+begin
+  AResponse := '';
+  if not FSession.IsRunning and not FSession.Start then
+    Exit(rtrDisconnected);
+  Result := FSession.Exchange(ACommand, ATimeoutMs, AResponse);
+  if Result <> rtrSuccess then
+    FSession.Stop;
+end;
 
 constructor TRigctldClient.Create(const ATransport: IRigctldTransport;
   const ADiagnostics: IDiagnosticSink; const ATimeoutMs: Integer);

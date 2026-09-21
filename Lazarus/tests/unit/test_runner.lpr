@@ -94,6 +94,30 @@ type
     property LastTimeoutMs: Integer read FLastTimeoutMs;
   end;
 
+  TFakeRigctldProcessSession = class(TInterfacedObject,
+    IRigctldProcessSession)
+  private
+    FRunning: Boolean;
+    FStartAllowed: Boolean;
+    FStartCount: Integer;
+    FStopCount: Integer;
+    FExchangeCount: Integer;
+    FNextResult: TRigctldTransportResult;
+  public
+    constructor Create;
+    function Start: Boolean;
+    procedure Stop;
+    function IsRunning: Boolean;
+    function Exchange(const ACommand: string; const ATimeoutMs: Integer;
+      out AResponse: string): TRigctldTransportResult;
+    property StartAllowed: Boolean read FStartAllowed write FStartAllowed;
+    property NextResult: TRigctldTransportResult read FNextResult
+      write FNextResult;
+    property StartCount: Integer read FStartCount;
+    property StopCount: Integer read FStopCount;
+    property ExchangeCount: Integer read FExchangeCount;
+  end;
+
   TRecordingRecentQsosView = class(TInterfacedObject, IRecentQsosView)
   private
     FRenderCount: Integer;
@@ -175,6 +199,39 @@ procedure TFakeRigctldTransport.Configure(
 begin
   FNextResult := AResult;
   FNextResponse := AResponse;
+end;
+
+constructor TFakeRigctldProcessSession.Create;
+begin
+  inherited Create;
+  FStartAllowed := True;
+  FNextResult := rtrSuccess;
+end;
+
+function TFakeRigctldProcessSession.Start: Boolean;
+begin
+  Inc(FStartCount);
+  Result := FStartAllowed;
+  FRunning := Result;
+end;
+
+procedure TFakeRigctldProcessSession.Stop;
+begin
+  Inc(FStopCount);
+  FRunning := False;
+end;
+
+function TFakeRigctldProcessSession.IsRunning: Boolean;
+begin
+  Result := FRunning;
+end;
+
+function TFakeRigctldProcessSession.Exchange(const ACommand: string;
+  const ATimeoutMs: Integer; out AResponse: string): TRigctldTransportResult;
+begin
+  Inc(FExchangeCount);
+  AResponse := 'RPRT 0';
+  Result := FNextResult;
 end;
 
 procedure TRecordingSubmissionObserver.SubmissionCompleted(
@@ -985,6 +1042,17 @@ begin
   AssertTrue(Health.Status = hsHealthy, 'successful recovery restores health');
   AssertTrue(Health.ErrorCount = 1, 'recovery preserves cumulative counters');
 
+  Diagnostics.Report(dcRigTransportFailed, dsCritical, 'hamlib-rigctld',
+    'offline');
+  Diagnostics.Report(dcQsoPersistenceFailed, dsError, 'qso-persistence',
+    'disk');
+  Diagnostics.ReportHealthy('qso-persistence');
+  Health := HealthQuery.Snapshot;
+  AssertTrue(Health.Status = hsFailed,
+    'recovering one component does not hide another failure');
+  AssertTrue(Health.LastComponent = 'hamlib-rigctld',
+    'health retains the remaining failed component');
+
   Pump := nil;
   Submission := nil;
   Dispatcher := nil;
@@ -992,6 +1060,43 @@ begin
   Observer := nil;
   Diagnostics := nil;
   HealthQuery := nil;
+end;
+
+procedure TestRigctldProcessLifecycle;
+var
+  SessionObject: TFakeRigctldProcessSession;
+  Session: IRigctldProcessSession;
+  Transport: IRigctldTransport;
+  Response: string;
+begin
+  SessionObject := TFakeRigctldProcessSession.Create;
+  Session := SessionObject;
+  Transport := TRigctldProcessTransport.Create(Session);
+  AssertTrue(Transport.Execute('f', 100, Response) = rtrSuccess,
+    'process transport starts and exchanges a command');
+  AssertTrue(SessionObject.StartCount = 1, 'child process starts lazily');
+  AssertTrue(SessionObject.ExchangeCount = 1, 'command is exchanged once');
+  AssertTrue(Transport.Execute('f', 100, Response) = rtrSuccess,
+    'running child process is reused');
+  AssertTrue(SessionObject.StartCount = 1, 'healthy process is not restarted');
+
+  SessionObject.NextResult := rtrTimeout;
+  AssertTrue(Transport.Execute('f', 100, Response) = rtrTimeout,
+    'process timeout reaches the protocol client');
+  AssertTrue(SessionObject.StopCount = 1, 'timed-out child is stopped');
+  SessionObject.NextResult := rtrSuccess;
+  AssertTrue(Transport.Execute('f', 100, Response) = rtrSuccess,
+    'next command restarts the stopped child');
+  AssertTrue(SessionObject.StartCount = 2, 'child restart is observable');
+
+  SessionObject.Stop;
+  SessionObject.StartAllowed := False;
+  AssertTrue(Transport.Execute('f', 100, Response) = rtrDisconnected,
+    'start failure is reported as disconnected');
+  AssertTrue(SessionObject.ExchangeCount = 4,
+    'start failure performs no pipe exchange');
+  Transport := nil;
+  Session := nil;
 end;
 
 procedure TestRigctldContractAndBackoff;
@@ -1091,6 +1196,7 @@ begin
     TestCompletionNotificationCoalescing;
     TestStructuredDiagnosticsAndHealth;
     TestRigctldContractAndBackoff;
+    TestRigctldProcessLifecycle;
     WriteLn('PASS: ', TestsRun, ' assertions');
   except
     on E: Exception do
