@@ -15,6 +15,7 @@ uses
   ZLog.Infrastructure.SubmissionQueue, ZLog.Infrastructure.CompletionQueue,
   ZLog.Infrastructure.SubmissionWorker, ZLog.Infrastructure.Health,
   ZLog.Infrastructure.Rigctld,
+  ZLog.Infrastructure.RigctldProcess,
   ZLog.Presentation.QsoEntry,
   ZLog.Presentation.RecentQsos;
 
@@ -1099,6 +1100,41 @@ begin
   Session := nil;
 end;
 
+function FakeRigctldExecutable: string;
+begin
+  Result := IncludeTrailingPathDelimiter(ExtractFilePath(ParamStr(0))) +
+    'fake-rigctld';
+  {$IFDEF WINDOWS}
+  Result := Result + '.exe';
+  {$ENDIF}
+end;
+
+procedure TestRealRigctldProcessSession;
+var
+  Session: IRigctldProcessSession;
+  Transport: IRigctldTransport;
+  Response: string;
+begin
+  AssertTrue(FileExists(FakeRigctldExecutable),
+    'fake rigctld executable is built beside the test runner');
+  Session := TRigctldProcessSession.Create(FakeRigctldExecutable);
+  Transport := TRigctldProcessTransport.Create(Session);
+  AssertTrue(Transport.Execute('f', 1000, Response) = rtrSuccess,
+    'real pipe session reads a rigctld response');
+  AssertTrue(Response = '7100000', 'real pipe session preserves one response line');
+  AssertTrue(Transport.Execute('F 14000000', 1000, Response) = rtrSuccess,
+    'real pipe session writes a set-frequency command');
+  AssertTrue(Response = 'RPRT 0', 'set-frequency acknowledgement is read');
+
+  AssertTrue(Transport.Execute('delay', 20, Response) = rtrTimeout,
+    'real pipe session enforces its response timeout');
+  AssertTrue(Transport.Execute('f', 1000, Response) = rtrSuccess,
+    'transport restarts the child after timeout');
+  AssertTrue(Response = '7100000', 'restarted child has a clean response buffer');
+  Transport := nil;
+  Session := nil;
+end;
+
 procedure TestRigctldContractAndBackoff;
 var
   TransportObject: TFakeRigctldTransport;
@@ -1197,6 +1233,7 @@ begin
     TestStructuredDiagnosticsAndHealth;
     TestRigctldContractAndBackoff;
     TestRigctldProcessLifecycle;
+    TestRealRigctldProcessSession;
     WriteLn('PASS: ', TestsRun, ' assertions');
   except
     on E: Exception do

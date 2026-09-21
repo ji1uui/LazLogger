@@ -121,5 +121,8 @@ Hamlibの最初のsliceとして、UIから即時に戻る`IRigCommandPort`と�
 追加しました。周波数変更は未送信の古い値を最新値で置換するためqueue growthを起こさず、timeout時は250 msから8秒までの
 指数backoffで同じcommandを保持します。応答成功時だけread modelを更新し、接続状態とdiagnostics healthを復旧します。
 child-process transportはlazy start、正常時のprocess再利用、timeout時のstop、次回commandでのrestartを管理します。
+Free Pascal `TProcess`による共通sessionはstdin/stdoutをline protocolとして扱い、stderrをboundedにdrainしながら
+2 ms間隔で応答、process終了、deadlineを監視します。CIではfake `rigctld` executableを実際に起動し、正常応答、timeout、
+stop/restart後のclean bufferを検証します。次は実`rigctld`のversion/support matrixと強制kill policyを追加します。
 OS固有のprocess APIと標準入出力pipeを包むsessionは未実装であり、次のsliceでWindows/macOS adapterを追加します。
 現在のtransportはfake contractであり、次はWindows/macOS共通のchild-process lifecycle、標準入出力、kill/restartを実装します。
