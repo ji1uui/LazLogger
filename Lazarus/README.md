@@ -133,3 +133,5 @@ CW/RTTY engineの最初の性能sliceとして、audio callbackとDSP workerの�
 追加しました。block単位のpush/popではallocationとlockを行わず、容量超過は部分書込せずrejectしてoverrun counterへ
 記録します。wrap-around、FIFO、overflow不変条件をunit testで固定し、256 sample blockを100,000回往復する
 `make benchmark-audio`のJSONをCI artifactへ追加しました。次はsynthetic RTTY generatorとscalar reference demodulatorです。
+OS固有のprocess APIと標準入出力pipeを包むsessionは未実装であり、次のsliceでWindows/macOS adapterを追加します。
+現在のtransportはfake contractであり、次はWindows/macOS共通のchild-process lifecycle、標準入出力、kill/restartを実装します。

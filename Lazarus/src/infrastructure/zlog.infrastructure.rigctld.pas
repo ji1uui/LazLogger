@@ -246,6 +246,7 @@ begin
     on E: Exception do
       TransportResult := rtrDisconnected;
   end;
+  TransportResult := FTransport.Execute(Command, FTimeoutMs, Response);
   Result := True;
   if TransportResult <> rtrSuccess then
   begin
