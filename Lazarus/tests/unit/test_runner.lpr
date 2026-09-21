@@ -16,6 +16,7 @@ uses
   ZLog.Infrastructure.SubmissionWorker, ZLog.Infrastructure.Health,
   ZLog.Infrastructure.Rigctld,
   ZLog.Infrastructure.RigctldProcess,
+  ZLog.Infrastructure.RigWorker,
   ZLog.Presentation.QsoEntry,
   ZLog.Presentation.RecentQsos;
 
@@ -1135,6 +1136,55 @@ begin
   Session := nil;
 end;
 
+procedure TestRigWorkerKeepsIoOffCaller;
+const
+  CompletionTimeoutMs = 2000;
+var
+  TransportObject: TFakeRigctldTransport;
+  Transport: IRigctldTransport;
+  ClientObject: TRigctldClient;
+  Commands: IRigCommandPort;
+  Pump: IRigWorkPump;
+  Managed: IManagedRigCommandPort;
+  Rig: TRigSnapshot;
+  Deadline: QWord;
+  RejectedAfterShutdown: Boolean;
+begin
+  TransportObject := TFakeRigctldTransport.Create;
+  TransportObject.Configure(rtrSuccess, 'RPRT 0');
+  Transport := TransportObject;
+  ClientObject := TRigctldClient.Create(Transport, nil, 500);
+  Commands := ClientObject;
+  Pump := ClientObject;
+  Managed := TRigWorkerService.Create(Commands, Pump);
+
+  AssertTrue(Managed.RequestFrequency(28000000),
+    'managed rig accepts work without caller-side transport I/O');
+  Deadline := GetTickCount64 + CompletionTimeoutMs;
+  repeat
+    Rig := Managed.Snapshot;
+    if (Rig.State = rcsReady) and not Rig.HasPendingFrequency then
+      Break;
+    Sleep(1);
+  until GetTickCount64 >= Deadline;
+  AssertTrue(Rig.State = rcsReady, 'dedicated rig worker processes the command');
+  AssertTrue(Rig.FrequencyHz = 28000000, 'worker publishes rig read model');
+  AssertTrue(TransportObject.CallCount = 1, 'worker performs one transport call');
+
+  Managed.Shutdown;
+  RejectedAfterShutdown := False;
+  try
+    Managed.RequestRefresh;
+  except
+    on E: EInvalidOperation do RejectedAfterShutdown := True;
+  end;
+  AssertTrue(RejectedAfterShutdown, 'shutdown rejects new rig work');
+  Managed := nil;
+  Pump := nil;
+  Commands := nil;
+  Transport := nil;
+end;
+
 procedure TestRigctldContractAndBackoff;
 var
   TransportObject: TFakeRigctldTransport;
@@ -1234,6 +1284,7 @@ begin
     TestRigctldContractAndBackoff;
     TestRigctldProcessLifecycle;
     TestRealRigctldProcessSession;
+    TestRigWorkerKeepsIoOffCaller;
     WriteLn('PASS: ', TestsRun, ' assertions');
   except
     on E: Exception do

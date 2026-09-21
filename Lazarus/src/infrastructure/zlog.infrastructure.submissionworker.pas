@@ -117,6 +117,10 @@ begin
   if FShutdown then
     Exit;
   FShutdown := True;
+  if Assigned(FWorker) then
+    FWorker.StopAndJoin;
+  if Assigned(FPump) then
+    FPump.CancelPending;
   FWorker.StopAndJoin;
   FPump.CancelPending;
 end;

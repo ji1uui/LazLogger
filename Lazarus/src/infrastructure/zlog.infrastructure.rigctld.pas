@@ -201,6 +201,7 @@ begin
     Result.FrequencyHz := FFrequencyHz;
     Result.PendingFrequencyHz := FPendingFrequencyHz;
     Result.HasPendingFrequency := FHasPendingFrequency;
+    Result.HasPendingRefresh := FRefreshPending;
     Result.ConsecutiveFailures := FConsecutiveFailures;
     Result.NextRetryAtMs := FNextRetryAtMs;
   finally
@@ -239,6 +240,12 @@ begin
     FLock.Release;
   end;
 
+  try
+    TransportResult := FTransport.Execute(Command, FTimeoutMs, Response);
+  except
+    on E: Exception do
+      TransportResult := rtrDisconnected;
+  end;
   TransportResult := FTransport.Execute(Command, FTimeoutMs, Response);
   Result := True;
   if TransportResult <> rtrSuccess then
