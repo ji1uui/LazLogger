@@ -121,6 +121,8 @@ begin
     FWorker.StopAndJoin;
   if Assigned(FPump) then
     FPump.CancelPending;
+  FWorker.StopAndJoin;
+  FPump.CancelPending;
 end;
 
 end.

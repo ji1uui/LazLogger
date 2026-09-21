@@ -29,6 +29,7 @@ $(BUILD_DIR)/fake-rigctld: check-fpc | $(BUILD_DIR) $(UNIT_DIR)
 	$(FPC) $(FPC_FLAGS) -o$@ tests/fixtures/fake_rigctld.lpr
 
 $(BUILD_DIR)/test-runner: check-fpc $(BUILD_DIR)/fake-rigctld | $(BUILD_DIR) $(UNIT_DIR)
+$(BUILD_DIR)/test-runner: check-fpc | $(BUILD_DIR) $(UNIT_DIR)
 	$(FPC) $(FPC_FLAGS) -o$@ tests/unit/test_runner.lpr
 
 $(BUILD_DIR)/journal-benchmark: check-fpc | $(BUILD_DIR) $(UNIT_DIR)

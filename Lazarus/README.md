@@ -128,3 +128,5 @@ stop/restart後のclean bufferを検証します。次は実`rigctld`のversion/
 `TRigWorkerService`はcommand portを専用threadでpumpし、UIからのfrequency/refresh要求ではeventを通知するだけです。
 retry deadlineまではevent waitするためbusy pollingせず、shutdownはworkerを起床してjoinした後に新規要求を拒否します。
 これにより実process/pipeの待機がLCL main threadへ侵入しない構成を実行時にも固定しました。
+OS固有のprocess APIと標準入出力pipeを包むsessionは未実装であり、次のsliceでWindows/macOS adapterを追加します。
+現在のtransportはfake contractであり、次はWindows/macOS共通のchild-process lifecycle、標準入出力、kill/restartを実装します。
