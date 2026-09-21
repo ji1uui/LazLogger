@@ -9,6 +9,7 @@ uses
   ZLog.Application.LogQso, ZLog.Application.QueryQsos,
   ZLog.Application.Diagnostics,
   ZLog.Application.Rig,
+  ZLog.Application.Audio,
   ZLog.Infrastructure.Memory,
   ZLog.Infrastructure.Deterministic, ZLog.Infrastructure.Journal,
   ZLog.Infrastructure.Runtime, ZLog.Application.Submission,
@@ -17,6 +18,7 @@ uses
   ZLog.Infrastructure.Rigctld,
   ZLog.Infrastructure.RigctldProcess,
   ZLog.Infrastructure.RigWorker,
+  ZLog.Infrastructure.AudioRing,
   ZLog.Presentation.QsoEntry,
   ZLog.Presentation.RecentQsos;
 
@@ -1185,6 +1187,40 @@ begin
   Transport := nil;
 end;
 
+procedure TestBoundedAudioRing;
+const
+  FirstBlock: array[0..4] of Single = (1, 2, 3, 4, 5);
+  SecondBlock: array[0..3] of Single = (6, 7, 8, 9);
+var
+  Queue: IAudioSampleQueue;
+  Output: array[0..5] of Single;
+  Snapshot: TAudioQueueSnapshot;
+  Count: Integer;
+begin
+  Queue := TLockFreeSpscAudioRing.Create(8);
+  AssertTrue(Queue.TryPush(FirstBlock), 'audio ring accepts the first block');
+  Count := Queue.Pop(Slice(Output, 3));
+  AssertTrue(Count = 3, 'audio ring returns the requested sample count');
+  AssertTrue((Output[0] = 1) and (Output[1] = 2) and (Output[2] = 3),
+    'audio ring preserves FIFO sample order');
+  AssertTrue(Queue.TryPush(SecondBlock), 'audio ring accepts a wrapped block');
+  Count := Queue.Pop(Output);
+  AssertTrue(Count = 6, 'audio ring reads across its wrap boundary');
+  AssertTrue((Output[0] = 4) and (Output[1] = 5) and
+    (Output[2] = 6) and (Output[5] = 9),
+    'wrapped audio remains in FIFO order');
+
+  AssertTrue(Queue.TryPush(FirstBlock), 'audio ring can be reused');
+  AssertTrue(not Queue.TryPush(SecondBlock),
+    'audio ring rejects a block that would exceed capacity');
+  Snapshot := Queue.Snapshot;
+  AssertTrue(Snapshot.Capacity = 8, 'audio capacity is explicit');
+  AssertTrue(Snapshot.Available = 5, 'rejected block changes no queue data');
+  AssertTrue(Snapshot.HighWaterMark = 6, 'audio high-water mark is retained');
+  AssertTrue(Snapshot.OverrunCount = 1, 'audio overrun is observable');
+  Queue := nil;
+end;
+
 procedure TestRigctldContractAndBackoff;
 var
   TransportObject: TFakeRigctldTransport;
@@ -1285,6 +1321,7 @@ begin
     TestRigctldProcessLifecycle;
     TestRealRigctldProcessSession;
     TestRigWorkerKeepsIoOffCaller;
+    TestBoundedAudioRing;
     WriteLn('PASS: ', TestsRun, ' assertions');
   except
     on E: Exception do

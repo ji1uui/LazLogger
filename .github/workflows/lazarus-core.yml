@@ -81,6 +81,12 @@ jobs:
         shell: bash
         run: make benchmark-memory | tee build/repository-benchmark.json
 
+      - name: Measure audio ring baseline
+        if: runner.os == 'Linux'
+        working-directory: Lazarus
+        shell: bash
+        run: make benchmark-audio | tee build/audio-ring-benchmark.json
+
       - name: Upload benchmark result
         if: runner.os == 'Linux'
         uses: actions/upload-artifact@v4
@@ -89,3 +95,4 @@ jobs:
           path: |
             Lazarus/build/journal-benchmark.json
             Lazarus/build/repository-benchmark.json
+            Lazarus/build/audio-ring-benchmark.json

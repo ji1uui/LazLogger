@@ -150,6 +150,11 @@ modem が contest rule や QSO repository を直接参照することはあり�
 
 UI waterfall は decode pipeline と queue を共有せず、描画低下や非表示が復調性能へ影響しない構成にします。
 
+現在はこの境界の最初の実装として、容量を構築時に確保する`TLockFreeSpscAudioRing`を追加済みです。
+producer/consumerが所有するindexはinterlocked operationでpublishし、hot pathではallocationとOS lockを使いません。
+overflowはblock全体をrejectして既存sampleを保持し、high-water markとoverrun countをsnapshotで取得できます。
+実audio callbackへ接続する前にCI benchmarkと長時間SPSC stress testのbaselineを固定します。
+
 ## 7. Audio とリアルタイム設計
 
 `IAudioInput` / `IAudioOutput` は timestamp 付き frame を扱い、Windows/macOS の具体 API を platform adapter に隔離します。
