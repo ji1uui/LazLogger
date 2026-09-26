@@ -1,6 +1,13 @@
 # 実装進捗監査
 
-最終更新: 2026-09-21
+最終更新: 2026-09-26
+
+## 最新コミットの検証状態
+
+対象: PR #29 / `f9a02bce751be9b6956d2a9062e5fc6b4cf7608d`。
+[CI run](https://github.com/ji1uui/LazLogger/actions/runs/36203748416): Python 5件は3 OS成功。Linux/macOSは `zlog.presentation.recentqsos.pas:126` の `EInvalidOperation` 未解決でcompile失敗、WindowsはFPC取得HTTP 504でcore未実行。benchmark artifactは0件。下記Implementedはコードとtestの存在を示し、このSHAでの動作保証ではない。改訂後G0/G1は未合格。
+
+要件と受入数値は[REQUIREMENTS](REQUIREMENTS.md)、実装順は[DEVELOPMENT_PLAN](DEVELOPMENT_PLAN.md)を正本とする。文書の改訂で実装をAcceptedに変更しない。
 
 ## 1. 判定方法
 
@@ -78,11 +85,11 @@ benchmark runnerとJSON artifact upload定義は存在するが、このreposito
 
 機能追加より先に、次の検証基盤を完成させる。
 
-1. CI結果からbenchmarkをbaselineとしてversion管理し、同一runner系列で20%超の退行を検出する。
-2. lock-free audio ringのproducer/consumer concurrent stressとThreadSanitizer相当の検証を追加する。
-3. RTTYへdeterministic AWGN/frequency-offset corpusを追加し、BER曲線をscalar referenceで固定する。
-4. ITA2 encoder/decoderとstart/data/stop framingを追加して文字列round-tripを成立させる。
-5. 実`rigctld` support matrixとPTT watchdogを実装してからLCLへCAT操作を接続する。
+1. compileとWindows toolchain取得を修復し、両OS GUI/coreを検証する。benchmark baselineを保存し、同一環境・scenarioで10%超の退行を検出する（要件台帳の測定契約に統一）。
+2. 起動journal復旧の非同期化、shutdown/active-operation/deadline、UI heartbeat、外部process killと両OS package復旧を完了しG1を判定する。
+3. G1後にQSO lifecycle・logbook・contest/exportのログ中核を実装する。
+4. CAT/PTT安全基盤の後、audio実thread stress、RTTY AWGN/offset corpus・ITA2/framing、CW/RTTY送受信を実装する。
+5. 詳細な依存・owner・証拠は改訂開発計画B01〜B08とM0〜M8に従う。
 
 Contest coreが未着手のため、現在の成果物を「zLog代替」やMVPとは扱わない。現状はPhase 1のwalking skeletonと
 Phase 3向け技術spikeが並行して存在する状態である。

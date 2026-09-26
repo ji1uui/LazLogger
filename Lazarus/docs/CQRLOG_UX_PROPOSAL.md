@@ -1,5 +1,7 @@
 # CQRLOG を参考にした機能・UI・非同期実行の提案
 
+> 2026-09-26改訂: 要求・受入数値・優先度は[要件台帳](REQUIREMENTS.md)、実装順とゲートは[開発実行計画](DEVELOPMENT_PLAN.md)を正本とする。本書の設計背景・詳細は保持する。初期budgetは達成済み値ではなく、過去の実装/CI記述は現行SHAの合格証拠ではない。
+
 ## 1. 調査範囲と扱い
 
 参照元は [ok2cqr/cqrlog](https://github.com/ok2cqr/cqrlog) とします。CQRLOG の画面やコードをコピーするのではなく、
