@@ -6,7 +6,7 @@ program ZLogUnitTests;
 uses
   {$IFDEF UNIX}cthreads,{$ENDIF}
   SysUtils, Classes, DateUtils, Math, ZLog.Domain.Types, ZLog.Domain.Qso,
-  ZLog.Application.LogQso, ZLog.Application.QueryQsos,
+  ZLog.Application.Ports, ZLog.Application.LogQso, ZLog.Application.QueryQsos,
   ZLog.Application.Diagnostics,
   ZLog.Application.Rig,
   ZLog.Application.Audio,
@@ -578,7 +578,9 @@ begin
       raise EArgumentOutOfRangeException.Create('Invalid file prefix length');
     Destination := TFileStream.Create(ADestinationFileName, fmCreate);
     try
-      Destination.CopyFrom(Source, ALength);
+      { TStream.CopyFrom(..., 0) copies the entire source, not an empty prefix. }
+      if ALength > 0 then
+        Destination.CopyFrom(Source, ALength);
     finally
       Destination.Free;
     end;
@@ -782,6 +784,8 @@ begin
     for CutPosition := 0 to CompleteSize - 1 do
     begin
       CopyFilePrefix(BaselineFileName, TruncatedFileName, CutPosition);
+      AssertTrue(SizeOfFile(TruncatedFileName) = CutPosition,
+        'tail fixture contains exactly the requested prefix');
       Repository := TJournalQsoRepository.Create(TruncatedFileName);
       if CutPosition >= FirstRecordSize then
       begin
