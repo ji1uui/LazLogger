@@ -38,6 +38,8 @@ LCL composition root、テスト、CI である。評価軸は次のとおり。
 |High|ライフサイクル|worker service の `Submit` と `Shutdown` を複数 thread から同時実行する契約がない|制約を維持。当面 UI owner のみが呼ぶ。CAT/network producer 導入前に状態 machine と同期を追加する|
 |High|例外安全|worker thread constructor失敗時に部分構築objectのdestructorがnil workerをjoinする可能性があった|修正済み。shutdownはworker/pumpの割当を確認し、部分構築からも安全に解放する|
 |High|例外安全|queue投入後のUI notifier例外がworkerを停止させ得た|修正済み。wake-upはbest-effortとし、投入済みcompletionはdrain可能なまま維持する|
+|High|worker監視|submission pumpの予期しない例外がthreadを無通知で終了させ得た|修正済み。thread境界で隔離し、critical diagnosticを記録してbounded wait後に処理を継続する|
+|Critical|UI終了処理|notifier無効化とworkerの`QueueAsyncCall`が競合すると、破棄後のnotifierを呼ぶcallが残り得た|修正済み。先にform参照を切り、worker join後にasync callを再度除去して破棄順を保証する|
 |High|データモデル|contest、band、operator、station、serial、dupe/multiplier 情報が QSO にない|計画済み。contest rule model 確定後に versioned migration として追加する|
 |Medium|入力|exchange 長、ID 長、timestamp 範囲の domain 制約がない|未完。contest ごとの制約と journal 全体の安全上限を分ける|
 |Medium|性能|journal 起動時は全 record を object として再生するため、大規模 log で起動時間と RAM が線形増加する|未完。測定後に snapshot/checkpoint または SQLite read model を選定する|

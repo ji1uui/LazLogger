@@ -6,6 +6,7 @@ Windows と macOS を同じドメインモデルで支える **新規実装** �
 
 ## まず読む文書
 
+* [機能・非機能要件台帳](docs/REQUIREMENTS.md) — 要求ID、受入条件、測定契約、未決事項と責任・期限（2026-09-26改訂の正本）
 * [移植・再設計方針](docs/MIGRATION_POLICY.md) — 目的、設計原則、機能範囲、UX、性能、段階移行
 * [アーキテクチャ](docs/ARCHITECTURE.md) — 依存方向、コンポーネント境界、並行処理、永続化
 * [交信モード／CW・RTTYエンジン](docs/MODE_ENGINE.md) — Hamlib連携、送受信、DSP、遅延・安全性
@@ -14,6 +15,7 @@ Windows と macOS を同じドメインモデルで支える **新規実装** �
 * [開発実行計画](docs/DEVELOPMENT_PLAN.md) — 実装順、反復ごとの検証、品質ゲート、進捗管理
 * [実装品質レビュー](docs/QUALITY_REVIEW.md) — 堅牢性、効率性、保守性の監査結果と次段階の品質ゲート
 * [実装進捗監査](docs/IMPLEMENTATION_STATUS.md) — 実装済み範囲、検証証跡、未達ゲート、次の優先順位
+* [マルチスレッド安全性監査](docs/THREADING_REVIEW.md) — thread境界、保証範囲、未達の安全性ゲート
 
 ## 想定ツールチェーン
 
@@ -52,6 +54,8 @@ Lazarus/
 5. 一括置換や DFM→LFM 変換ではなく、縦に薄い機能単位で完成させる。
 
 ## 現在の実装
+
+2026-09-26監査: 以下は実装構成の説明です。PR #29の `f9a02bc` はLinux/macOSでcompile失敗、Windowsでtoolchain取得失敗、性能artifactなし。CIの定義と実行合格を区別し、最新の[実装進捗監査](docs/IMPLEMENTATION_STATUS.md)を参照してください。改訂計画ではM0/M1を優先します。
 
 最初の縦割りとして、pure Pascalのcallsign／周波数value object、QSO entity、`ILogQsoUseCase`、repository／clock／IDの
 port、in-memory adapter、決定的なunit test、console composition rootを追加しました。LCL画面や永続journalへ進む前に、

@@ -6,6 +6,7 @@ program ZLogUnitTests;
 uses
   {$IFDEF UNIX}cthreads,{$ENDIF}
   SysUtils, Classes, DateUtils, Math, ZLog.Domain.Types, ZLog.Domain.Qso,
+  ZLog.Application.Ports, ZLog.Application.LogQso, ZLog.Application.QueryQsos,
   SysUtils, Classes, DateUtils, ZLog.Domain.Types, ZLog.Domain.Qso,
   ZLog.Application.LogQso, ZLog.Application.QueryQsos,
   ZLog.Application.Diagnostics,
@@ -93,6 +94,17 @@ type
   TFailingLogQsoUseCase = class(TInterfacedObject, ILogQsoUseCase)
   public
     function Execute(const ADraft: TQsoDraft): TLogQsoResult;
+  end;
+
+  TTransientFailingSubmissionPump = class(TInterfacedObject,
+    ISubmissionWorkPump)
+  private
+    FCallCount: LongInt;
+  public
+    function ProcessNext: Boolean;
+    procedure CancelPending;
+    function PendingCount: Integer;
+    function CallCount: LongInt;
   end;
 
   TFakeRigctldTransport = class(TInterfacedObject, IRigctldTransport)
@@ -218,6 +230,27 @@ function TFailingLogQsoUseCase.Execute(
   const ADraft: TQsoDraft): TLogQsoResult;
 begin
   raise EWriteError.Create('simulated storage detail');
+end;
+
+function TTransientFailingSubmissionPump.ProcessNext: Boolean;
+begin
+  if InterlockedIncrement(FCallCount) = 1 then
+    raise EInvalidOperation.Create('simulated worker pump failure');
+  Result := False;
+end;
+
+procedure TTransientFailingSubmissionPump.CancelPending;
+begin
+end;
+
+function TTransientFailingSubmissionPump.PendingCount: Integer;
+begin
+  Result := 0;
+end;
+
+function TTransientFailingSubmissionPump.CallCount: LongInt;
+begin
+  Result := InterlockedCompareExchange(FCallCount, 0, 0);
 end;
 
 function TFakeRigctldTransport.Execute(const ACommand: string;
@@ -551,6 +584,9 @@ begin
       raise EArgumentOutOfRangeException.Create('Invalid file prefix length');
     Destination := TFileStream.Create(ADestinationFileName, fmCreate);
     try
+      { TStream.CopyFrom(..., 0) copies the entire source, not an empty prefix. }
+      if ALength > 0 then
+        Destination.CopyFrom(Source, ALength);
       Destination.CopyFrom(Source, ALength);
     finally
       Destination.Free;
@@ -755,6 +791,8 @@ begin
     for CutPosition := 0 to CompleteSize - 1 do
     begin
       CopyFilePrefix(BaselineFileName, TruncatedFileName, CutPosition);
+      AssertTrue(SizeOfFile(TruncatedFileName) = CutPosition,
+        'tail fixture contains exactly the requested prefix');
       Repository := TJournalQsoRepository.Create(TruncatedFileName);
       if CutPosition >= FirstRecordSize then
       begin
@@ -1047,6 +1085,57 @@ begin
   Dispatcher := nil;
   UseCase := nil;
   Repository := nil;
+end;
+
+procedure TestSubmissionWorkerSurvivesUnexpectedPumpFailure;
+const
+  WorkerTimeoutMs = 3000;
+var
+  SubmissionObject: TControlledSubmission;
+  Submission: IQsoSubmissionPort;
+  PumpObject: TTransientFailingSubmissionPump;
+  Pump: ISubmissionWorkPump;
+  Managed: IManagedQsoSubmissionPort;
+  Observer: IQsoSubmissionObserver;
+  MonitorObject: TInMemoryHealthMonitor;
+  Diagnostics: IDiagnosticSink;
+  HealthQuery: IHealthQuery;
+  Deadline: QWord;
+  Draft: TQsoDraft;
+begin
+  SubmissionObject := TControlledSubmission.Create;
+  Submission := SubmissionObject;
+  PumpObject := TTransientFailingSubmissionPump.Create;
+  Pump := PumpObject;
+  MonitorObject := TInMemoryHealthMonitor.Create;
+  Diagnostics := MonitorObject;
+  HealthQuery := MonitorObject;
+  Managed := TSubmissionWorkerService.Create(Submission, Pump, Diagnostics);
+
+  Deadline := GetTickCount64 + WorkerTimeoutMs;
+  while (HealthQuery.Snapshot.LastCode <> dcSubmissionWorkerFailed) and
+    (GetTickCount64 < Deadline) do
+    Sleep(1);
+  AssertTrue(PumpObject.CallCount >= 1,
+    'submission worker invokes its pump');
+  AssertTrue(HealthQuery.Snapshot.LastCode = dcSubmissionWorkerFailed,
+    'unexpected pump failure is observable through diagnostics');
+
+  Observer := TRecordingSubmissionObserver.Create;
+  Managed.Submit(Draft, Observer);
+  Deadline := GetTickCount64 + WorkerTimeoutMs;
+  while (PumpObject.CallCount < 2) and (GetTickCount64 < Deadline) do
+    Sleep(1);
+  AssertTrue(PumpObject.CallCount >= 2,
+    'submission worker remains alive after an unexpected exception');
+
+  Managed.Shutdown;
+  Managed := nil;
+  Observer := nil;
+  HealthQuery := nil;
+  Diagnostics := nil;
+  Pump := nil;
+  Submission := nil;
 end;
 
 procedure TestCompletionNotificationCoalescing;
@@ -1455,6 +1544,7 @@ begin
     TestBoundedSubmissionQueue;
     TestCompletionCapacityRaceDoesNotDuplicateQso;
     TestSubmissionWorkerAndMainThreadCompletion;
+    TestSubmissionWorkerSurvivesUnexpectedPumpFailure;
     TestCompletionNotificationCoalescing;
     TestStructuredDiagnosticsAndHealth;
     TestRigctldContractAndBackoff;

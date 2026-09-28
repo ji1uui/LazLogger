@@ -1,5 +1,13 @@
 # 実装進捗監査
 
+最終更新: 2026-09-26
+
+## 最新コミットの検証状態
+
+対象: PR #29 / `f9a02bce751be9b6956d2a9062e5fc6b4cf7608d`。
+[CI run](https://github.com/ji1uui/LazLogger/actions/runs/36203748416): Python 5件は3 OS成功。Linux/macOSは `zlog.presentation.recentqsos.pas:126` の `EInvalidOperation` 未解決でcompile失敗、WindowsはFPC取得HTTP 504でcore未実行。benchmark artifactは0件。下記Implementedはコードとtestの存在を示し、このSHAでの動作保証ではない。改訂後G0/G1は未合格。
+
+要件と受入数値は[REQUIREMENTS](REQUIREMENTS.md)、実装順は[DEVELOPMENT_PLAN](DEVELOPMENT_PLAN.md)を正本とする。文書の改訂で実装をAcceptedに変更しない。
 最終更新: 2026-09-21
 
 ## 1. 判定方法
@@ -58,6 +66,10 @@ completion notifier は queue 投入後に UI wake-up を行う。notifier の�
 completion 自体は queue にあるにもかかわらず worker が異常終了し得たため、wake-up を best-effort
 境界とし、投入済み completion の所有権を変えないようにした。
 
+submission workerはpump境界の予期しない例外を捕捉していなかったため、threadが無通知で終了し、
+以後のQSOが処理されない可能性があった。例外をworker境界で隔離してhealth monitorへ通知し、
+hot loopを避けるbounded wait後に処理を継続するよう変更した。
+
 ## 5. 性能に関する結論
 
 benchmark runnerとJSON artifact upload定義は存在するが、このrepositoryの現在のcommitには測定artifact、runner仕様、
@@ -75,6 +87,11 @@ benchmark runnerとJSON artifact upload定義は存在するが、このreposito
 
 機能追加より先に、次の検証基盤を完成させる。
 
+1. compileとWindows toolchain取得を修復し、両OS GUI/coreを検証する。benchmark baselineを保存し、同一環境・scenarioで10%超の退行を検出する（要件台帳の測定契約に統一）。
+2. 起動journal復旧の非同期化、shutdown/active-operation/deadline、UI heartbeat、外部process killと両OS package復旧を完了しG1を判定する。
+3. G1後にQSO lifecycle・logbook・contest/exportのログ中核を実装する。
+4. CAT/PTT安全基盤の後、audio実thread stress、RTTY AWGN/offset corpus・ITA2/framing、CW/RTTY送受信を実装する。
+5. 詳細な依存・owner・証拠は改訂開発計画B01〜B08とM0〜M8に従う。
 1. CI結果からbenchmarkをbaselineとしてversion管理し、同一runner系列で20%超の退行を検出する。
 2. lock-free audio ringのproducer/consumer concurrent stressとThreadSanitizer相当の検証を追加する。
 3. RTTYへdeterministic AWGN/frequency-offset corpusを追加し、BER曲線をscalar referenceで固定する。

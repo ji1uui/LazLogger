@@ -232,6 +232,10 @@ begin
     FCompletionNotifier.Disable;
   if Assigned(FManagedSubmission) then
     FManagedSubmission.Shutdown;
+  { A worker may have passed the notifier's disabled check immediately before
+    the first RemoveAsyncCalls. Once joined, remove that final possible call. }
+  if Assigned(FCompletionNotifier) then
+    FCompletionNotifier.Disable;
   if Assigned(FCompletionPump) then
     while FCompletionPump.PendingCount > 0 do
       FCompletionPump.Drain(16);
@@ -368,6 +372,8 @@ begin
     Diagnostics);
   QueueSubmission := QueueObject;
   WorkPump := QueueObject;
+  FManagedSubmission := TSubmissionWorkerService.Create(QueueSubmission,
+    WorkPump, Diagnostics);
   FManagedSubmission := TSubmissionWorkerService.Create(QueueSubmission, WorkPump);
   FViewAdapter := TQsoEntryViewAdapter.Create(Self);
   FView := FViewAdapter;

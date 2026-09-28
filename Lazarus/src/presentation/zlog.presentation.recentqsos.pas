@@ -5,6 +5,7 @@ unit ZLog.Presentation.RecentQsos;
 interface
 
 uses
+  SysUtils, Classes, DateUtils, ZLog.Domain.Types, ZLog.Domain.Qso,
   SysUtils, DateUtils, ZLog.Domain.Types, ZLog.Domain.Qso,
   ZLog.Application.QueryQsos;
 
