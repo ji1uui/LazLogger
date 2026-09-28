@@ -152,6 +152,9 @@ begin
     FirstSample := Ceil((Double(BitIndex) * FProfile.SampleRate) /
       FProfile.Baud);
     EndSample := Ceil((Double(BitIndex + 1) * FProfile.SampleRate) /
+    FirstSample := Floor((Double(BitIndex) * FProfile.SampleRate) /
+      FProfile.Baud);
+    EndSample := Floor((Double(BitIndex + 1) * FProfile.SampleRate) /
       FProfile.Baud);
     if BitIndex = AExpectedBitCount - 1 then
       EndSample := RequiredSamples;

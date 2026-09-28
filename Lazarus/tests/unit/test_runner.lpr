@@ -7,6 +7,8 @@ uses
   {$IFDEF UNIX}cthreads,{$ENDIF}
   SysUtils, Classes, DateUtils, Math, ZLog.Domain.Types, ZLog.Domain.Qso,
   ZLog.Application.Ports, ZLog.Application.LogQso, ZLog.Application.QueryQsos,
+  SysUtils, Classes, DateUtils, ZLog.Domain.Types, ZLog.Domain.Qso,
+  ZLog.Application.LogQso, ZLog.Application.QueryQsos,
   ZLog.Application.Diagnostics,
   ZLog.Application.Rig,
   ZLog.Application.Audio,
@@ -218,6 +220,10 @@ end;
 procedure TCountingCompletionNotifier.NotifyCompletionAvailable;
 begin
   Inc(FCount);
+procedure TCountingCompletionNotifier.NotifyCompletionAvailable;
+begin
+  Inc(FCount);
+  FResult := AResult;
 end;
 
 function TFailingLogQsoUseCase.Execute(
@@ -581,6 +587,7 @@ begin
       { TStream.CopyFrom(..., 0) copies the entire source, not an empty prefix. }
       if ALength > 0 then
         Destination.CopyFrom(Source, ALength);
+      Destination.CopyFrom(Source, ALength);
     finally
       Destination.Free;
     end;

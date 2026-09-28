@@ -8,6 +8,7 @@
 [CI run](https://github.com/ji1uui/LazLogger/actions/runs/36203748416): Python 5件は3 OS成功。Linux/macOSは `zlog.presentation.recentqsos.pas:126` の `EInvalidOperation` 未解決でcompile失敗、WindowsはFPC取得HTTP 504でcore未実行。benchmark artifactは0件。下記Implementedはコードとtestの存在を示し、このSHAでの動作保証ではない。改訂後G0/G1は未合格。
 
 要件と受入数値は[REQUIREMENTS](REQUIREMENTS.md)、実装順は[DEVELOPMENT_PLAN](DEVELOPMENT_PLAN.md)を正本とする。文書の改訂で実装をAcceptedに変更しない。
+最終更新: 2026-09-21
 
 ## 1. 判定方法
 
@@ -47,6 +48,7 @@ Free Pascalを実行できない場合はAcceptedと判定しない。
 |Contest logging|Not started|なし|dupe/point/multi/serial/score/export互換がない|
 
 ## 4. コード監査で修正した事項
+## 4. 今回のコード監査で修正した事項
 
 scalar RTTY generatorはbit境界を `ceil(bit * sample_rate / baud)` で切り替える。一方、decoderは従来
 `floor`を使っていたため、fractional baudでは各window先頭へ直前bitのsampleを1個含める場合があった。
@@ -90,6 +92,11 @@ benchmark runnerとJSON artifact upload定義は存在するが、このreposito
 3. G1後にQSO lifecycle・logbook・contest/exportのログ中核を実装する。
 4. CAT/PTT安全基盤の後、audio実thread stress、RTTY AWGN/offset corpus・ITA2/framing、CW/RTTY送受信を実装する。
 5. 詳細な依存・owner・証拠は改訂開発計画B01〜B08とM0〜M8に従う。
+1. CI結果からbenchmarkをbaselineとしてversion管理し、同一runner系列で20%超の退行を検出する。
+2. lock-free audio ringのproducer/consumer concurrent stressとThreadSanitizer相当の検証を追加する。
+3. RTTYへdeterministic AWGN/frequency-offset corpusを追加し、BER曲線をscalar referenceで固定する。
+4. ITA2 encoder/decoderとstart/data/stop framingを追加して文字列round-tripを成立させる。
+5. 実`rigctld` support matrixとPTT watchdogを実装してからLCLへCAT操作を接続する。
 
 Contest coreが未着手のため、現在の成果物を「zLog代替」やMVPとは扱わない。現状はPhase 1のwalking skeletonと
 Phase 3向け技術spikeが並行して存在する状態である。

@@ -9,6 +9,7 @@ type
   TDiagnosticCode = (dcNone, dcQsoPersistenceFailed,
     dcCompletionDispatchFailed, dcRigTransportFailed,
     dcSubmissionWorkerFailed);
+    dcCompletionDispatchFailed, dcRigTransportFailed);
   THealthStatus = (hsHealthy, hsDegraded, hsFailed);
 
   THealthSnapshot = record

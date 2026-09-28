@@ -6,6 +6,8 @@ SOURCE_PATHS := -Fu./src/domain -Fu./src/application -Fu./src/infrastructure \
 FPC_FLAGS := -Mobjfpc -Sh -Fu. $(SOURCE_PATHS) -FU$(UNIT_DIR)
 
 .PHONY: all test test-tools run gui benchmark benchmark-memory benchmark-audio benchmark-rtty verify-demo clean check-fpc check-lazarus
+.PHONY: all test test-tools run gui benchmark benchmark-memory benchmark-audio verify-demo clean check-fpc check-lazarus
+.PHONY: all test test-tools run gui benchmark benchmark-memory verify-demo clean check-fpc check-lazarus
 
 all: $(BUILD_DIR)/zlog-demo
 
@@ -29,6 +31,7 @@ $(BUILD_DIR)/fake-rigctld: check-fpc | $(BUILD_DIR) $(UNIT_DIR)
 	$(FPC) $(FPC_FLAGS) -o$@ tests/fixtures/fake_rigctld.lpr
 
 $(BUILD_DIR)/test-runner: check-fpc $(BUILD_DIR)/fake-rigctld | $(BUILD_DIR) $(UNIT_DIR)
+$(BUILD_DIR)/test-runner: check-fpc | $(BUILD_DIR) $(UNIT_DIR)
 	$(FPC) $(FPC_FLAGS) -o$@ tests/unit/test_runner.lpr
 
 $(BUILD_DIR)/journal-benchmark: check-fpc | $(BUILD_DIR) $(UNIT_DIR)

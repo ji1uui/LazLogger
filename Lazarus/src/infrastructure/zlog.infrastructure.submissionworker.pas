@@ -7,6 +7,7 @@ interface
 uses
   SysUtils, Classes, SyncObjs, ZLog.Domain.Qso, ZLog.Application.Submission,
   ZLog.Application.Diagnostics;
+  SysUtils, Classes, SyncObjs, ZLog.Domain.Qso, ZLog.Application.Submission;
 
 type
   TSubmissionWorkerService = class(TInterfacedObject,
@@ -23,6 +24,11 @@ type
     public
       constructor Create(const APump: ISubmissionWorkPump;
         const ADiagnostics: IDiagnosticSink);
+      FWakeEvent: TEvent;
+    protected
+      procedure Execute; override;
+    public
+      constructor Create(const APump: ISubmissionWorkPump);
       destructor Destroy; override;
       procedure Wake;
       procedure StopAndJoin;
@@ -37,6 +43,7 @@ type
     constructor Create(const ASubmission: IQsoSubmissionPort;
       const APump: ISubmissionWorkPump;
       const ADiagnostics: IDiagnosticSink = nil);
+      const APump: ISubmissionWorkPump);
     destructor Destroy; override;
     procedure Submit(const ADraft: TQsoDraft;
       const AObserver: IQsoSubmissionObserver);
@@ -47,6 +54,7 @@ implementation
 
 constructor TSubmissionWorkerService.TWorkerThread.Create(
   const APump: ISubmissionWorkPump; const ADiagnostics: IDiagnosticSink);
+  const APump: ISubmissionWorkPump);
 begin
   inherited Create(True);
   FreeOnTerminate := False;
@@ -97,6 +105,12 @@ begin
         Continue;
       end;
     end;
+    if FPump.ProcessNext then
+      Continue;
+    if FPump.PendingCount > 0 then
+      FWakeEvent.WaitFor(16)
+    else
+      FWakeEvent.WaitFor(1000);
   end;
 end;
 
@@ -115,6 +129,7 @@ end;
 constructor TSubmissionWorkerService.Create(
   const ASubmission: IQsoSubmissionPort; const APump: ISubmissionWorkPump;
   const ADiagnostics: IDiagnosticSink);
+  const ASubmission: IQsoSubmissionPort; const APump: ISubmissionWorkPump);
 begin
   inherited Create;
   if not Assigned(ASubmission) then
@@ -125,6 +140,7 @@ begin
   FPump := APump;
   FDiagnostics := ADiagnostics;
   FWorker := TWorkerThread.Create(FPump, FDiagnostics);
+  FWorker := TWorkerThread.Create(FPump);
 end;
 
 destructor TSubmissionWorkerService.Destroy;
@@ -155,6 +171,8 @@ begin
     FWorker.StopAndJoin;
   if Assigned(FPump) then
     FPump.CancelPending;
+  FWorker.StopAndJoin;
+  FPump.CancelPending;
 end;
 
 end.

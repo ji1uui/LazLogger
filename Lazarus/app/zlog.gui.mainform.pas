@@ -374,6 +374,7 @@ begin
   WorkPump := QueueObject;
   FManagedSubmission := TSubmissionWorkerService.Create(QueueSubmission,
     WorkPump, Diagnostics);
+  FManagedSubmission := TSubmissionWorkerService.Create(QueueSubmission, WorkPump);
   FViewAdapter := TQsoEntryViewAdapter.Create(Self);
   FView := FViewAdapter;
   FPresenter := TQsoEntryPresenter.Create(FView, FManagedSubmission);

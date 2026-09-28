@@ -89,6 +89,9 @@ begin
     CancelPending;
   FreeAndNil(FLock);
   FreeAndNil(FQueue);
+  CancelPending;
+  FLock.Free;
+  FQueue.Free;
   FDispatcher := nil;
   FDiagnostics := nil;
   FUseCase := nil;
@@ -133,6 +136,11 @@ begin
         Item.Free;
         raise;
       end;
+    Accepted := FQueue.Count < FCapacity;
+    if Accepted then
+    begin
+      Item := TWorkItem.Create(ADraft, AObserver);
+      FQueue.Add(Item);
     end;
   finally
     FLock.Release;
@@ -211,6 +219,7 @@ begin
       FPendingCompletion := nil;
     end
     else if FQueue.Count > 0 then
+    if FQueue.Count > 0 then
     begin
       Result := TWorkItem(FQueue[0]);
       FQueue.Delete(0);
@@ -244,6 +253,10 @@ begin
   if not FDispatcher.HasCapacity then
     Exit(False);
   Item := ExtractForProcessing;
+begin
+  if not FDispatcher.HasCapacity then
+    Exit(False);
+  Item := ExtractFirst;
   Result := Assigned(Item);
   if not Result then
     Exit;
@@ -294,6 +307,27 @@ begin
       FinishProcessing;
       Item.Free;
     end;
+      LogResult := FUseCase.Execute(Item.Draft);
+      if LogResult.Success and Assigned(FDiagnostics) then
+        FDiagnostics.ReportHealthy('qso-persistence');
+    except
+      on E: Exception do
+      begin
+        if Assigned(FDiagnostics) then
+          FDiagnostics.Report(dcQsoPersistenceFailed, dsError,
+            'qso-persistence', E.ClassName);
+        LogResult := RetryableFailure(lqePersistenceUnavailable);
+      end;
+    end;
+    if not FDispatcher.TryDispatch(Item.Observer, LogResult) then
+    begin
+      if Assigned(FDiagnostics) then
+        FDiagnostics.Report(dcCompletionDispatchFailed, dsCritical,
+          'completion-dispatch', 'Completion queue capacity changed');
+      raise EInvalidOperation.Create('Completion capacity changed unexpectedly');
+    end;
+  finally
+    Item.Free;
   end;
 end;
 
@@ -312,6 +346,8 @@ begin
           LogResult := Failure(lqeCancelled);
         if not FDispatcher.TryDispatch(Item.Observer, LogResult) then
           Item.Observer.SubmissionCompleted(LogResult);
+        if not FDispatcher.TryDispatch(Item.Observer, Failure(lqeCancelled)) then
+          Item.Observer.SubmissionCompleted(Failure(lqeCancelled));
       finally
         Item.Free;
       end;
@@ -323,6 +359,7 @@ begin
   FLock.Acquire;
   try
     Result := FQueue.Count + Ord(Assigned(FPendingCompletion)) + FInFlight;
+    Result := FQueue.Count;
   finally
     FLock.Release;
   end;
