@@ -28,6 +28,7 @@ JA コンテスター全般を主な利用者とし、海外のコンテスト�
 | D12 | 無線機制御には HamlibComponent（Lazarus パッケージ、Rev.6.0 時点）を同一プロセスで使う。中核は無線機ポートを介して依存し、コンポーネントの型に直接依存しない | HamlibComponent README（旧未決事項 Q4 を解消） |
 | D13 | ツールチェーンは FPC 3.2.2 と Lazarus 4.4 に固定する。CI での導入方法は Linux が apt、macOS が Homebrew、Windows が setup-lazarus | [ADR 0001](adr/0001-toolchain.md) |
 | D14 | 単体テストには FPCUnit（FPC 標準の `fcl-fpcunit`）を使い、標準のコンソールランナーで実行する | [ADR 0002](adr/0002-unit-test-framework.md) |
+| D15 | SQLite は `sqlite3dyn` で C API を直接呼ぶ。WAL・`synchronous=FULL` で使い、スキーマの版は `user_version` で管理し、前進のみのマイグレーションを 1 版ずつトランザクションで適用する。新しい版の DB は開かない | [ADR 0003](adr/0003-storage-sqlite.md) |
 
 ## 3. 開発原則
 
