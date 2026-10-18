@@ -1,9 +1,9 @@
 (Released ADIF Version 3.1.8, updated 2026-10-12)
 
-
+ 
 
 Amateur Data Interchange Format (ADIF) Specification
-
+ 
 
 Table of Contents
 Introduction
@@ -20,79 +20,79 @@ Deletion
 Data Types, Enumerations, and Fields
 Data Types
 
-AwardList (import-only),
-Boolean,
-Character,  CreditList,
-Date,  Digit,
-Enumeration,
-GridSquare,  GridSquareExt,  GridSquareList,
-Integer,  IntlCharacter,  IntlMultilineString,  IntlString,  IOTARefNo,
-Location,
-MultilineString,
-Number,
-PositiveInteger,  POTARef,  POTARefList,
-SecondarySubdivisionList,  SecondaryAdministrativeSubdivisionListAlt,  SOTARef,  SponsoredAwardList,  String,
-Time,
+AwardList (import-only), 
+Boolean, 
+Character,  CreditList, 
+Date,  Digit, 
+Enumeration, 
+GridSquare,  GridSquareExt,  GridSquareList, 
+Integer,  IntlCharacter,  IntlMultilineString,  IntlString,  IOTARefNo, 
+Location, 
+MultilineString, 
+Number, 
+PositiveInteger,  POTARef,  POTARefList, 
+SecondarySubdivisionList,  SecondaryAdministrativeSubdivisionListAlt,  SOTARef,  SponsoredAwardList,  String, 
+Time, 
 WWFFRef
 Enumerations
 
-Ant_Path,  ARRL Section,  Award (import-only),
-Band,
-Contest ID,  Continent,  Credit,
-DXCC Entity Code,
-EQSL_AG,
-Mode,  Morse Key Type,
-Primary Administrative Subdivision,  Propagation Mode,
-QSL Medium,  QSL Rcvd,  QSL Sent,  QSL Via,  QSO Complete,  QSO Download Status,  QSO Upload Status,
-Region,
+Ant_Path,  ARRL Section,  Award (import-only), 
+Band, 
+Contest ID,  Continent,  Credit, 
+DXCC Entity Code, 
+EQSL_AG, 
+Mode,  Morse Key Type, 
+Primary Administrative Subdivision,  Propagation Mode, 
+QSL Medium,  QSL Rcvd,  QSL Sent,  QSL Via,  QSO Complete,  QSO Download Status,  QSO Upload Status, 
+Region, 
 Secondary Administrative Subdivision,  Secondary Administrative Subdivision Alt,  Sponsored Award,  Submode
 Fields
 ADIF-defined Fields
 Header Fields
 
-ADIF_VER,
-CREATED_TIMESTAMP,
-PROGRAMID,  PROGRAMVERSION,
+ADIF_VER, 
+CREATED_TIMESTAMP, 
+PROGRAMID,  PROGRAMVERSION, 
 USERDEFn
 QSO Fields
 
-ADDRESS,  ADDRESS_INTL,  AGE,  ALTITUDE,  ANT_AZ,  ANT_EL,  ANT_PATH,  ARRL_SECT,  AWARD_GRANTED,  AWARD_SUBMITTED,  A_INDEX,
-BAND,  BAND_RX,
-CALL,  CHECK,  CLASS,  CLUBLOG_QSO_UPLOAD_DATE,  CLUBLOG_QSO_UPLOAD_STATUS,  CNTY,  CNTY_ALT,  COMMENT,  COMMENT_INTL,  CONT,  CONTACTED_OP,  CONTEST_ID,  COUNTRY,  COUNTRY_INTL,  CQZ,  CREDIT_SUBMITTED,  CREDIT_GRANTED,
-DARC_DOK,  DCL_QSLRDATE,  DCL_QSLSDATE,  DCL_QSL_RCVD,  DCL_QSL_SENT,  DISTANCE,  DXCC,
-EMAIL,  EQ_CALL,  EQSL_AG,  EQSL_QSLRDATE,  EQSL_QSLSDATE,  EQSL_QSL_RCVD,  EQSL_QSL_SENT,
-FISTS,  FISTS_CC,  FORCE_INIT,  FREQ,  FREQ_RX,
-GRIDSQUARE,  GRIDSQUARE_EXT,  GUEST_OP,
-HAMLOGEU_QSO_UPLOAD_DATE,  HAMLOGEU_QSO_UPLOAD_STATUS,  HAMQTH_QSO_UPLOAD_DATE,  HAMQTH_QSO_UPLOAD_STATUS,  HRDLOG_QSO_UPLOAD_DATE,  HRDLOG_QSO_UPLOAD_STATUS,
-IOTA,  IOTA_ISLAND_ID,  ITUZ,
-K_INDEX,
-LAT,  LON,  LOTW_QSLRDATE,  LOTW_QSLSDATE,  LOTW_QSL_RCVD,  LOTW_QSL_SENT,
-MAX_BURSTS,  MODE,  MORSE_KEY_INFO,  MORSE_KEY_TYPE,  MS_SHOWER,
+ADDRESS,  ADDRESS_INTL,  AGE,  ALTITUDE,  ANT_AZ,  ANT_EL,  ANT_PATH,  ARRL_SECT,  AWARD_GRANTED,  AWARD_SUBMITTED,  A_INDEX, 
+BAND,  BAND_RX, 
+CALL,  CHECK,  CLASS,  CLUBLOG_QSO_UPLOAD_DATE,  CLUBLOG_QSO_UPLOAD_STATUS,  CNTY,  CNTY_ALT,  COMMENT,  COMMENT_INTL,  CONT,  CONTACTED_OP,  CONTEST_ID,  COUNTRY,  COUNTRY_INTL,  CQZ,  CREDIT_SUBMITTED,  CREDIT_GRANTED, 
+DARC_DOK,  DCL_QSLRDATE,  DCL_QSLSDATE,  DCL_QSL_RCVD,  DCL_QSL_SENT,  DISTANCE,  DXCC, 
+EMAIL,  EQ_CALL,  EQSL_AG,  EQSL_QSLRDATE,  EQSL_QSLSDATE,  EQSL_QSL_RCVD,  EQSL_QSL_SENT, 
+FISTS,  FISTS_CC,  FORCE_INIT,  FREQ,  FREQ_RX, 
+GRIDSQUARE,  GRIDSQUARE_EXT,  GUEST_OP, 
+HAMLOGEU_QSO_UPLOAD_DATE,  HAMLOGEU_QSO_UPLOAD_STATUS,  HAMQTH_QSO_UPLOAD_DATE,  HAMQTH_QSO_UPLOAD_STATUS,  HRDLOG_QSO_UPLOAD_DATE,  HRDLOG_QSO_UPLOAD_STATUS, 
+IOTA,  IOTA_ISLAND_ID,  ITUZ, 
+K_INDEX, 
+LAT,  LON,  LOTW_QSLRDATE,  LOTW_QSLSDATE,  LOTW_QSL_RCVD,  LOTW_QSL_SENT, 
+MAX_BURSTS,  MODE,  MORSE_KEY_INFO,  MORSE_KEY_TYPE,  MS_SHOWER, 
 MY_
-MY_ALTITUDE,  MY_ANTENNA,  MY_ANTENNA_INTL,  MY_ARRL_SECT,
-MY_CITY,  MY_CITY_INTL,  MY_CNTY,  MY_CNTY_ALT,  MY_COUNTRY,  MY_COUNTRY_INTL,  MY_CQ_ZONE,
-MY_DARC_DOK,  MY_DXCC,
-MY_FISTS,
-MY_GRIDSQUARE,  MY_GRIDSQUARE_EXT,
-MY_IOTA,  MY_IOTA_ISLAND_ID,  MY_ITU_ZONE,
-MY_LAT,  MY_LON,
-MY_MORSE_KEY_INFO,  MY_MORSE_KEY_TYPE,
-MY_NAME,  MY_NAME_INTL,
-MY_POSTAL_CODE,  MY_POSTAL_CODE_INTL,  MY_POTA_REF,
-MY_RIG,  MY_RIG_INTL,
-MY_SIG,  MY_SIG_INTL,  MY_SIG_INFO,  MY_SIG_INFO_INTL,  MY_SOTA_REF,  MY_STATE,  MY_STREET,  MY_STREET_INTL,
-MY_USACA_COUNTIES,
-MY_VUCC_GRIDS,
-MY_WWFF_REF,
-NAME,  NAME_INTL,  NOTES,  NOTES_INTL,  NR_BURSTS,  NR_PINGS,
-OPERATOR,  OWNER_CALLSIGN,
-PFX,  POTA_REF,  PRECEDENCE,  PROP_MODE,  PUBLIC_KEY,
-QRZCOM_QSO_DOWNLOAD_DATE,  QRZCOM_QSO_DOWNLOAD_STATUS,  QRZCOM_QSO_UPLOAD_DATE,  QRZCOM_QSO_UPLOAD_STATUS,  QSLMSG,  QSLMSG_INTL,  QSLMSG_RCVD,  QSLRDATE,  QSLSDATE,  QSL_RCVD,  QSL_RCVD_VIA,  QSL_SENT,  QSL_SENT_VIA,  QSL_VIA,  QSO_COMPLETE,  QSO_DATE,  QSO_DATE_OFF,  QSO_RANDOM,  QTH,  QTH_INTL,
-REGION,  RIG,  RIG_INTL,  RST_RCVD,  RST_SENT,  RX_PWR,
-SAT_MODE,  SAT_NAME,  SFI,  SIG,  SIG_INTL,  SIG_INFO,  SIG_INFO_INTL,  SILENT_KEY,  SKCC,  SOTA_REF,  SRX,  SRX_STRING,  STATE,  STATION_CALLSIGN,  STX,  STX_STRING,  SUBMODE,  SWL,
-TEN_TEN,  TIME_OFF,  TIME_ON,  TX_PWR,
-UKSMG,  USACA_COUNTIES,
-VE_PROV,  VUCC_GRIDS,
+MY_ALTITUDE,  MY_ANTENNA,  MY_ANTENNA_INTL,  MY_ARRL_SECT, 
+MY_CITY,  MY_CITY_INTL,  MY_CNTY,  MY_CNTY_ALT,  MY_COUNTRY,  MY_COUNTRY_INTL,  MY_CQ_ZONE, 
+MY_DARC_DOK,  MY_DXCC, 
+MY_FISTS, 
+MY_GRIDSQUARE,  MY_GRIDSQUARE_EXT, 
+MY_IOTA,  MY_IOTA_ISLAND_ID,  MY_ITU_ZONE, 
+MY_LAT,  MY_LON, 
+MY_MORSE_KEY_INFO,  MY_MORSE_KEY_TYPE, 
+MY_NAME,  MY_NAME_INTL, 
+MY_POSTAL_CODE,  MY_POSTAL_CODE_INTL,  MY_POTA_REF, 
+MY_RIG,  MY_RIG_INTL, 
+MY_SIG,  MY_SIG_INTL,  MY_SIG_INFO,  MY_SIG_INFO_INTL,  MY_SOTA_REF,  MY_STATE,  MY_STREET,  MY_STREET_INTL, 
+MY_USACA_COUNTIES, 
+MY_VUCC_GRIDS, 
+MY_WWFF_REF, 
+NAME,  NAME_INTL,  NOTES,  NOTES_INTL,  NR_BURSTS,  NR_PINGS, 
+OPERATOR,  OWNER_CALLSIGN, 
+PFX,  POTA_REF,  PRECEDENCE,  PROP_MODE,  PUBLIC_KEY, 
+QRZCOM_QSO_DOWNLOAD_DATE,  QRZCOM_QSO_DOWNLOAD_STATUS,  QRZCOM_QSO_UPLOAD_DATE,  QRZCOM_QSO_UPLOAD_STATUS,  QSLMSG,  QSLMSG_INTL,  QSLMSG_RCVD,  QSLRDATE,  QSLSDATE,  QSL_RCVD,  QSL_RCVD_VIA,  QSL_SENT,  QSL_SENT_VIA,  QSL_VIA,  QSO_COMPLETE,  QSO_DATE,  QSO_DATE_OFF,  QSO_RANDOM,  QTH,  QTH_INTL, 
+REGION,  RIG,  RIG_INTL,  RST_RCVD,  RST_SENT,  RX_PWR, 
+SAT_MODE,  SAT_NAME,  SFI,  SIG,  SIG_INTL,  SIG_INFO,  SIG_INFO_INTL,  SILENT_KEY,  SKCC,  SOTA_REF,  SRX,  SRX_STRING,  STATE,  STATION_CALLSIGN,  STX,  STX_STRING,  SUBMODE,  SWL, 
+TEN_TEN,  TIME_OFF,  TIME_ON,  TX_PWR, 
+UKSMG,  USACA_COUNTIES, 
+VE_PROV,  VUCC_GRIDS, 
 WEB,  WWFF_REF
 Application-defined Fields
 User-defined Fields
@@ -232,7 +232,7 @@ A member of the Credit enumeration.
 A member of the Credit enumeration followed by a colon and an ampersand-delimited list of members of the QSL_Medium enumeration.
 For example IOTA,WAS:LOTW&CARD,DXCC:CARD
 SponsoredAwardList	 	a comma-delimited list of members of the Sponsored_Award enumeration
-Boolean	B
+Boolean	B	
 if True, the single ASCII character Y or y
 if False, the single ASCII character N or n
 Digit	 	an ASCII character whose code lies in the range of 48 through 57, inclusive
@@ -284,7 +284,7 @@ VE-5082@CA-AB	The Great Trail of Canada (the Canadian Trailway) National Scenic 
 8P-0012	Chancery Lane Swamp National Park
 VK-0556	Pieman River State Reserve
 K-4562@US-CA	Pacific Crest Trail, within California, USA
-
+  
 
 Additional Notes on POTARef:
 A browsable and searchable list of all park references is available.
@@ -296,4 +296,5040 @@ SecondarySubdivisionList	 	a colon-delimited list of two or more members of the 
 MA,Franklin:MA,Hampshire
 Secondary
 Administrative
-SubdivisionListAlt	 	a semicolon (;) delimited, unordered list of one or more members of a Secondary_Administrative_Subdivision_Alt
+SubdivisionListAlt	 	a semicolon (;) delimited, unordered list of one or more members of a Secondary_Administrative_Subdivision_Alt enumeration in the form:
+enumeration-name:enumeration-code
+
+Where there is more than one locality represented by the enumeration-code, they are separated by slash (/) characters.  Only one of each enumeration-name valid for the DXCC entity concerned can appear in the list.
+
+Examples:
+<CNTY_ALT:28>NZ_Regions:Hawkes Bay/Wairoa
+<MY_CNTY_ALT:52>NZ_Islands:North Island;NZ_Regions:Hawkes Bay/Wairoa
+
+The first example shows the enumeration-name NZ_Regions with the region Hawkes Bay and the district Wairoa.
+
+For the purposes of illustration, the second example includes a non-existent subdivision with two available enumeration-codes, NZ_Islands:North Island and NZ_Islands:South Island.
+The example shows:
+the enumeration-name NZ_Islands with the island North Island
+the enumeration-name NZ_Regions with the region Hawkes Bay and the district Wairoa
+SOTARef	 	a sequence of Characters representing an International SOTA Reference.  The sequence comprises:
+an ITU prefix
+if applicable, a SOTA subdivision
+a / Character
+a SOTA Reference Number
+Examples:
+W2/WE-003
+G/LD-003
+WWFFRef	 	a sequence of case-insensitive Characters representing an International WWFF (World Wildlife Flora & Fauna) reference in the form xxFF-nnnn comprising 8 to 11 characters where:
+xx is the WWFF national program and is 1 to 4 characters in length.
+FF- is two F characters followed by a dash character.
+nnnn represents the unique number within the national program and is 4 characters in length with leading zeros.
+Examples:
+KFF-4655
+3DAFF-0002
+III.A.1 Maidenhead Locators
+The following definition applies to the encoding of Maidenhead Locators within ADIF (abbreviated in this section to "locators").  Applications implementing variations of the encoding described here must make any necessary conversions when importing locators from ADIF or exporting locators to ADIF.
+
+Locators are based on WGS-84.  For the purposes of ADIF, they comprise between 1 and 6 pairs of characters.
+The first character in each pair encodes longitude, increasing in an easterly direction.  The second character in a pair encodes latitude, increasing in a northerly direction.
+The second and subsequent pairs of characters subdivide the area defined by the respective previous pair of characters.
+
+Character
+Position	Range
+(case-insensitive)	Span	Dimension
+1	A-R	20 degrees	Longitude
+2	A-R	10 degrees	Latitude
+3	0-9	2 degrees	Longitude
+4	0-9	1 degree	Latitude
+5	A-X	5 minutes	Longitude
+6	A-X	2.5 minutes	Latitude
+7	0-9	30 seconds	Longitude
+8	0-9	15 seconds	Latitude
+9	A-X	1.25 seconds	Longitude
+10	A-X	0.625 seconds	Latitude
+11	0-9	0.125 seconds	Longitude
+12	0-9	0.0625 seconds	Latitude
+
+
+Characters 1 & 2: Two ASCII case-insensitive letters with each letter in the range A-R.
+A letter 'A' as the first letter in the pair represents an area spanning 20 degrees of longitude in an easterly direction and starts at longitude 180 degrees.  Each subsequent first letter (B, C, …) represents the start of an area 20 degrees farther eastwards.
+A letter 'A' as the second letter in the pair represents an area spanning 10 degrees of latitude in a northerly direction and starts at latitude 90 degrees south.  Each subsequent first letter (B, C, …) represents the start of an area 10 degrees farther northwards.
+
+Characters 3 & 4: Two ASCII digits with each digit in the range 0-9.
+A digit 0 as the first digit in the pair represents the start of an area spanning 2 degrees of longitude, subdividing the area given by character 1 into a 2-degree area.  Each subsequent digit (1, 2, …) represents the start of an area 2 degrees farther eastwards.
+A digit 0 as the second digit in the pair represents the start of an area spanning 1 degree of latitude, subdividing the area given by character 2 into a 1-degree area.  Each subsequent digit (1, 2, …) represents the start of an area 1 degree farther northwards.
+
+Characters 5 & 6: Two ASCII case-insensitive letters with each letter in the range A-X.
+In a similar way to characters 3 & 4, these characters subdivide the area given by characters 3 & 4 into areas that are 5 minutes of longitude and 2.5 minutes of latitude.
+
+Characters 7 & 8: Two ASCII digits with each digit in the range 0-9.
+In a similar way to characters 5 & 6, these characters subdivide the area given by characters 5 & 6 into areas that are 30 seconds of longitude and 15 seconds of latitude.
+
+Characters 9 & 10: Two ASCII case-insensitive letters with each letter in the range A-X.
+In a similar way to characters 7 & 8, these characters subdivide the area given by characters 7 & 8 into areas that are 1.25 seconds of longitude and 0.625 seconds of latitude.
+
+Characters 11 & 12: Two ASCII digits with each digit in the range 0-9.
+In a similar way to characters 9 & 10, these characters subdivide the area given by characters 9 & 10 into areas that are 0.125 seconds of longitude and 0.0625 seconds of latitude.
+
+The mapping of locators onto ADIF fields depends on their length and purpose.  An example of a 10-character locator is FN01MH42BQ.
+The GRIDSQUARE and MY_GRIDSQUARE fields can contain between 1 and 4 pairs of characters.  For example:
+<GRIDSQUARE:4>FN01
+<GRIDSQUARE:8>FN01MH42
+ 
+The additional pair of characters in 10-character locators or the additional 2 pairs of characters in 12-character locators must be stored as appropriate in the GRIDSQUARE_EXT and MY_GRIDSQUARE_EXT fields.  For example:
+<GRIDSQUARE:8>FN01MH42 <GRIDSQUARE_EXT:2>BQ
+ 
+Where there is a requirement to store two adjacent 4-character or 6-character locators or four adjacent 4-character or 6-character locators, these must be stored as appropriate in the VUCC_GRIDS or MY_VUCC_GRIDS fields.  Note that only 4-character or 6-character locators are allowed in these two fields.   For example:
+<VUCC_GRIDS:19>EM98,FM08,EM97,FM07
+EM98	FM08
+EM97	FM07
+
+<MY_VUCC_GRIDS:13>IO83UG,IO83UF
+IO83UG
+IO83UF
+If both GRIDSQUARE and VUCC_GRIDS are exported in a QSO record, the locator in GRIDSQUARE should be consistent with the locators in VUCC_GRIDS.  Similarly, MY_GRIDSQUARE should be consistent with MY_VUCC_GRIDS.
+
+For example, the following is consistent because the locators in VUCC_GRIDS have four characters and the first four characters in GRIDSQUARE are the same as those in one of the locators in VUCC_GRIDS:
+<MY_GRID_SQUARE:6>EM97AB <VUCC_GRIDS:19>EM98,FM08,EM97,FM07
+ 
+
+III.B. Enumerations
+Enumeration values are case insensitive.
+
+III.B.1. Ant Path Enumeration
+Abbreviation	Meaning
+G	grayline
+O	other
+S	short path
+L	long path
+ 
+
+III.B.2. ARRL Section Enumeration
+Abbreviation	Section Name	DXCC Entity Code	From Date	Deleted Date
+AL	Alabama	291	 	 
+AK	Alaska	6	 	 
+AB	Alberta	1	 	 
+AR	Arkansas	291	 	 
+AZ	Arizona	291	 	 
+BC	British Columbia	1	 	 
+CO	Colorado	291	 	 
+CT	Connecticut	291	 	 
+DE	Delaware	291	 	 
+EB	East Bay	291	 	 
+EMA	Eastern Massachusetts	291	 	 
+ENY	Eastern New York	291	 	 
+EPA	Eastern Pennsylvania	291	 	 
+EWA	Eastern Washington	291	 	 
+GA	Georgia	291	 	 
+GH	Golden Horseshoe	1	2023/01/01	 
+GTA	Greater Toronto Area
+(replaced by GH)	1	2012/09/01	2023/01/01
+ID	Idaho	291	 	 
+IL	Illinois	291	 	 
+IN	Indiana	291	 	 
+IA	Iowa	291	 	 
+KS	Kansas	291	 	 
+KY	Kentucky	291	 	 
+LAX	Los Angeles	291	 	 
+LA	Louisiana	291	 	 
+ME	Maine	291	 	 
+MB	Manitoba	1	 	 
+MAR	Maritime
+(replaced by NB and NS)	1	 	2023/01/01
+MDC	Maryland-DC	291	 	 
+MI	Michigan	291	 	 
+MN	Minnesota	291	 	 
+MS	Mississippi	291	 	 
+MO	Missouri	291	 	 
+MT	Montana	291	 	 
+NE	Nebraska	291	 	 
+NV	Nevada	291	 	 
+NB	New Brunswick	1	2023/01/01	 
+NH	New Hampshire	291	 	 
+NM	New Mexico	291	 	 
+NLI	New York City-Long Island	291	 	 
+NL	Newfoundland/Labrador	1	 	 
+NC	North Carolina	291	 	 
+ND	North Dakota	291	 	 
+NTX	North Texas	291	 	 
+NFL	Northern Florida	291	 	 
+NNJ	Northern New Jersey	291	 	 
+NNY	Northern New York	291	 	 
+NT	Northwest Territories/Yukon/Nunavut
+(replaced by TER)	1	2003/11/01	2023/01/01
+NWT	Northwest Territories/Yukon/Nunavut
+(replaced by NT)	1	 	2003/11/01
+NS	Nova Scotia	1	2023/01/01	 
+OH	Ohio	291	 	 
+OK	Oklahoma	291	 	 
+ON	Ontario
+(replaced by GTA, ONE, ONN, and ONS)	1	 	2012/09/01
+ONE	Ontario East
+1	2012/09/01	 
+ONN	Ontario North
+1	2012/09/01	 
+ONS	Ontario South
+1	2012/09/01	 
+ORG	Orange	291	 	 
+OR	Oregon	291	 	 
+PAC	Pacific	9, 20, 103, 110, 123, 138, 166, 174, 197, 297, 515	 	 
+PE	Prince Edward Island	1	2020/04/01	 
+PR	Puerto Rico	43, 202	 	 
+QC	Quebec	1	 	 
+RI	Rhode Island	291	 	 
+SV	Sacramento Valley	291	 	 
+SDG	San Diego	291	 	 
+SF	San Francisco	291	 	 
+SJV	San Joaquin Valley	291	 	 
+SB	Santa Barbara	291	 	 
+SCV	Santa Clara Valley	291	 	 
+SK	Saskatchewan	1	 	 
+SC	South Carolina	291	 	 
+SD	South Dakota	291	 	 
+STX	South Texas	291	 	 
+SFL	Southern Florida	291	 	 
+SNJ	Southern New Jersey	291	 	 
+TN	Tennessee	291	 	 
+TER	Territories	1	2023/01/01	 
+VI	US Virgin Islands	105, 182, 285	 	 
+UT	Utah	291	 	 
+VT	Vermont	291	 	 
+VA	Virginia	291	 	 
+WCF	West Central Florida	291	 	 
+WTX	West Texas	291	 	 
+WV	West Virginia	291	 	 
+WMA	Western Massachusetts	291	 	 
+WNY	Western New York	291	 	 
+WPA	Western Pennsylvania	291	 	 
+WWA	Western Washington	291	 	 
+WI	Wisconsin	291	 	 
+WY	Wyoming	291	 	 
+ 
+
+III.B.3. Award Enumeration (import-only)
+Award
+AJA  (import-only)
+CQDX  (import-only)
+CQDXFIELD  (import-only)
+CQWAZ_MIXED  (import-only)
+CQWAZ_CW  (import-only)
+CQWAZ_PHONE  (import-only)
+CQWAZ_RTTY  (import-only)
+CQWAZ_160m  (import-only)
+CQWPX  (import-only)
+DARC_DOK  (import-only)
+DXCC  (import-only)
+DXCC_MIXED  (import-only)
+DXCC_CW  (import-only)
+DXCC_PHONE  (import-only)
+DXCC_RTTY  (import-only)
+IOTA  (import-only)
+JCC  (import-only)
+JCG  (import-only)
+MARATHON  (import-only)
+RDA  (import-only)
+WAB  (import-only)
+WAC  (import-only)
+WAE  (import-only)
+WAIP  (import-only)
+WAJA  (import-only)
+WAS  (import-only)
+WAZ  (import-only)
+USACA  (import-only)
+VUCC  (import-only)
+ 
+
+III.B.4. Band Enumeration
+Band	Lower Freq (MHz)	Upper Freq (MHz)
+2190m	.1357	.1378
+630m	.472	.479
+560m	.501	.504
+160m	1.8	2.0
+80m	3.5	4.0
+60m	5.06	5.45
+40m	7.0	7.3
+30m	10.1	10.15
+20m	14.0	14.35
+17m	18.068	18.168
+15m	21.0	21.45
+12m	24.890	24.99
+10m	28.0	29.7
+8m	40	45
+6m	50	54
+5m	54.000001	69.9
+4m	70	71
+2m	144	148
+1.25m	222	225
+70cm	420	450
+33cm	902	928
+23cm	1240	1300
+13cm	2300	2450
+9cm	3300	3500
+6cm	5650	5925
+3cm	10000	10500
+1.25cm	24000	24250
+6mm	47000	47200
+4mm	75500	81000
+2.5mm	119980	123000
+2mm	134000	149000
+1mm	241000	250000
+submm	300000	7500000
+ 
+
+III.B.5. Contest ID Enumeration
+Contest-ID	Description
+070-160M-SPRINT	PODXS Great Pumpkin Sprint
+070-3-DAY	PODXS Three Day Weekend
+070-31-FLAVORS	PODXS 31 Flavors
+070-40M-SPRINT	PODXS 40m Firecracker Sprint
+070-80M-SPRINT	PODXS 80m Jay Hudak Memorial Sprint
+070-PSKFEST	PODXS PSKFest
+070-ST-PATS-DAY	PODXS St. Patricks Day
+070-VALENTINE-SPRINT	PODXS Valentine Sprint
+10-RTTY	Ten-Meter RTTY Contest (2011 onwards)
+1010-OPEN-SEASON	Open Season Ten Meter QSO Party
+7QP	7th-Area QSO Party
+AL-QSO-PARTY	Alabama QSO Party
+ALL-ASIAN-DX-CW	JARL All Asian DX Contest (CW)
+ALL-ASIAN-DX-PHONE	JARL All Asian DX Contest (PHONE)
+ANARTS-RTTY	ANARTS WW RTTY
+ANATOLIAN-RTTY	Anatolian WW RTTY
+AP-SPRINT	Asia - Pacific Sprint
+AR-QSO-PARTY	Arkansas QSO Party
+ARI-DX	ARI DX Contest
+ARI-EME	ARI Italian EME Trophy
+ARI-IAC-13CM	ARI Italian Activity Contest (13cm+)
+ARI-IAC-23CM	ARI Italian Activity Contest (23cm)
+ARI-IAC-6M	ARI Italian Activity Contest (6m)
+ARI-IAC-UHF	ARI Italian Activity Contest (UHF)
+ARI-IAC-VHF	ARI Italian Activity Contest (VHF)
+ARRL-10	ARRL 10 Meter Contest
+ARRL-10-GHZ	ARRL 10 GHz and Up Contest
+ARRL-160	ARRL 160 Meter Contest
+ARRL-222	ARRL 222 MHz and Up Distance Contest
+ARRL-DIGI	ARRL International Digital Contest
+ARRL-DX-CW	ARRL International DX Contest (CW)
+ARRL-DX-SSB	ARRL International DX Contest (Phone)
+ARRL-EME	ARRL EME contest
+ARRL-FIELD-DAY	ARRL Field Day
+ARRL-RR-CW	ARRL Rookie Roundup (CW)
+ARRL-RR-RTTY	ARRL Rookie Roundup (RTTY)
+ARRL-RR-SSB	ARRL Rookie Roundup (Phone)
+ARRL-RTTY	ARRL RTTY Round-Up
+ARRL-SCR	ARRL School Club Roundup
+ARRL-SS-CW	ARRL November Sweepstakes (CW)
+ARRL-SS-SSB	ARRL November Sweepstakes (Phone)
+ARRL-UHF-AUG	ARRL August UHF Contest
+ARRL-VHF-JAN	ARRL January VHF Sweepstakes
+ARRL-VHF-JUN	ARRL June VHF QSO Party
+ARRL-VHF-SEP	ARRL September VHF QSO Party
+AZ-QSO-PARTY	Arizona QSO Party
+BANGGAI-DX	ORARI Banggai DX Contest
+BARTG-RTTY	BARTG Spring RTTY Contest
+BARTG-SPRINT	BARTG Sprint Contest
+BC-QSO-PARTY	British Columbia QSO Party
+BEKASI-MERDEKA-CONTEST	ORARI Bekasi Merdeka Contest
+CA-QSO-PARTY	California QSO Party
+CIS-DX	CIS DX Contest
+CO-QSO-PARTY	Colorado QSO Party
+CQ-160-CW	CQ WW 160 Meter DX Contest (CW)
+CQ-160-SSB	CQ WW 160 Meter DX Contest (SSB)
+CQ-M	CQ-M International DX Contest
+CQ-VHF	CQ World-Wide VHF Contest
+CQ-WPX-CW	CQ WW WPX Contest (CW)
+CQ-WPX-RTTY	CQ/RJ WW RTTY WPX Contest
+CQ-WPX-SSB	CQ WW WPX Contest (SSB)
+CQ-WW-CW	CQ WW DX Contest (CW)
+CQ-WW-RTTY	CQ/RJ WW RTTY DX Contest
+CQ-WW-SSB	CQ WW DX Contest (SSB)
+CT-QSO-PARTY	Connecticut QSO Party
+CVA-DX-CW	Concurso Verde e Amarelo DX CW Contest
+CVA-DX-SSB	Concurso Verde e Amarelo DX CW Contest
+CWOPS-CW-OPEN	CWops CW Open Competition
+CWOPS-CWT	CWops Mini-CWT Test
+DARC-10	DARC 10m Contest
+DARC-CWA	DARC CW Trainee Contest
+DARC-FT4	DARC FT4 Contest
+DARC-HELL	DARC Hell Contest
+DARC-MICROWAVE	DARC Microwave Contest
+DARC-TRAINEE	DARC Trainee Contest
+DARC-UKW-SPRING	DARC UKW Spring Contest
+DARC-UKW-FIELD-DAY	DARC UKW Summer Contest
+DARC-VHF-UHF-MICROWAVE	DARC VHF-, UHF-, Microwave Contest (May)
+DARC-WAEDC-CW	WAE DX Contest (CW)
+DARC-WAEDC-RTTY	WAE DX Contest (RTTY)
+DARC-WAEDC-SSB	WAE DX Contest (SSB)
+DARC-WAG	DARC Worked All Germany
+DE-QSO-PARTY	Delaware QSO Party
+DL-DX-RTTY	DL-DX RTTY Contest
+DMC-RTTY	DMC RTTY Contest
+EA-CNCW	Concurso Nacional de Telegrafía
+EA-DME	Municipios Españoles
+EA-MAJESTAD-CW	His Majesty The King of Spain CW Contest (2022 and later)
+EA-MAJESTAD-SSB	His Majesty The King of Spain SSB Contest (2022 and later)
+EA-PSK63	EA PSK63
+EA-RTTY (import-only)	Unión de Radioaficionados Españoles RTTY Contest
+EA-SMRE-CW	Su Majestad El Rey de España - CW (2021 and earlier)
+EA-SMRE-SSB	Su Majestad El Rey de España - SSB (2021 and earlier)
+EA-VHF-ATLANTIC	Atlántico V-UHF
+EA-VHF-COM	Combinado de V-UHF
+EA-VHF-COSTA-SOL	Costa del Sol V-UHF
+EA-VHF-EA	Nacional VHF
+EA-VHF-EA1RCS	Segovia EA1RCS V-UHF
+EA-VHF-QSL	QSL V-UHF & 50MHz
+EA-VHF-SADURNI	Sant Sadurni V-UHF
+EA-WW-RTTY	Unión de Radioaficionados Españoles RTTY Contest
+EASTER	DARC Easter Contest
+EPC-PSK63	PSK63 QSO Party
+EU Sprint	EU Sprint
+EU-HF	EU HF Championship
+EU-PSK-DX	EU PSK DX Contest
+EUCW160M	European CW Association 160m CW Party
+FALL SPRINT	FISTS Fall Sprint
+FL-QSO-PARTY	Florida QSO Party
+GA-QSO-PARTY	Georgia QSO Party
+HA-DX	Hungarian DX Contest
+HELVETIA	Helvetia Contest
+HI-QSO-PARTY	Hawaiian QSO Party
+HOLYLAND	IARC Holyland Contest
+IA-QSO-PARTY	Iowa QSO Party
+IARU-FIELD-DAY	DARC IARU Region 1 Field Day
+IARU-HF	IARU HF World Championship
+ICWC-MST	ICWC Medium Speed Test
+ID-QSO-PARTY	Idaho QSO Party
+IL QSO Party	Illinois QSO Party
+IN-QSO-PARTY	Indiana QSO Party
+JARTS-WW-RTTY	JARTS WW RTTY
+JIDX-CW	Japan International DX Contest (CW)
+JIDX-SSB	Japan International DX Contest (SSB)
+JT-DX-RTTY	Mongolian RTTY DX Contest
+K1USN-SSO	K1USN Slow Speed Open
+K1USN-SST	K1USN Slow Speed Test
+KS-QSO-PARTY	Kansas QSO Party
+KY-QSO-PARTY	Kentucky QSO Party
+LA-QSO-PARTY	Louisiana QSO Party
+LDC-RTTY	DRCG Long Distance Contest (RTTY)
+LZ DX	LZ DX Contest
+MAR-QSO-PARTY	Maritimes QSO Party
+MD-QSO-PARTY	Maryland QSO Party
+ME-QSO-PARTY	Maine QSO Party
+MI-QSO-PARTY	Michigan QSO Party
+MIDATLANTIC-QSO-PARTY	Mid-Atlantic QSO Party
+MN-QSO-PARTY	Minnesota QSO Party
+MO-QSO-PARTY	Missouri QSO Party
+MS-QSO-PARTY	Mississippi QSO Party
+MT-QSO-PARTY	Montana QSO Party
+NA-SPRINT-CW	North America Sprint (CW)
+NA-SPRINT-RTTY	North America Sprint (RTTY)
+NA-SPRINT-SSB	North America Sprint (Phone)
+NAQP-CW	North America QSO Party (CW)
+NAQP-RTTY	North America QSO Party (RTTY)
+NAQP-SSB	North America QSO Party (Phone)
+NAVAL	International Naval Contest (INC)
+NC-QSO-PARTY	North Carolina QSO Party
+ND-QSO-PARTY	North Dakota QSO Party
+NE-QSO-PARTY	Nebraska QSO Party
+NEQP	New England QSO Party
+NH-QSO-PARTY	New Hampshire QSO Party
+NJ-QSO-PARTY	New Jersey QSO Party
+NM-QSO-PARTY	New Mexico QSO Party
+NRAU-BALTIC-CW	NRAU-Baltic Contest (CW)
+NRAU-BALTIC-SSB	NRAU-Baltic Contest (SSB)
+NV-QSO-PARTY	Nevada QSO Party
+NY-QSO-PARTY	New York QSO Party
+OCEANIA-DX-CW	Oceania DX Contest (CW)
+OCEANIA-DX-SSB	Oceania DX Contest (SSB)
+OH-QSO-PARTY	Ohio QSO Party
+OK-DX-RTTY	Czech Radio Club OK DX Contest
+OK-OM-DX	Czech Radio Club OK-OM DX Contest
+OK-QSO-PARTY	Oklahoma QSO Party
+OMISS-QSO-PARTY	Old Man International Sideband Society QSO Party
+ON-QSO-PARTY	Ontario QSO Party
+OR-QSO-PARTY	Oregon QSO Party
+ORARI-DX	ORARI DX Contest
+PA-QSO-PARTY	Pennsylvania QSO Party
+PACC	Dutch PACC Contest
+PCC	PCCPro CW Contest
+PSK-DEATHMATCH	MDXA PSK DeathMatch (2005-2010)
+QC-QSO-PARTY	Quebec QSO Party
+RAC (import-only)	Canadian Amateur Radio Society Contest
+RAC-CANADA-DAY	RAC Canada Day Contest
+RAC-CANADA-WINTER	RAC Canada Winter Contest
+RDAC	Russian District Award Contest
+RDXC	Russian DX Contest
+REF-160M	Reseau des Emetteurs Francais 160m Contest
+REF-CW	Reseau des Emetteurs Francais Contest (CW)
+REF-SSB	Reseau des Emetteurs Francais Contest (SSB)
+REP-PORTUGAL-DAY-HF	Rede dos Emissores Portugueses Portugal Day HF Contest
+RI-QSO-PARTY	Rhode Island QSO Party
+RSGB-160	1.8MHz Contest
+RSGB-21/28-CW	21/28 MHz Contest (CW)
+RSGB-21/28-SSB	21/28 MHz Contest (SSB)
+RSGB-80M-CC	80m Club Championships
+RSGB-AFS-CW	Affiliated Societies Team Contest (CW)
+RSGB-AFS-SSB	Affiliated Societies Team Contest (SSB)
+RSGB-CLUB-CALLS	Club Calls
+RSGB-COMMONWEALTH	Commonwealth Contest
+RSGB-IOTA	IOTA Contest
+RSGB-LOW-POWER	Low Power Field Day
+RSGB-NFD	National Field Day
+RSGB-ROPOCO	RoPoCo
+RSGB-SSB-FD	SSB Field Day
+RUSSIAN-RTTY	Russian Radio RTTY Worldwide Contest
+SAC-CW	Scandinavian Activity Contest (CW)
+SAC-SSB	Scandinavian Activity Contest (SSB)
+SARTG-RTTY	SARTG WW RTTY
+SC-QSO-PARTY	South Carolina QSO Party
+SCC-RTTY	SCC RTTY Championship
+SD-QSO-PARTY	South Dakota QSO Party
+ShortRY	DARC RTTY Short Contest
+SKCC-SKS	SKCC Straight Key Sprint
+SKCC-SKSA	SKCC Straight Key Sprint Asia
+SKCC-SKSE	SKCC Straight Key Sprint Europe
+SKCC-WES	SKCC Weekend Sprintathon
+SMP-AUG	SSA Portabeltest
+SMP-MAY	SSA Portabeltest
+SP-DX-RTTY	PRC SPDX Contest (RTTY)
+SPAR-WINTER-FD	SPAR Winter Field Day(2016 and earlier)
+SPDXContest	SP DX Contest
+SPRING SPRINT	FISTS Spring Sprint
+SR-MARATHON	Scottish-Russian Marathon
+STEW-PERRY	Stew Perry Topband Distance Challenge
+SUMMER SPRINT	FISTS Summer Sprint
+TARA-GRID-DIP	TARA Grid Dip PSK-RTTY Shindig
+TARA-RTTY	TARA RTTY Mêlée
+TARA-RUMBLE	TARA Rumble PSK Contest
+TARA-SKIRMISH	TARA Skirmish Digital Prefix Contest
+TEN-RTTY	Ten-Meter RTTY Contest (before 2011)
+TMC-RTTY	The Makrothen Contest
+TN-QSO-PARTY	Tennessee QSO Party
+TX-QSO-PARTY	Texas QSO Party
+UBA-DX-CW	UBA Contest (CW)
+UBA-DX-SSB	UBA Contest (SSB)
+UK-DX-BPSK63	European PSK Club BPSK63 Contest
+UK-DX-RTTY	UK DX RTTY Contest
+UKR-CHAMP-RTTY	Open Ukraine RTTY Championship
+UKRAINIAN DX	Ukrainian DX
+UKSMG-6M-MARATHON	UKSMG 6m Marathon
+UKSMG-SUMMER-ES	UKSMG Summer Es Contest
+URE-DX  (import-only)	Ukrainian DX Contest
+US-COUNTIES-QSO	Mobile Amateur Awards Club
+UT-QSO-PARTY	Utah QSO Party
+VA-QSO-PARTY	Virginia QSO Party
+VENEZ-IND-DAY	RCV Venezuelan Independence Day Contest
+VIRGINIA QSO PARTY (import-only)	Virginia QSO Party
+VOLTA-RTTY	Alessandro Volta RTTY DX Contest
+VT-QSO-PARTY	Vermont QSO Party
+WA-QSO-PARTY	Washington QSO Party
+WFD	Winter Field Day (2017 and later)
+WI-QSO-PARTY	Wisconsin QSO Party
+WIA-HARRY ANGEL	WIA Harry Angel Memorial 80m Sprint
+WIA-JMMFD	WIA John Moyle Memorial Field Day
+WIA-OCDX	WIA Oceania DX (OCDX) Contest
+WIA-REMEMBRANCE	WIA Remembrance Day
+WIA-ROSS HULL	WIA Ross Hull Memorial VHF/UHF Contest
+WIA-TRANS TASMAN	WIA Trans Tasman Low Bands Challenge
+WIA-VHF/UHF FD	WIA VHF UHF Field Days
+WIA-VK SHIRES	WIA VK Shires
+WINTER SPRINT	FISTS Winter Sprint
+WV-QSO-PARTY	West Virginia QSO Party
+WW-DIGI	World Wide Digi DX Contest
+WY-QSO-PARTY	Wyoming QSO Party
+XE-INTL-RTTY	Mexico International Contest (RTTY)
+YOHFDX	YODX HF contest
+YUDXC	YU DX Contest
+ 
+
+III.B.6. Continent Enumeration
+Abbreviation	Continent
+NA	North America
+SA	South America
+EU	Europe
+AF	Africa
+OC	Oceania
+AS	Asia
+AN	Antarctica
+ 
+
+III.B.7. Credit Enumeration
+Credit For	Sponsor	Award	Facet
+CQDX	CQ Magazine	DX	Mixed
+CQDX_BAND	CQ Magazine	DX	Band
+CQDX_MODE	CQ Magazine	DX	Mode
+CQDX_MOBILE	CQ Magazine	DX	Mobile
+CQDX_QRP	CQ Magazine	DX	QRP
+CQDX_SATELLITE	CQ Magazine	DX	Satellite
+CQDXFIELD	CQ Magazine	DX Field	Mixed
+CQDXFIELD_BAND	CQ Magazine	DX Field	Band
+CQDXFIELD_MODE	CQ Magazine	DX Field	Mode
+CQDXFIELD_MOBILE	CQ Magazine	DX Field	Mobile
+CQDXFIELD_QRP	CQ Magazine	DX Field	QRP
+CQDXFIELD_SATELLITE	CQ Magazine	DX Field	Satellite
+CQWAZ_MIXED	CQ Magazine	Worked All Zones (WAZ)	Mixed
+CQWAZ_BAND	CQ Magazine	Worked All Zones (WAZ)	Band
+CQWAZ_MODE	CQ Magazine	Worked All Zones (WAZ)	Mode
+CQWAZ_SATELLITE	CQ Magazine	Worked All Zones (WAZ)	Satellite
+CQWAZ_EME	CQ Magazine	Worked All Zones (WAZ)	EME
+CQWAZ_MOBILE	CQ Magazine	Worked All Zones (WAZ)	Mobile
+CQWAZ_QRP	CQ Magazine	Worked All Zones (WAZ)	QRP
+CQWPX	CQ Magazine	WPX	Mixed
+CQWPX_BAND	CQ Magazine	WPX	Band
+CQWPX_MODE	CQ Magazine	WPX	Mode
+DXCC	ARRL	DX Century Club (DXCC)	Mixed
+DXCC_BAND	ARRL	DX Century Club (DXCC)	Band
+DXCC_MODE	ARRL	DX Century Club (DXCC)	Mode
+DXCC_SATELLITE	ARRL	DX Century Club (DXCC)	Satellite
+EAUSTRALIA	eQSL	eAustralia	Mixed
+ECANADA	eQSL	eCanada	Mixed
+ECOUNTY_STATE	eQSL	eCounty	State
+EDX	eQSL	eDX	Mixed
+EDX100	eQSL	eDX100	Mixed
+EDX100_BAND	eQSL	eDX100	Band
+EDX100_MODE	eQSL	eDX100	Mode
+EECHOLINK50	eQSL	eEcholink50	Echolink
+EGRID_BAND	eQSL	eGrid	Band
+EGRID_SATELLITE	eQSL	eGrid	Satellite
+EPFX300	eQSL	ePfx300	Mixed
+EPFX300_MODE	eQSL	ePfx300	Mode
+EWAS	eQSL	eWAS	Mixed
+EWAS_BAND	eQSL	eWAS	Band
+EWAS_MODE	eQSL	eWAS	Mode
+EWAS_SATELLITE	eQSL	eWAS	Satellite
+EZ40	eQSL	eZ40	Mixed
+EZ40_MODE	eQSL	eZ40	Mode
+FFMA	ARRL	Fred Fish Memorial Award (FFMA)	Mixed
+IOTA	RSGB	Islands on the Air (IOTA)	Mixed
+IOTA_BASIC	RSGB	Islands on the Air (IOTA)	Mixed
+IOTA_CONT	RSGB	Islands on the Air (IOTA)	Continent
+IOTA_GROUP	RSGB	Islands on the Air (IOTA)	Group
+RDA	TAG	Russian Districts Award (RDA)	Mixed
+USACA	CQ Magazine	United States of America Counties (USA-CA)	Mixed
+VUCC_BAND	ARRL	VHF/UHF Century Club Program (VUCC)	Band
+VUCC_SATELLITE	ARRL	VHF/UHF Century Club Program (VUCC)	Satellite
+WAB	WAB AG	Worked All Britain (WAB)	Mixed
+WAC	IARU	Worked All Continents (WAC)	Mixed
+WAC_BAND	IARU	Worked All Continents (WAC)	Band
+WAE	DARC	Worked All Europe (WAE)	Mixed
+WAE_BAND	DARC	Worked All Europe (WAE)	Band
+WAE_MODE	DARC	Worked All Europe (WAE)	Mode
+WAIP	ARI	Worked All Italian Provinces (WAIP)	Mixed
+WAIP_BAND	ARI	Worked All Italian Provinces (WAIP)	Band
+WAIP_MODE	ARI	Worked All Italian Provinces (WAIP)	Mode
+WAS	ARRL	Worked All States (WAS)	Mixed
+WAS_BAND	ARRL	Worked All States (WAS)	Band
+WAS_EME	ARRL	Worked All States (WAS)	EME
+WAS_MODE	ARRL	Worked All States (WAS)	Mode
+WAS_NOVICE	ARRL	Worked All States (WAS)	Novice
+WAS_QRP	ARRL	Worked All States (WAS)	QRP
+WAS_SATELLITE	ARRL	Worked All States (WAS)	Satellite
+WITUZ	RSGB	Worked ITU Zones (WITUZ)	Mixed
+WITUZ_BAND	RSGB	Worked ITU Zones (WITUZ)	Band
+ 
+
+III.B.8. DXCC Entity Code Enumeration
+Entity Code	Entity Name	Deleted
+0	None (the contacted station is known to not be within a DXCC entity)	 
+1	CANADA	 
+2	ABU AIL IS.	Y
+3	AFGHANISTAN	 
+4	AGALEGA & ST. BRANDON IS.	 
+5	ALAND IS.	 
+6	ALASKA	 
+7	ALBANIA	 
+8	ALDABRA	Y
+9	AMERICAN SAMOA	 
+10	AMSTERDAM & ST. PAUL IS.	 
+11	ANDAMAN & NICOBAR IS.	 
+12	ANGUILLA	 
+13	ANTARCTICA	 
+14	ARMENIA	 
+15	ASIATIC RUSSIA	 
+16	NEW ZEALAND SUBANTARCTIC ISLANDS	 
+17	AVES I.	 
+18	AZERBAIJAN	 
+19	BAJO NUEVO	Y
+20	BAKER & HOWLAND IS.	 
+21	BALEARIC IS.	 
+22	PALAU	 
+23	BLENHEIM REEF	Y
+24	BOUVET	 
+25	BRITISH NORTH BORNEO	Y
+26	BRITISH SOMALILAND	Y
+27	BELARUS	 
+28	CANAL ZONE	Y
+29	CANARY IS.	 
+30	CELEBE & MOLUCCA IS.	Y
+31	C. KIRIBATI (BRITISH PHOENIX IS.)	 
+32	CEUTA & MELILLA	 
+33	CHAGOS IS.	 
+34	CHATHAM IS.	 
+35	CHRISTMAS I.	 
+36	CLIPPERTON I.	 
+37	COCOS I.	 
+38	COCOS (KEELING) IS.	 
+39	COMOROS	Y
+40	CRETE	 
+41	CROZET I.	 
+42	DAMAO, DIU	Y
+43	DESECHEO I.	 
+44	DESROCHES	Y
+45	DODECANESE	 
+46	EAST MALAYSIA	 
+47	EASTER I.	 
+48	E. KIRIBATI (LINE IS.)	 
+49	EQUATORIAL GUINEA	 
+50	MEXICO	 
+51	ERITREA	 
+52	ESTONIA	 
+53	ETHIOPIA	 
+54	EUROPEAN RUSSIA	 
+55	FARQUHAR	Y
+56	FERNANDO DE NORONHA	 
+57	FRENCH EQUATORIAL AFRICA	Y
+58	FRENCH INDO-CHINA	Y
+59	FRENCH WEST AFRICA	Y
+60	BAHAMAS	 
+61	FRANZ JOSEF LAND	 
+62	BARBADOS	 
+63	FRENCH GUIANA	 
+64	BERMUDA	 
+65	BRITISH VIRGIN IS.	 
+66	BELIZE	 
+67	FRENCH INDIA	Y
+68	KUWAIT/SAUDI ARABIA NEUTRAL ZONE	Y
+69	CAYMAN IS.	 
+70	CUBA	 
+71	GALAPAGOS IS.	 
+72	DOMINICAN REPUBLIC	 
+74	EL SALVADOR	 
+75	GEORGIA	 
+76	GUATEMALA	 
+77	GRENADA	 
+78	HAITI	 
+79	GUADELOUPE	 
+80	HONDURAS	 
+81	GERMANY	Y
+82	JAMAICA	 
+84	MARTINIQUE	 
+85	BONAIRE, CURACAO	Y
+86	NICARAGUA	 
+88	PANAMA	 
+89	TURKS & CAICOS IS.	 
+90	TRINIDAD & TOBAGO	 
+91	ARUBA	 
+93	GEYSER REEF	Y
+94	ANTIGUA & BARBUDA	 
+95	DOMINICA	 
+96	MONTSERRAT	 
+97	ST. LUCIA	 
+98	ST. VINCENT	 
+99	GLORIOSO IS.	 
+100	ARGENTINA	 
+101	GOA	Y
+102	GOLD COAST, TOGOLAND	Y
+103	GUAM	 
+104	BOLIVIA	 
+105	GUANTANAMO BAY	 
+106	GUERNSEY	 
+107	GUINEA	 
+108	BRAZIL	 
+109	GUINEA-BISSAU	 
+110	HAWAII	 
+111	HEARD I.	 
+112	CHILE	 
+113	IFNI	Y
+114	ISLE OF MAN	 
+115	ITALIAN SOMALILAND	Y
+116	COLOMBIA	 
+117	ITU HQ	 
+118	JAN MAYEN	 
+119	JAVA	Y
+120	ECUADOR	 
+122	JERSEY	 
+123	JOHNSTON I.	 
+124	JUAN DE NOVA, EUROPA	 
+125	JUAN FERNANDEZ IS.	 
+126	KALININGRAD	 
+127	KAMARAN IS.	Y
+128	KARELO-FINNISH REPUBLIC	Y
+129	GUYANA	 
+130	KAZAKHSTAN	 
+131	KERGUELEN IS.	 
+132	PARAGUAY	 
+133	KERMADEC IS.	 
+134	KINGMAN REEF	Y
+135	KYRGYZSTAN	 
+136	PERU	 
+137	REPUBLIC OF KOREA	 
+138	KURE I.	 
+139	KURIA MURIA I.	Y
+140	SURINAME	 
+141	FALKLAND IS.	 
+142	LAKSHADWEEP IS.	 
+143	LAOS	 
+144	URUGUAY	 
+145	LATVIA	 
+146	LITHUANIA	 
+147	LORD HOWE I.	 
+148	VENEZUELA	 
+149	AZORES	 
+150	AUSTRALIA	 
+151	MALYJ VYSOTSKIJ I.	Y
+152	MACAO	 
+153	MACQUARIE I.	 
+154	YEMEN ARAB REPUBLIC	Y
+155	MALAYA	Y
+157	NAURU	 
+158	VANUATU	 
+159	MALDIVES	 
+160	TONGA	 
+161	MALPELO I.	 
+162	NEW CALEDONIA	 
+163	PAPUA NEW GUINEA	 
+164	MANCHURIA	Y
+165	MAURITIUS	 
+166	MARIANA IS.	 
+167	MARKET REEF	 
+168	MARSHALL IS.	 
+169	MAYOTTE	 
+170	NEW ZEALAND	 
+171	MELLISH REEF	 
+172	PITCAIRN I.	 
+173	MICRONESIA	 
+174	MIDWAY I.	 
+175	FRENCH POLYNESIA	 
+176	FIJI	 
+177	MINAMI TORISHIMA	 
+178	MINERVA REEF	Y
+179	MOLDOVA	 
+180	MOUNT ATHOS	 
+181	MOZAMBIQUE	 
+182	NAVASSA I.	 
+183	NETHERLANDS BORNEO	Y
+184	NETHERLANDS NEW GUINEA	Y
+185	SOLOMON IS.	 
+186	NEWFOUNDLAND, LABRADOR	Y
+187	NIGER	 
+188	NIUE	 
+189	NORFOLK I.	 
+190	SAMOA	 
+191	NORTH COOK IS.	 
+192	OGASAWARA	 
+193	OKINAWA (RYUKYU IS.)	Y
+194	OKINO TORI-SHIMA	Y
+195	ANNOBON I.	 
+196	PALESTINE	Y
+197	PALMYRA & JARVIS IS.	 
+198	PAPUA TERRITORY	Y
+199	PETER 1 I.	 
+200	PORTUGUESE TIMOR	Y
+201	PRINCE EDWARD & MARION IS.	 
+202	PUERTO RICO	 
+203	ANDORRA	 
+204	REVILLAGIGEDO	 
+205	ASCENSION I.	 
+206	AUSTRIA	 
+207	RODRIGUES I.	 
+208	RUANDA-URUNDI	Y
+209	BELGIUM	 
+210	SAAR	Y
+211	SABLE I.	 
+212	BULGARIA	 
+213	SAINT MARTIN	 
+214	CORSICA	 
+215	CYPRUS	 
+216	SAN ANDRES & PROVIDENCIA	 
+217	SAN FELIX & SAN AMBROSIO	 
+218	CZECHOSLOVAKIA	Y
+219	SAO TOME & PRINCIPE	 
+220	SARAWAK	Y
+221	DENMARK	 
+222	FAROE IS.	 
+223	ENGLAND	 
+224	FINLAND	 
+225	SARDINIA	 
+226	SAUDI ARABIA/IRAQ NEUTRAL ZONE	Y
+227	FRANCE	 
+228	SERRANA BANK & RONCADOR CAY	Y
+229	GERMAN DEMOCRATIC REPUBLIC	Y
+230	FEDERAL REPUBLIC OF GERMANY	 
+231	SIKKIM	Y
+232	SOMALIA	 
+233	GIBRALTAR	 
+234	SOUTH COOK IS.	 
+235	SOUTH GEORGIA I.	 
+236	GREECE	 
+237	GREENLAND	 
+238	SOUTH ORKNEY IS.	 
+239	HUNGARY	 
+240	SOUTH SANDWICH IS.	 
+241	SOUTH SHETLAND IS.	 
+242	ICELAND	 
+243	PEOPLE'S DEMOCRATIC REP. OF YEMEN	Y
+244	SOUTHERN SUDAN	Y
+245	IRELAND	 
+246	SOVEREIGN MILITARY ORDER OF MALTA	 
+247	SPRATLY IS.	 
+248	ITALY	 
+249	ST. KITTS & NEVIS	 
+250	ST. HELENA	 
+251	LIECHTENSTEIN	 
+252	ST. PAUL I.	 
+253	ST. PETER & ST. PAUL ROCKS	 
+254	LUXEMBOURG	 
+255	ST. MAARTEN, SABA, ST. EUSTATIUS	Y
+256	MADEIRA IS.	 
+257	MALTA	 
+258	SUMATRA	Y
+259	SVALBARD	 
+260	MONACO	 
+261	SWAN IS.	Y
+262	TAJIKISTAN	 
+263	NETHERLANDS	 
+264	TANGIER	Y
+265	NORTHERN IRELAND	 
+266	NORWAY	 
+267	TERRITORY OF NEW GUINEA	Y
+268	TIBET	Y
+269	POLAND	 
+270	TOKELAU IS.	 
+271	TRIESTE	Y
+272	PORTUGAL	 
+273	TRINDADE & MARTIM VAZ IS.	 
+274	TRISTAN DA CUNHA & GOUGH I.	 
+275	ROMANIA	 
+276	TROMELIN I.	 
+277	ST. PIERRE & MIQUELON	 
+278	SAN MARINO	 
+279	SCOTLAND	 
+280	TURKMENISTAN	 
+281	SPAIN	 
+282	TUVALU	 
+283	UK SOVEREIGN BASE AREAS ON CYPRUS	 
+284	SWEDEN	 
+285	VIRGIN IS.	 
+286	UGANDA	 
+287	SWITZERLAND	 
+288	UKRAINE	 
+289	UNITED NATIONS HQ	 
+291	UNITED STATES OF AMERICA	 
+292	UZBEKISTAN	 
+293	VIET NAM	 
+294	WALES	 
+295	VATICAN	 
+296	SERBIA	 
+297	WAKE I.	 
+298	WALLIS & FUTUNA IS.	 
+299	WEST MALAYSIA	 
+301	W. KIRIBATI (GILBERT IS. )	 
+302	WESTERN SAHARA	 
+303	WILLIS I.	 
+304	BAHRAIN	 
+305	BANGLADESH	 
+306	BHUTAN	 
+307	ZANZIBAR	Y
+308	COSTA RICA	 
+309	MYANMAR	 
+312	CAMBODIA	 
+315	SRI LANKA	 
+318	CHINA	 
+321	HONG KONG	 
+324	INDIA	 
+327	INDONESIA	 
+330	IRAN	 
+333	IRAQ	 
+336	ISRAEL	 
+339	JAPAN	 
+342	JORDAN	 
+344	DEMOCRATIC PEOPLE'S REP. OF KOREA	 
+345	BRUNEI DARUSSALAM	 
+348	KUWAIT	 
+354	LEBANON	 
+363	MONGOLIA	 
+369	NEPAL	 
+370	OMAN	 
+372	PAKISTAN	 
+375	PHILIPPINES	 
+376	QATAR	 
+378	SAUDI ARABIA	 
+379	SEYCHELLES	 
+381	SINGAPORE	 
+382	DJIBOUTI	 
+384	SYRIA	 
+386	TAIWAN	 
+387	THAILAND	 
+390	TURKEY	 
+391	UNITED ARAB EMIRATES	 
+400	ALGERIA	 
+401	ANGOLA	 
+402	BOTSWANA	 
+404	BURUNDI	 
+406	CAMEROON	 
+408	CENTRAL AFRICA	 
+409	CAPE VERDE	 
+410	CHAD	 
+411	COMOROS	 
+412	REPUBLIC OF THE CONGO	 
+414	DEMOCRATIC REPUBLIC OF THE CONGO	 
+416	BENIN	 
+420	GABON	 
+422	THE GAMBIA	 
+424	GHANA	 
+428	COTE D'IVOIRE	 
+430	KENYA	 
+432	LESOTHO	 
+434	LIBERIA	 
+436	LIBYA	 
+438	MADAGASCAR	 
+440	MALAWI	 
+442	MALI	 
+444	MAURITANIA	 
+446	MOROCCO	 
+450	NIGERIA	 
+452	ZIMBABWE	 
+453	REUNION I.	 
+454	RWANDA	 
+456	SENEGAL	 
+458	SIERRA LEONE	 
+460	ROTUMA I.	 
+462	REPUBLIC OF SOUTH AFRICA	 
+464	NAMIBIA	 
+466	SUDAN	 
+468	KINGDOM OF ESWATINI	 
+470	TANZANIA	 
+474	TUNISIA	 
+478	EGYPT	 
+480	BURKINA FASO	 
+482	ZAMBIA	 
+483	TOGO	 
+488	WALVIS BAY	Y
+489	CONWAY REEF	 
+490	BANABA I. (OCEAN I.)	 
+492	YEMEN	 
+493	PENGUIN IS.	Y
+497	CROATIA	 
+499	SLOVENIA	 
+501	BOSNIA-HERZEGOVINA	 
+502	NORTH MACEDONIA (REPUBLIC OF)	 
+503	CZECH REPUBLIC	 
+504	SLOVAK REPUBLIC	 
+505	PRATAS I.	 
+506	SCARBOROUGH REEF	 
+507	TEMOTU PROVINCE	 
+508	AUSTRAL I.	 
+509	MARQUESAS IS.	 
+510	PALESTINE	 
+511	TIMOR-LESTE	 
+512	CHESTERFIELD IS.	 
+513	DUCIE I.	 
+514	MONTENEGRO	 
+515	SWAINS I.	 
+516	SAINT BARTHELEMY	 
+517	CURACAO	 
+518	SINT MAARTEN	 
+519	SABA & ST. EUSTATIUS	 
+520	BONAIRE	 
+521	SOUTH SUDAN (REPUBLIC OF)	 
+522	REPUBLIC OF KOSOVO	 
+ 
+
+III.B.9. EQSL_AG Enumeration
+Status	Description
+Y	The QSO's callsign holds eQSL.cc's "Authenticity Guaranteed" status
+N	The QSO's callsign does not hold eQSL.cc's "Authenticity Guaranteed" status
+U	Unspecified (Default)
+ 
+
+III.B.10. Mode Enumeration
+Mode	Submodes	Description
+AM	 	 
+ARDOP	 	Amateur Radio Digital Open Protocol
+ATV	 	 
+CHIP	CHIP64, CHIP128	 
+CLO	 	 
+CONTESTI	 	 
+CW	PCW	 
+DIGITALVOICE	C4FM, DMR, DSTAR, FREEDV, M17	 
+DOMINO	DOM-M, DOM4, DOM5, DOM8, DOM11, DOM16, DOM22, DOM44, DOM88, DOMINOEX, DOMINOF	 
+DYNAMIC	FREEDATA, VARA HF, VARA SATELLITE, VARA FM 1200, VARA FM 9600	 
+FAX	 	 
+FM	 	 
+FSK441	 	 
+FSK	SCAMP_FAST, SCAMP_SLOW, SCAMP_VSLOW	Frequency shift keying
+FT8	 	Franke-Taylor design, 8-FSK modulation
+HELL	FMHELL, FSKH105, FSKH245, FSKHELL, HELL80, HELLX5, HELLX9, HFSK, PSKHELL, SLOWHELL	 
+ISCAT	ISCAT-A, ISCAT-B	 
+JT4	JT4A, JT4B, JT4C, JT4D, JT4E, JT4F, JT4G	 
+JT6M	 	 
+JT9	JT9-1, JT9-2, JT9-5, JT9-10, JT9-30, JT9A, JT9B, JT9C, JT9D, JT9E, JT9E FAST, JT9F, JT9F FAST, JT9G, JT9G FAST, JT9H, JT9H FAST	 
+JT44	 	 
+JT65	JT65A, JT65B, JT65B2, JT65C, JT65C2	 
+MFSK	FSQCALL, FST4, FST4W, FT2, FT4, JS8, JTMS, JTTY, MFSK4, MFSK8, MFSK11, MFSK16, MFSK22, MFSK31, MFSK32, MFSK64, MFSK64L, MFSK128 MFSK128L, Q65	 
+MSK144	 	 
+MTONE	SCAMP_OO, SCAMP_OO_SLW	Single modulated tone
+MT63	 	 
+OFDM	RIBBIT_PIX, RIBBIT_SMS	Orthogonal Frequency-Division Multiplexing including COFDM
+OLIVIA	OLIVIA 4/125, OLIVIA 4/250, OLIVIA 8/250, OLIVIA 8/500, OLIVIA 16/500, OLIVIA 16/1000, OLIVIA 32/1000	 
+OPERA	OPERA-BEACON, OPERA-QSO	 
+PAC	PAC2, PAC3, PAC4	 
+PAX	PAX2	 
+PKT	 	 
+PSK	8PSK125, 8PSK125F, 8PSK125FL, 8PSK250, 8PSK250F, 8PSK250FL, 8PSK500, 8PSK500F, 8PSK1000, 8PSK1000F, 8PSK1200F, FSK31, PSK10, PSK31, PSK63, PSK63F, PSK63RC4, PSK63RC5, PSK63RC10, PSK63RC20, PSK63RC32, PSK125, PSK125C12, PSK125R, PSK125RC10, PSK125RC12, PSK125RC16, PSK125RC4, PSK125RC5, PSK250, PSK250C6, PSK250R, PSK250RC2, PSK250RC3, PSK250RC5, PSK250RC6, PSK250RC7, PSK500, PSK500C2, PSK500C4, PSK500R, PSK500RC2, PSK500RC3, PSK500RC4, PSK800C2, PSK800RC2, PSK1000, PSK1000C2, PSK1000R, PSK1000RC2, PSKAM10, PSKAM31, PSKAM50, PSKFEC31, QPSK31, QPSK63, QPSK125, QPSK250, QPSK500, SIM31	 
+PSK2K	 	 
+Q15	 	 
+QRA64	QRA64A, QRA64B, QRA64C, QRA64D, QRA64E	 
+ROS	ROS-EME, ROS-HF, ROS-MF	 
+RTTY	ASCI	 
+RTTYM	 	 
+SSB	LSB, USB	 
+SSTV	 	 
+T10	 	Tonal 10 digital mode with focus on sensitivity, band capacity and resistance to the HF Doppler frequency spread
+THOR	THOR-M, THOR4, THOR5, THOR8, THOR11, THOR16, THOR22, THOR25X4, THOR50X1, THOR50X2, THOR100	 
+THRB	THRBX, THRBX1, THRBX2, THRBX4, THROB1, THROB2, THROB4	 
+TOR	AMTORFEC, GTOR, NAVTEX, SITORB	 
+V4	 	 
+VOI	 	 
+WINMOR	 	 
+WSPR	 	 
+AMTORFEC  (import-only) 	 	 
+ASCI  (import-only) 	 	 
+C4FM  (import-only) 	 	C4FM 4-level FSK Technology
+ 
+Imported QSOs with <MODE:4>C4FM> must be exported as:
+<MODE:12>DIGITALVOICE <SUBMODE:4>C4FM
+CHIP64  (import-only) 	 	 
+CHIP128  (import-only) 	 	 
+DOMINOF  (import-only) 	 	 
+DSTAR  (import-only) 	 	Digital Smart Technologies for Amateur Radio
+ 
+Imported QSOs with <MODE:5>DSTAR must be exported as:
+<MODE:12>DIGITALVOICE <SUBMODE:5>DSTAR
+FMHELL  (import-only) 	 	 
+FSK31  (import-only) 	 	 
+GTOR  (import-only) 	 	 
+HELL80  (import-only) 	 	 
+HFSK  (import-only) 	 	 
+JT4A  (import-only) 	 	 
+JT4B  (import-only) 	 	 
+JT4C  (import-only) 	 	 
+JT4D  (import-only) 	 	 
+JT4E  (import-only) 	 	 
+JT4F  (import-only) 	 	 
+JT4G  (import-only) 	 	 
+JT65A  (import-only) 	 	 
+JT65B  (import-only) 	 	 
+JT65C  (import-only) 	 	 
+MFSK8  (import-only) 	 	 
+MFSK16  (import-only) 	 	 
+PAC2  (import-only) 	 	 
+PAC3  (import-only) 	 	 
+PAX2  (import-only) 	 	 
+PCW  (import-only) 	 	 
+PSK10  (import-only) 	 	 
+PSK31  (import-only) 	 	 
+PSK63  (import-only) 	 	 
+PSK63F  (import-only) 	 	 
+PSK125  (import-only) 	 	 
+PSKAM10  (import-only) 	 	 
+PSKAM31  (import-only) 	 	 
+PSKAM50  (import-only) 	 	 
+PSKFEC31  (import-only) 	 	 
+PSKHELL  (import-only) 	 	 
+QPSK31  (import-only) 	 	 
+QPSK63  (import-only) 	 	 
+QPSK125  (import-only) 	 	 
+THRBX  (import-only) 	 	 
+III.B.11. Morse Key Type Enumeration
+Abbreviation	Meaning	Characteristics	Morse Composition	Examples
+SK	Straight Key	a single control which actuates a single switch.	a human makes the dits and dahs and builds characters	Lionel J-38
+SS	Sideswiper	a single control which actuates a SPDT (single poll, double throw) switch.	a human makes the dits and dahs and builds characters	W1SFR Green Machine Torsion Bar Cootie
+BUG	Mechanical semi-automatic keyer or Bug	a control which actuates a switch as well as a control which actuates a spring and pendulum mechanism which actuates a switch. Both switches are wired in parallel.	a machine makes the dits and a human makes the dahs and builds characters.	Vibroplex Blue Racer Deluxe
+FAB	Mechanical fully-automatic keyer or Bug	a control which actuates one of two separate spring and pendulum mechanisms at a time, each of which actuates a switch. Both switches are wired in parallel.	a machine makes the dits and the dahs and a human builds characters.	GHD GN209FA fully-automatic bug
+SP	Single Paddle	a single control which actuates two independent switches.	a machine makes the dits and the dahs and a human builds the characters.	American Morse Mini-B
+DP	Dual Paddle	two controls which actuate independent switches.	a machine makes the dits and the dahs and a human builds the characters.	Begali Sculpture, VK3IL pressure paddles, M0UKD capacitive touch paddles
+CPU	Computer Driven	an electronic device performs the actuation of the switch.	a machine makes the dits and dahs to build the characters.	N1MM+ Logging Software
+ 
+
+III.B.12. Primary Administrative Subdivision Enumeration
+Enumeration for Country Code 1 (Canada)
+Code	Primary Administrative Subdivision	CQ Zone	ITU Zone
+NS	Nova Scotia	05	09
+QC	Québec	02,05	04,09
+ON	Ontario	04	03,04
+MB	Manitoba	04	03,04
+SK	Saskatchewan	04	03
+AB	Alberta	04	02
+BC	British Columbia	03	02
+NT	Northwest Territories	01,02,04	03,04,75
+NB	New Brunswick	05	09
+NL	Newfoundland and Labrador	02,05	09
+YT	Yukon	01	02
+PE	Prince Edward Island	05	09
+NU	Nunavut	02	04,09
+ 
+
+ 
+
+Enumeration for Country Code 5 (Aland Is.)
+Code	Primary Administrative Subdivision	Deleted
+001	Brändö	 
+002	Eckerö	 
+003	Finström	 
+004	Föglö	 
+005	Geta	 
+006	Hammarland	 
+007	Jomala	 
+008	Kumlinge	 
+009	Kökar	 
+010	Lemland	 
+011	Lumparland	 
+012	Maarianhamina	 
+013	Saltvik	 
+014	Sottunga	 
+015	Sund	 
+016	Vårdö	 
+051	Märket	Y
+ 
+
+ 
+
+Enumeration for Country Code 6 (Alaska)
+Code	Primary Administrative Subdivision
+AK	Alaska
+ 
+
+ 
+
+Enumeration for Country Code 11 (Andaman & Nicobar Is.)
+Code	Primary Administrative Subdivision
+AN	Andaman and Nicobar Islands (Union territory)
+Reference: ISO 3166-2: India
+ 
+
+ 
+
+Enumeration for Country Code 15 (Asiatic Russia)
+Code	Primary Administrative Subdivision	Oblast #	CQ Zone	ITU Zone
+UO	Ust’-Ordynsky Autonomous Okrug - for contacts made before 2008-01-01	174	18	32
+AB	Aginsky Buryatsky Autonomous Okrug - for contacts made before 2008-03-01	175	18	33
+CB	Chelyabinsk (Chelyabinskaya oblast)	165	17	30
+SV	Sverdlovskaya oblast	154	17	30
+PM	Perm` (Permskaya oblast) - for contacts made on or after 2005-12-01	140	17	30
+PM	Permskaya Kraj - for contacts made before 2005-12-01	140	17	30
+KP	Komi-Permyatsky Autonomous Okrug - for contacts made before 2005-12-01	141	17	30
+TO	Tomsk (Tomskaya oblast)	158	18	30
+HM	Khanty-Mansyisky Autonomous Okrug	162	17	21
+YN	Yamalo-Nenetsky Autonomous Okrug	163	17	21
+TN	Tyumen' (Tyumenskaya oblast)	161	17	30
+OM	Omsk (Omskaya oblast)	146	17	30
+NS	Novosibirsk (Novosibirskaya oblast)	145	18	31
+KN	Kurgan (Kurganskaya oblast)	134	17	30
+OB	Orenburg (Orenburgskaya oblast)	167	S=16 T=17	30
+KE	Kemerovo (Kemerovskaya oblast)	130	18	31
+BA	Republic of Bashkortostan	84	16	30
+KO	Republic of Komi	90	17	20
+AL	Altaysky Kraj	99	18	31
+GA	Republic Gorny Altay	100	18	31
+KK	Krasnoyarsk (Krasnoyarsk Kraj)	103	18	32
+TM	Taymyr Autonomous Okrug - for contacts made before 2007-01-01	105	18	32
+HK	Khabarovsk (Khabarovsky Kraj)	110	19	34
+EA	Yevreyskaya Autonomous Oblast	111	19	33
+SL	Sakhalin (Sakhalinskaya oblast)	153	19	34
+EV	Evenkiysky Autonomous Okrug - for contacts made before 2007-01-01	106	18	22
+MG	Magadan (Magadanskaya oblast)	138	19	24
+AM	Amurskaya oblast	112	19	33
+CK	Chukotka Autonomous Okrug	139	19	26
+PK	Primorsky Kraj	107	19	34
+BU	Republic of Buryatia	85	18	32
+YA	Sakha (Yakut) Republic	98	19	32
+IR	Irkutsk (Irkutskaya oblast)	124	18	32
+CT	Zabaykalsky Kraj - referred to as Chita (Chitinskaya oblast) before 2008-03-01	166	18	33
+HA	Republic of Khakassia	104	18	32
+KY	Koryaksky Autonomous Okrug - for contacts made before 2007-01-01	129	19	25
+TU	Republic of Tuva	159	23	32
+KT	Kamchatka (Kamchatskaya oblast)	128	19	35
+ 
+
+ 
+
+Enumeration for Country Code 21 (Balearic Is.)
+Code	Primary Administrative Subdivision
+IB	Balears
+Reference: ISO 3166-2: Spain
+ 
+
+ 
+
+Enumeration for Country Code 27 (Belarus)
+Code	Primary Administrative Subdivision
+MI	Minsk (Minskaya voblasts')
+BR	Brest (Brestskaya voblasts')
+HR	Grodno (Hrodzenskaya voblasts')
+VI	Vitebsk (Vitsyebskaya voblasts')
+MA	Mogilev (Mahilyowskaya voblasts')
+HO	Gomel (Homyel'skaya voblasts')
+HM	Horad Minsk
+ 
+
+ 
+
+Enumeration for Country Code 29 (Canary Is.)
+Code	Primary Administrative Subdivision
+GC	Las Palmas
+TF	Santa Cruz de Tenerife
+Reference: ISO 3166-2: Spain
+ 
+
+ 
+
+Enumeration for Country Code 32 (Ceuta & Melilla)
+Code	Primary Administrative Subdivision
+CE	Ceuta
+ML	Melilla
+Reference: ISO 3166-2: Spain
+ 
+
+ 
+
+Enumeration for Country Code 50 (Mexico)
+Code	Primary Administrative Subdivision
+COL	Colima
+DF	Distrito Federal (import-only replaced by CMX)
+CMX	Ciudad de México
+EMX	Estado de México (import-only)
+MEX	México
+GTO	Guanajuato (import-only)
+GUA	Guanajuato
+HGO	Hidalgo (import-only)
+HID	Hidalgo
+JAL	Jalisco
+MIC	Michoacán de Ocampo
+MOR	Morelos
+NAY	Nayarit
+PUE	Puebla
+QRO	Querétaro de Arteaga (import-only)
+QUE	Querétaro
+TLX	Tlaxcala (import-only)
+TLA	Tlaxcala
+VER	Veracruz de Ignacio de la Llave
+AGS	Aguascalientes (import-only)
+AGU	Aguascalientes
+BC	Baja California (import-only)
+BCN	Baja California
+BCS	Baja California Sur
+CHH	Chihuahua
+COA	Coahuila de Zaragoza
+DGO	Durango (import-only)
+DUR	Durango
+NL	Nuevo Leon (import-only)
+NLE	Nuevo León
+SLP	San Luis Potosí
+SIN	Sinaloa
+SON	Sonora
+TMS	Tamaulipas (import-only)
+TAM	Tamaulipas
+ZAC	Zacatecas
+CAM	Campeche
+CHS	Chiapas (import-only)
+CHP	Chiapas
+GRO	Guerrero
+OAX	Oaxaca
+QTR	Quintana Roo (import-only)
+ROO	Quintana Roo
+TAB	Tabasco
+YUC	Yucatán
+Reference: ISO 3166-2: Mexico
+ 
+
+ 
+
+Enumeration for Country Code 54 (European Russia)
+Code	Primary Administrative Subdivision	Oblast #	CQ Zone	ITU Zone
+SP	City of St. Petersburg	169	16	29
+LO	Leningradskaya oblast	136	16	29
+KL	Republic of Karelia	88	16	19
+AR	Arkhangelsk (Arkhangelskaya oblast)	113	16	19
+NO	Nenetsky Autonomous Okrug	114	16	20
+VO	Vologda (Vologodskaya oblast)	120	16	29
+NV	Novgorodskaya oblast	144	16	29
+PS	Pskov (Pskovskaya oblast)	149	16	29
+MU	Murmansk (Murmanskaya oblast)	143	16	19
+MA	City of Moscow	170	16	29
+MO	Moscowskaya oblast	142	16	29
+OR	Oryel (Orlovskaya oblast)	147	16	29
+LP	Lipetsk (Lipetskaya oblast)	137	16	29
+TV	Tver' (Tverskaya oblast)	126	16	29
+SM	Smolensk (Smolenskaya oblast)	155	16	29
+YR	Yaroslavl (Yaroslavskaya oblast)	168	16	29
+KS	Kostroma (Kostromskaya oblast)	132	16	29
+TL	Tula (Tul'skaya oblast)	160	16	29
+VR	Voronezh (Voronezhskaya oblast)	121	16	29
+TB	Tambov (Tambovskaya oblast)	157	16	29
+RA	Ryazan' (Ryazanskaya oblast)	151	16	29
+NN	Nizhni Novgorod (Nizhegorodskaya oblast)	122	16	29
+IV	Ivanovo (Ivanovskaya oblast)	123	16	29
+VL	Vladimir (Vladimirskaya oblast)	119	16	29
+KU	Kursk (Kurskaya oblast)	135	16	29
+KG	Kaluga (Kaluzhskaya oblast)	127	16	29
+BR	Bryansk (Bryanskaya oblast)	118	16	29
+BO	Belgorod (Belgorodskaya oblast)	117	16	29
+VG	Volgograd (Volgogradskaya oblast)	156	16	29
+SA	Saratov (Saratovskaya oblast)	152	16	29
+PE	Penza (Penzenskaya oblast)	148	16	29
+SR	Samara (Samarskaya oblast)	133	16	30
+UL	Ulyanovsk (Ulyanovskaya oblast)	164	16	29
+KI	Kirov (Kirovskaya oblast)	131	16	30
+TA	Republic of Tataria	94	16	30
+MR	Republic of Marij-El	91	16	29
+MD	Republic of Mordovia	92	16	29
+UD	Republic of Udmurtia	95	16	30
+CU	Republic of Chuvashia	97	16	29
+KR	Krasnodar (Krasnodarsky Kraj)	101	16	29
+KC	Republic of Karachaevo-Cherkessia	109	16	29
+ST	Stavropol' (Stavropolsky Kraj)	108	16	29
+KM	Republic of Kalmykia	89	16	29
+SO	Republic of Northern Ossetia	93	16	29
+RO	Rostov-on-Don (Rostovskaya oblast)	150	16	29
+CN	Republic Chechnya	96	16	29
+IN	Republic of Ingushetia	96	16	29
+AO	Astrakhan' (Astrakhanskaya oblast)	115	16	29
+DA	Republic of Daghestan	86	16	29
+KB	Republic of Kabardino-Balkaria	87	16	29
+AD	Republic of Adygeya	102	16	29
+ 
+
+ 
+
+Enumeration for Country Code 61 (Franz Josef Land)
+Code	Primary Administrative Subdivision
+AR	Arkhangelsk (Arkhangelskaya oblast)
+FJL	Franz Josef Land (import-only)
+ 
+
+ 
+
+Enumeration for Country Code 70 (Cuba)
+Code	Primary Administrative Subdivision
+15	Artemisa (province)
+09	Camagüey (province)
+08	Ciego de Ávila (province)
+06	Cienfuegos (province)
+12	Granma (province)
+14	Guantánamo (province)
+11	Holguín (province)
+99	Isla de la Juventud (special municipality)
+03	La Habana (province)
+10	Las Tunas (province)
+04	Matanzas (province)
+16	Mayabeque (province)
+01	Pinar del Río (province)
+07	Sancti Spíritus (province)
+13	Santiago de Cuba (province)
+05	Villa Clara (province)
+Reference: ISO 3166-2: Cuba
+ 
+
+ 
+
+Enumeration for Country Code 100 (Argentina)
+Code	Primary Administrative Subdivision
+C	Capital federal (Buenos Aires City)
+B	Buenos Aires Province
+S	Santa Fe
+H	Chaco
+P	Formosa
+X	Córdoba
+N	Misiones
+E	Entre Ríos
+T	Tucumán
+W	Corrientes
+M	Mendoza
+G	Santiago del Estero
+A	Salta
+J	San Juan
+D	San Luis
+K	Catamarca
+F	La Rioja
+Y	Jujuy
+L	La Pampa
+R	Río Negro
+U	Chubut
+Z	Santa Cruz
+V	Tierra del Fuego
+Q	Neuquén
+Reference: ISO 3166-2: Argentina
+ 
+
+ 
+
+Enumeration for Country Code 108 (Brazil)
+Code	Primary Administrative Subdivision
+ES	Espírito Santo
+GO	Goiás
+SC	Santa Catarina
+SE	Sergipe
+AL	Alagoas
+AM	Amazonas
+TO	Tocantins
+AP	Amapá
+PB	Paraíba
+MA	Maranhão
+RN	Rio Grande do Norte
+PI	Piauí
+DF	Distrito Federal
+CE	Ceará
+AC	Acre
+MS	Mato Grosso do Sul
+RR	Roraima
+RO	Rondônia
+RJ	Rio de Janeiro
+SP	São Paulo
+RS	Rio Grande do Sul
+MG	Minas Gerais
+PR	Paraná
+BA	Bahia
+PE	Pernambuco
+PA	Pará
+MT	Mato Grosso
+Reference: ISO 3166-2: Brazil
+ 
+
+ 
+
+Enumeration for Country Code 110 (Hawaii)
+Code	Primary Administrative Subdivision
+HI	Hawaii
+ 
+
+ 
+
+Enumeration for Country Code 112 (Chile)
+Code	Primary Administrative Subdivision
+II	Antofagasta (import-only)
+AN	Antofagasta
+III	Atacama (import-only)
+AT	Atacama
+I	Tarapacá (import-only)
+TA	Tarapacá
+XV	Arica y Parinacota (import-only)
+AP	Arica y Parinacota
+IV	Coquimbo (import-only)
+CO	Coquimbo
+V	Valparaíso (import-only)
+VS	Valparaíso
+RM	Region Metropolitana de Santiago
+VI	Libertador General Bernardo O'Higgins (import-only)
+LI	Libertador General Bernardo O'Higgins
+VII	Maule (import-only)
+ML	Maule
+VIII	Bío-Bío (import-only)
+BI	Biobío
+IX	La Araucanía (import-only)
+AR	La Araucanía
+XIV	Los Ríos (import-only)
+LR	Los Ríos
+X	Los Lagos (import-only)
+LL	Los Lagos
+XI	Aisén del General Carlos Ibáñez del Campo
+(import-only)
+AI	Aisén del General Carlos Ibañez del Campo
+XII	Magallanes (import-only)
+MA	Magallanes
+NB	Ñuble
+Reference: ISO 3166-2: Chile
+ 
+
+ 
+
+Enumeration for Country Code 118 (Jan Mayen)
+Code	Primary Administrative Subdivision
+22	Jan Mayen
+Reference: ISO 3166-2: Norway
+ 
+
+ 
+
+Enumeration for Country Code 126 (Kaliningrad)
+Code	Primary Administrative Subdivision	Oblast #	CQ Zone	ITU Zone
+KA	Kalingrad (Kaliningradskaya oblast)	125	15	29
+ 
+
+ 
+
+Enumeration for Country Code 132 (Paraguay)
+Code	Primary Administrative Subdivision
+16	Alto Paraguay
+19	Boquerón
+15	Presidente Hayes
+13	Amambay
+01	Concepción (import-only)
+1	Concepción
+14	Canindeyú
+02	San Pedro (import-only)
+2	San Pedro
+ASU	Asunción
+11	Central
+03	Cordillera (import-only)
+3	Cordillera
+09	Paraguarí (import-only)
+9	Paraguarí
+06	Caazapl (import-only)
+6	Caazapá
+05	Caeguazú (import-only)
+5	Caeguazú
+04	Guairá (import-only)
+4	Guairá
+08	Miaiones (import-only)
+8	Misiones
+12	Ñeembucú
+10	Alto Paraná
+07	Itapua (import-only)
+7	Itapúa
+Reference: ISO 3166-2: Paraguay
+ 
+
+ 
+
+Enumeration for Country Code 137 (Republic of Korea)
+Code	Primary Administrative Subdivision
+A	Seoul (Seoul Teugbyeolsi)
+N	Inchon (Incheon Gwang'yeogsi)
+D	Kangwon-do (Gang 'weondo)
+C	Kyunggi-do (Gyeonggido)
+E	Choongchungbuk-do (Chungcheongbugdo)
+F	Choongchungnam-do (Chungcheongnamdo)
+R	Taejon (Daejeon Gwang'yeogsi)
+M	Cheju-do (Jejudo)
+G	Chollabuk-do (Jeonrabugdo)
+H	Chollanam-do (Jeonranamdo)
+Q	Kwangju (Gwangju Gwang'yeogsi)
+K	Kyungsangbuk-do (Gyeongsangbugdo)
+L	Kyungsangnam-do (Gyeongsangnamdo)
+B	Pusan (Busan Gwang'yeogsi)
+P	Taegu (Daegu Gwang'yeogsi)
+S	Ulsan (Ulsan Gwanq'yeogsi)
+T	Sejong
+IS	Special Island
+ 
+
+ 
+
+Enumeration for Country Code 138 (Kure Island)
+Code	Primary Administrative Subdivision
+KI	Kure Island
+ 
+
+ 
+
+Enumeration for Country Code 142 (Lakshadweep Is.)
+Code	Primary Administrative Subdivision
+LD	Lakshadweep (Union territory)
+Reference: ISO 3166-2: India
+ 
+
+ 
+
+Enumeration for Country Code 144 (Uruguay)
+Code	Primary Administrative Subdivision
+MO	Montevideo
+CA	Canelones
+SJ	San José
+CO	Colonia
+SO	Soriano
+RN	Río Negro
+PA	Paysandú
+SA	Salto
+AR	Artigas
+FD	Florida
+FS	Flores
+DU	Durazno
+TA	Tacuarembó
+RV	Rivera
+MA	Maldonado
+LA	Lavalleja
+RO	Rocha
+TT	Treinta y Tres
+CL	Cerro Largo
+Reference: ISO 3166-2: Uruguay
+ 
+
+ 
+
+Enumeration for Country Code 147 (Lord Howe Is)
+Code	Primary Administrative Subdivision
+LH	Lord Howe Is
+ 
+
+ 
+
+Enumeration for Country Code 148 (Venezuela)
+Code	Primary Administrative Subdivision
+AM	Amazonas
+AN	Anzoátegui
+AP	Apure
+AR	Aragua
+BA	Barinas
+BO	Bolívar
+CA	Carabobo
+CO	Cojedes
+DA	Delta Amacuro
+DC	Distrito Capital
+FA	Falcón
+GU	Guárico
+LA	Lara
+ME	Mérida
+MI	Miranda
+MO	Monagas
+NE	Nueva Esparta
+PO	Portuguesa
+SU	Sucre
+TA	Táchira
+TR	Trujillo
+VA	Vargas
+YA	Yaracuy
+ZU	Zulia
+ 
+
+ 
+
+Enumeration for Country Code 149 (Azores)
+Code	Primary Administrative Subdivision
+AC	Açores
+ 
+
+ 
+
+Enumeration for Country Code 150 (Australia)
+Code	Primary Administrative Subdivision
+ACT	Australian Capital Territory
+NSW	New South Wales
+VIC	Victoria
+QLD	Queensland
+SA	South Australia
+WA	Western Australia
+TAS	Tasmania
+NT	Northern Territory
+ 
+
+ 
+
+Enumeration for Country Code 151 (Malyj Vysotskij)
+Code	Primary Administrative Subdivision
+LO	Leningradskaya Oblast
+MV	Malyj Vysotskij (import-only)
+ 
+
+ 
+
+Enumeration for Country Code 153 (Macquarie Is)
+Code	Primary Administrative Subdivision
+MA	Macquarie Is
+ 
+
+ 
+
+Enumeration for Country Code 163 (Papua New Guinea)
+Code	Primary Administrative Subdivision
+NCD	National Capital District (Port Moresby)
+CPM	Central
+CPK	Chimbu
+EHG	Eastern Highlands
+EBR	East New Britain
+ESW	East Sepik
+EPW	Enga
+GPK	Gulf
+MPM	Madang
+MRL	Manus
+MBA	Milne Bay
+MPL	Morobe
+NIK	New Ireland
+NPP	Northern
+NSA	North Solomons (import-only)
+NSB	Bougainville
+SAN	West Sepik
+SHM	Southern Highlands
+WPD	Western
+WHM	Western Highlands
+WBR	West New Britain (import-only)
+WBK	West New Britain
+HLA	Hela
+JWK	Jiwaka
+Reference: ISO 3166-2: Papua New Guinea
+ 
+
+ 
+
+Enumeration for Country Code 170 (New Zealand)
+Code	Primary Administrative Subdivision
+AUK	Auckland
+BOP	Bay of Plenty
+NTL	Northland
+WKO	Waikato
+GIS	Gisborne
+HKB	Hawke's Bay
+MWT	Manawatū-Whanganui
+TKI	Taranaki
+WGN	Greater Wellington
+CAN	Canterbury
+MBH	Marlborough
+NSN	Nelson
+TAS	Tasman
+WTC	West Coast
+OTA	Otago
+STL	Southland
+Reference: ISO 3166-2: New Zealand
+ 
+
+ 
+
+Enumeration for Country Code 177 (Minami Torishima)
+Code	Primary Administrative Subdivision
+MT	Minami Torishima
+ 
+
+ 
+
+Enumeration for Country Code 192 (Ogasawara)
+Code	Primary Administrative Subdivision
+O	Ogasawara
+ 
+
+ 
+
+Enumeration for Country Code 206 (Austria)
+Code	Primary Administrative Subdivision
+Vienna (Wien)
+WC	Wien
+Salzburg
+HA	Hallein
+JO	St. Johann
+SC	Salzburg
+SL	Salzburg-Land
+TA	Tamsweg
+ZE	Zell Am See
+Lower Austria (Niederösterreich)
+AM	Amstetten
+BL	Bruck/Leitha
+BN	Baden
+GD	Gmünd
+GF	Gänserndorf
+HL	Hollabrunn
+HO	Horn
+KO	Korneuburg
+KR	Krems-Region
+KS	Krems
+LF	Lilienfeld
+MD	Mödling
+ME	Melk
+MI	Mistelbach
+NK	Neunkirchen
+PC	St. Pölten
+PL	St. Pölten-Land
+SB	Scheibbs
+SW	Schwechat
+TU	Tulln
+WB	Wr.Neustadt-Bezirk
+WN	Wr.Neustadt
+WT	Waidhofen/Thaya
+WU	Wien-Umgebung
+WY	Waidhofen/Ybbs
+ZT	Zwettl
+Burgenland
+EC	Eisenstadt
+EU	Eisenstadt-Umgebung
+GS	Güssing
+JE	Jennersdorf
+MA	Mattersburg
+ND	Neusiedl/See
+OP	Oberpullendorf
+OW	Oberwart
+Upper Austria (Oberösterreich)
+BR	Braunau/Inn
+EF	Eferding
+FR	Freistadt
+GM	Gmunden
+GR	Grieskirchen
+KI	Kirchdorf
+LC	Linz
+LL	Linz-Land
+PE	Perg
+RI	Ried/Innkreis
+RO	Rohrbach
+SD	Schärding
+SE	Steyr-Land
+SR	Steyr
+UU	Urfahr
+VB	Vöcklabruck
+WE	Wels
+WL	Wels-Land
+Styria (Steiermark)
+BA	Bad Aussee - for contacts made before 2012/01/01
+BM	Bruck/Mur - for contacts made before 2013/01/01
+BM	Bruck-Mürzzuschlag - for contacts made on or after 2013/01/01
+DL	Deutschlandsberg
+FB	Feldbach - for contacts made before 2013/01/01
+FF	Fürstenfeld - for contacts made before 2013/01/01
+GB	Gröbming
+GC	Graz
+GU	Graz-Umgebung
+HB	Hartberg - for contacts made before 2013/01/01
+HF	Hartberg-Fürstenfeld - for contacts made on or after 2013/01/01
+JU	Judenburg - for contacts made before 2012/01/01
+KF	Knittelfeld - for contacts made before 2012/01/01
+LB	Leibnitz
+LE	Leoben
+LI	Liezen
+LN	Leoben-Land
+MT	Murtal - for contacts made on or after 2012/01/01
+MU	Murau
+MZ	Mürzzuschlag - for contacts made before 2013/01/01
+RA	Radkersburg - for contacts made before 2013/01/01
+SO	Südoststeiermark - for contacts made on or after 2013/01/01
+VO	Voitsberg
+WZ	Weiz
+Tyrol (Tirol)
+IC	Innsbruck
+IL	Innsbruck-Land
+IM	Imst
+KB	Kitzbühel
+KU	Kufstein
+LA	Landeck
+LZ	Lienz
+RE	Reutte
+SZ	Schwaz
+Carinthia (Kärnten)
+FE	Feldkirchen
+HE	Hermagor
+KC	Klagenfurt
+KL	Klagenfurt-Land
+SP	Spittal/Drau
+SV	St.Veit/Glan
+VI	Villach
+VK	Völkermarkt
+VL	Villach-Land
+WO	Wolfsberg
+Vorarlberg
+BC	Bregenz
+BZ	Bludenz
+DO	Dornbirn
+FK	Feldkirch
+ 
+
+ 
+
+Enumeration for Country Code 209 (Belgium)
+Code	Primary Administrative Subdivision
+AN	Antwerpen
+BR	Brussels
+BW	Brabant Wallon
+HT	Hainaut
+LB	Limburg
+LG	Liêge
+NM	Namur
+LU	Luxembourg
+OV	Oost-Vlaanderen
+VB	Vlaams Brabant
+WV	West-Vlaanderen
+ 
+
+ 
+
+Enumeration for Country Code 212 (Bulgaria)
+Code	Primary Administrative Subdivision
+Burgas
+BU	Burgas
+SL	Sliven
+YA	Yambol (Jambol)
+City of Sofia
+SO	Sofija Grad
+Hashkovo
+HA	Haskovo
+KA	Kărdžali
+SZ	Stara Zagora
+Plovdiv
+PA	Pazardžik
+PD	Plovdiv
+SM	Smoljan
+Sofia
+BL	Blagoevgrad
+KD	Kjustendil
+PK	Pernik
+SF	Sofija (Sofia)
+Loveč
+GA	Gabrovo
+LV	Loveč (Lovech)
+PL	Pleven
+VT	Veliko Tărnovo
+Montanta
+MN	Montana
+VD	Vidin
+VR	Vraca
+Ruse
+RZ	Razgrad
+RS	Ruse
+SS	Silistra
+TA	Tărgovište
+Varna
+DO	Dobrič
+SN	Šumen
+VN	Varna
+ 
+
+ 
+
+Enumeration for Country Code 214 (Corsica)
+Code	Primary Administrative Subdivision
+2A	Corse-du-Sud
+2B	Haute-Corse
+ 
+
+ 
+
+Enumeration for Country Code 221 (Denmark)
+Code	Primary Administrative Subdivision
+015	Koebenhavns amt
+020	Frederiksborg amt
+025	Roskilde amt
+030	Vestsjaellands amt
+035	Storstrøm amt (Storstroems)
+040	Bornholms amt
+042	Fyns amt
+050	Sínderjylland amt (Sydjyllands)
+055	Ribe amt
+060	Vejle amt
+065	Ringkøbing amt (Ringkoebing)
+070	Århus amt (Aarhus)
+076	Viborg amt
+080	Nordjyllands amt
+101	Copenhagen City
+147	Frederiksberg
+ 
+
+ 
+
+Enumeration for Country Code 224 (Finland)
+Code	Primary Administrative Subdivision
+Turku-Pori (Turun ja Porin lääni)
+100	Somero
+102	Alastaro
+103	Askainen
+104	Aura
+105	Dragsfjärd
+106	Eura
+107	Eurajoki
+108	Halikko
+109	Harjavalta
+110	Honkajoki
+111	Houtskari
+112	Huittinen
+115	Iniö
+116	Jämijärvi
+117	Kaarina
+119	Kankaanpää
+120	Karinainen
+122	Karvia
+123	Äetsä
+124	Kemiö
+126	Kiikala
+128	Kiikoinen
+129	Kisko
+130	Kiukainen
+131	Kodisjoki
+132	Kokemäki
+133	Korppoo
+134	Koski tl
+135	Kullaa
+136	Kustavi
+137	Kuusjoki
+138	Köyliö
+139	Laitila
+140	Lappi
+141	Lavia
+142	Lemu
+143	Lieto
+144	Loimaa
+145	Loimaan kunta
+147	Luvia
+148	Marttila
+149	Masku
+150	Mellilä
+151	Merikarvia
+152	Merimasku
+154	Mietoinen
+156	Muurla
+157	Mynämäki
+158	Naantali
+159	Nakkila
+160	Nauvo
+161	Noormarkku
+162	Nousiainen
+163	Oripää
+164	Paimio
+165	Parainen
+167	Perniö
+168	Pertteli
+169	Piikkiö
+170	Pomarkku
+171	Pori
+172	Punkalaidun
+173	Pyhäranta
+174	Pöytyä
+175	Raisio
+176	Rauma
+178	Rusko
+179	Rymättylä
+180	Salo
+181	Sauvo
+182	Siikainen
+183	Suodenniemi
+184	Suomusjärvi
+185	Säkylä
+186	Särkisalo
+187	Taivassalo
+188	Tarvasjoki
+189	Turku
+190	Ulvila
+191	Uusikaupunki
+192	Vahto
+193	Vammala
+194	Vampula
+195	Vehmaa
+196	Velkua
+198	Västanfjärd
+199	Yläne
+Uudenmaa (Uudenmaan lääni)
+201	Artjärvi
+202	Askola
+204	Espoo
+205	Hanko
+206	Helsinki
+207	Hyvinkää
+208	Inkoo
+209	Järvenpää
+210	Karjaa
+211	Karjalohja
+212	Karkkila
+213	Kauniainen
+214	Kerava
+215	Kirkkonummi
+216	Lapinjärvi
+217	Liljendal
+218	Lohjan kaupunki
+220	Loviisa
+221	Myrskylä
+222	Mäntsälä
+223	Nummi-Pusula
+224	Nurmijärvi
+225	Orimattila
+226	Pernaja
+227	Pohja
+228	Pornainen
+229	Porvoo
+231	Pukkila
+233	Ruotsinpyhtää
+234	Sammatti
+235	Sipoo
+236	Siuntio
+238	Tammisaari
+241	Tuusula
+242	Vantaa
+243	Vihti
+Haeme (Hämeen lääni)
+301	Asikkala
+303	Forssa
+304	Hattula
+305	Hauho
+306	Hausjärvi
+307	Hollola
+308	Humppila
+309	Hämeenlinna
+310	Janakkala
+311	Jokioinen
+312	Juupajoki
+313	Kalvola
+314	Kangasala
+315	Hämeenkoski
+316	Kuhmalahti
+318	Kuru
+319	Kylmäkoski
+320	Kärkölä
+321	Lahti
+322	Lammi
+323	Lempäälä
+324	Loppi
+325	Luopioinen
+326	Längelmäki
+327	Mänttä
+328	Nastola
+329	Nokia
+330	Orivesi
+331	Padasjoki
+332	Pirkkala
+333	Pälkäne
+334	Renko
+335	Riihimäki
+336	Ruovesi
+337	Sahalahti
+340	Tammela
+341	Tampere
+342	Toijala
+344	Tuulos
+345	Urjala
+346	Valkeakoski
+347	Vesilahti
+348	Viiala
+349	Vilppula
+350	Virrat
+351	Ylöjärvi
+352	Ypäjä
+353	Hämeenkyrö
+354	Ikaalinen
+355	Kihniö
+356	Mouhijärvi
+357	Parkano
+358	Viljakkala
+Mikkeli (Mikkelin lääni)
+402	Enonkoski
+403	Hartola
+404	Haukivuori
+405	Heinola
+407	Heinävesi
+408	Hirvensalmi
+409	Joroinen
+410	Juva
+411	Jäppilä
+412	Kangaslampi
+413	Kangasniemi
+414	Kerimäki
+415	Mikkeli
+417	Mäntyharju
+418	Pertunmaa
+419	Pieksämäki
+420	Pieksänmaa
+421	Punkaharju
+422	Puumala
+423	Rantasalmi
+424	Ristiina
+425	Savonlinna
+426	Savonranta
+427	Sulkava
+428	Sysmä
+Kymi (Kymen lääni)
+502	Elimäki
+503	Hamina
+504	Iitti
+505	Imatra
+506	Jaala
+507	Joutseno
+509	Kotka
+510	Kouvola
+511	Kuusankoski
+513	Lappeenranta
+514	Lemi
+515	Luumäki
+516	Miehikkälä
+518	Parikkala
+519	Pyhtää
+520	Rautjärvi
+521	Ruokolahti
+522	Saari
+523	Savitaipale
+525	Suomenniemi
+526	Taipalsaari
+527	Uukuniemi
+528	Valkeala
+530	Virolahti
+531	Ylämaa
+532	Anjalankoski
+Keski-Suomi (Keski-Suomen lääni), Vaasa (Vaasan lääni)
+601	Alahärmä
+602	Alajärvi
+603	Alavus
+604	Evijärvi
+605	Halsua
+606	Hankasalmi
+607	Himanka
+608	Ilmajoki
+609	Isojoki
+610	Isokyrö
+611	Jalasjärvi
+612	Joutsa
+613	Jurva
+614	Jyväskylä
+615	Jyväskylän mlk
+616	Jämsä
+617	Jämsänkoski
+619	Kannonkoski
+620	Kannus
+621	Karijoki
+622	Karstula
+623	Kaskinen
+624	Kauhajoki
+625	Kauhava
+626	Kaustinen
+627	Keuruu
+628	Kinnula
+629	Kivijärvi
+630	Kokkola
+632	Konnevesi
+633	Korpilahti
+634	Korsnäs
+635	Kortesjärvi
+636	Kristiinankaupunki
+637	Kruunupyy
+638	Kuhmoinen
+639	Kuortane
+640	Kurikka
+641	Kyyjärvi
+642	Kälviä
+643	Laihia
+644	Lappajärvi
+645	Lapua
+646	Laukaa
+647	Lehtimäki
+648	Leivonmäki
+649	Lestijärvi
+650	Lohtaja
+651	Luhanka
+652	Luoto
+653	Maalahti
+654	Maksamaa
+655	Multia
+656	Mustasaari
+657	Muurame
+658	Nurmo
+659	Närpiö
+660	Oravainen
+661	Perho
+662	Peräseinäjoki
+663	Petäjävesi
+664	Pietarsaari
+665	Pedersöre
+666	Pihtipudas
+668	Pylkönmäki
+669	Saarijärvi
+670	Seinäjoki
+671	Soini
+672	Sumiainen
+673	Suolahti
+675	Teuva
+676	Toholampi
+677	Toivakka
+678	Töysä
+679	Ullava
+680	Uurainen
+681	Uusikaarlepyy
+682	Vaasa
+683	Veteli
+684	Viitasaari
+685	Vimpeli
+686	Vähäkyrö
+687	Vöyri
+688	Ylihärmä
+689	Ylistaro
+690	Ähtäri
+692	Äänekoski
+Kuopio (Kuopion lääni), Pohjois-Karjala (Pohjois-Karjalan lääni)
+701	Eno
+702	Iisalmi
+703	Ilomantsi
+704	Joensuu
+705	Juankoski
+706	Juuka
+707	Kaavi
+708	Karttula
+709	Keitele
+710	Kesälahti
+711	Kiihtelysvaara
+712	Kitee
+713	Kiuruvesi
+714	Kontiolahti
+715	Kuopio
+716	Lapinlahti
+717	Leppävirta
+718	Lieksa
+719	Liperi
+720	Maaninka
+721	Nilsiä
+722	Nurmes
+723	Outokumpu
+724	Pielavesi
+725	Polvijärvi
+726	Pyhäselkä
+727	Rautalampi
+728	Rautavaara
+729	Rääkkylä
+730	Siilinjärvi
+731	Sonkajärvi
+732	Suonenjoki
+733	Tervo
+734	Tohmajärvi
+735	Tuupovaara
+736	Tuusniemi
+737	Valtimo
+738	Varkaus
+739	Varpaisjärvi
+740	Vehmersalmi
+741	Vesanto
+742	Vieremä
+743	Värtsilä
+Oulu (Oulun lääni)
+801	Alavieska
+802	Haapajärvi
+803	Haapavesi
+804	Hailuoto
+805	Haukipudas
+806	Hyrynsalmi
+807	Ii
+808	Kajaani
+810	Kalajoki
+811	Kempele
+812	Kestilä
+813	Kiiminki
+814	Kuhmo
+815	Kuivaniemi
+816	Kuusamo
+817	Kärsämäki
+818	Liminka
+819	Lumijoki
+820	Merijärvi
+821	Muhos
+822	Nivala
+823	Oulainen
+824	Oulu
+825	Oulunsalo
+826	Paltamo
+827	Pattijoki
+828	Piippola
+829	Pudasjärvi
+830	Pulkkila
+831	Puolanka
+832	Pyhäjoki
+833	Pyhäjärvi
+834	Pyhäntä
+835	Raahe
+836	Rantsila
+837	Reisjärvi
+838	Ristijärvi
+839	Ruukki
+840	Sievi
+841	Siikajoki
+842	Sotkamo
+843	Suomussalmi
+844	Taivalkoski
+846	Tyrnävä
+847	Utajärvi
+848	Vaala
+849	Vihanti
+850	Vuolijoki
+851	Yli-Ii
+852	Ylikiiminki
+853	Ylivieska
+Lappi (Lapin lääni)
+901	Enontekiö
+902	Inari
+903	Kemi
+904	Keminmaa
+905	Kemijärvi
+907	Kittilä
+908	Kolari
+909	Muonio
+910	Pelkosenniemi
+911	Pello
+912	Posio
+913	Ranua
+914	Rovaniemi
+915	Rovaniemen mlk
+916	Salla
+917	Savukoski
+918	Simo
+919	Sodankylä
+920	Tervola
+921	Tornio
+922	Utsjoki
+923	Ylitornio
+ 
+
+ 
+
+Enumeration for Country Code 225 (Sardinia)
+Code	Primary Administrative Subdivision
+Sardinia (Sardegna)
+CA	Cagliari
+CI	Carbonia-Iglesias (import-only replaced by SU)
+SU	Sud Sardegna
+MD	Medio Campidano (import-only)
+NU	Nuoro
+OG	Ogliastra
+OR	Oristano
+OT	Olbia-Tempio
+SS	Sassari
+VS	MedioCampidano
+Reference: ISO 3166-2: Italy
+ 
+
+ 
+
+Enumeration for Country Code 227 (France)
+Code	Primary Administrative Subdivision
+01	Ain
+02	Aisne
+03	Allier
+04	Alpes-de-Haute-Provence
+05	Hautes-Alpes
+06	Alpes-Maritimes
+07	Ardèche
+08	Ardennes
+09	Ariège
+10	Aube
+11	Aude
+12	Aveyron
+13	Bouches-du-Rhône
+14	Calvados
+15	Cantal
+16	Charente
+17	Charente-Maritime
+18	Cher
+19	Corrèze
+21	Côte-d'Or
+22	Côtes-d'Armor
+23	Creuse
+24	Dordogne
+25	Doubs
+26	Drôme
+27	Eure
+28	Eure-et-Loir
+29	Finistère
+30	Gard
+31	Haute-Garonne
+32	Gers
+33	Gironde
+34	Hérault
+35	Ille-et-Vilaine
+36	Indre
+37	Indre-et-Loire
+38	Isère
+39	Jura
+40	Landes
+41	Loir-et-Cher
+42	Loire
+43	Haute-Loire
+44	Loire-Atlantique
+45	Loiret
+46	Lot
+47	Lot-et-Garonne
+48	Lozère
+49	Maine-et-Loire
+50	Manche
+51	Marne
+52	Haute-Marne
+53	Mayenne
+54	Meurthe-et-Moselle
+55	Meuse
+56	Morbihan
+57	Moselle
+58	Nièvre
+59	Nord
+60	Oise
+61	Orne
+62	Pas-de-Calais
+63	Puy-de-Dôme
+64	Pyrénées-Atlantiques
+65	Hautes-Pyrénées
+66	Pyrénées-Orientales
+67	Bas-Rhin
+68	Haut-Rhin
+69	Rhône
+70	Haute-Saône
+71	Saône-et-Loire
+72	Sarthe
+73	Savoie
+74	Haute-Savoie
+75	Paris
+76	Seine-Maritime
+77	Seine-et-Marne
+78	Yvelines
+79	Deux-Sèvres
+80	Somme
+81	Tarn
+82	Tarn-et-Garonne
+83	Var
+84	Vaucluse
+85	Vendée
+86	Vienne
+87	Haute-Vienne
+88	Vosges
+89	Yonne
+90	Territoire de Belfort
+91	Essonne
+92	Hauts-de-Seine
+93	Seine-Saint-Denis
+94	Val-de-Marne
+95	Val-d'Oise
+Reference: ISO 3166-2: France
+ 
+
+ 
+
+Enumeration for Country Code 230 (Fed. Rep. Of Germany)
+Code	Primary Administrative Subdivision
+BB	Brandenburg
+BE	Berlin
+BW	Baden-Württemberg
+BY	Bayern
+HB	Bremen
+HE	Hessen
+HH	Hamburg
+MV	Mecklenburg-Vorpommern
+NI	Niedersachsen
+NW	Nordrhein-Westfalen
+RP	Rheinland-Pfalz
+SL	Saarland
+SH	Schleswig-Holstein
+SN	Sachsen
+ST	Sachsen-Anhalt
+TH	Thüringen
+Reference: ISO 3166-2: Germany
+ 
+
+ 
+
+Enumeration for Country Code 239 (Hungary)
+Code	Primary Administrative Subdivision
+GY	Gyõr (Gyõr-Moson-Sopron)
+VA	Vas
+ZA	Zala
+KO	Komárom (Komárom-Esztergom)
+VE	Veszprém
+BA	Baranya
+SO	Somogy
+TO	Tolna
+FE	Fejér
+BP	Budapest
+HE	Heves
+NG	Nógrád
+PE	Pest
+SZ	Szolnok (Jász-Nagykun-Szolnok)
+BE	Békés
+BN	Bács-Kiskun
+CS	Csongrád
+BO	Borsod (Borsod-Abaúj-Zemplén)
+HB	Hajdú-Bihar
+SA	Szabolcs (Szabolcs-Szatmár-Bereg)
+ 
+
+ 
+
+Enumeration for Country Code 245 (Ireland)
+Code	Primary Administrative Subdivision
+CW	Carlow (Ceatharlach)
+CN	Cavan (An Cabhán)
+CE	Clare (An Clár)
+C	Cork (Corcaigh) (import-only)
+CO	Cork (Corcaigh)
+DL	Donegal (Dún na nGall)
+D	Dublin (Baile Áth Cliath)
+G	Galway (Gaillimh)
+KY	Kerry (Ciarraí)
+KE	Kildare (Cill Dara)
+KK	Kilkenny (Cill Chainnigh)
+LS	Laois (Laois)
+LM	Leitrim (Liatroim)
+LK	Limerick (Luimneach)
+LD	Longford (An Longfort)
+LH	Louth (Lú)
+MO	Mayo (Maigh Eo)
+MH	Meath (An Mhí)
+MN	Monaghan (Muineachán)
+OY	Offaly (Uíbh Fhailí)
+RN	Roscommon (Ros Comáin)
+SO	Sligo (Sligeach)
+TA	Tipperary (Tiobraid Árann)
+WD	Waterford (Port Láirge)
+WH	Westmeath (An Iarmhí)
+WX	Wexford (Loch Garman)
+WW	Wicklow (Cill Mhantáin)
+Reference: ISO 3166-2: Ireland
+ 
+
+ 
+
+Enumeration for Country Code 248 (Italy)
+Code	Primary Administrative Subdivision
+Liguria
+GE	Genova
+IM	Imperia
+SP	La Spezia
+SV	Savona
+Piedmont (Piemonte)
+AL	Alessandria
+AT	Asti
+BI	Biella
+CN	Cuneo
+NO	Novara
+TO	Torino
+VB	Verbano Cusio Ossola
+VC	Vercelli
+Aosta Valley (Valle D'Aosta)
+AO	Aosta
+Lombardy (Lombardia)
+BG	Bergamo
+BS	Brescia
+CO	Como
+CR	Cremona
+LC	Lecco
+LO	Lodi
+MB	Monza e Brianza
+MN	Mantova
+MI	Milano
+PV	Pavia
+SO	Sondrio
+VA	Varese
+Veneto
+BL	Belluno
+PD	Padova
+RO	Rovigo
+TV	Treviso
+VE	Venezia
+VR	Verona
+VI	Vicenza
+Trentino-South Tyrol (Trentino-Alto Adige)
+BZ	Bolzano
+TN	Trento
+Friuli-Venezia Giulia
+GO	Gorizia
+PN	Pordenone
+TS	Trieste
+UD	Udine
+Emilia Romagna
+BO	Bologna
+FE	Ferrara
+FO	Forlì (import-only)
+FC	Forlì-Cesena
+MO	Modena
+PR	Parma
+PC	Piacenza
+RA	Ravenna
+RE	Reggio Emilia
+RN	Rimini
+Tuscany (Toscana)
+AR	Arezzo
+FI	Firenze
+GR	Grosseto
+LI	Livorno
+LU	Lucca
+MS	Massa Carrara
+PT	Pistoia
+PI	Pisa
+PO	Prato
+SI	Siena
+Abruzzo
+CH	Chieti
+AQ	L'Aquila
+PE	Pescara
+TE	Teramo
+Marche
+AN	Ancona
+AP	Ascoli Piceno
+FM	Fermo
+MC	Macerata
+PS	Pesaro e Urbino (import-only)
+PU	Pesaro e Urbino
+Basilicata
+MT	Matera
+PZ	Potenza
+Puglia
+BA	Bari
+BT	Barletta-Andria-Trani
+BR	Brindisi
+FG	Foggia
+LE	Lecce
+TA	Taranto
+Calabria
+CZ	Catanzaro
+CS	Cosenza
+KR	Crotone
+RC	Reggio Calabria
+VV	Vibo Valentia
+Campania
+AV	Avellino
+BN	Benevento
+CE	Caserta
+NA	Napoli
+SA	Salerno
+Molise
+IS	Isernia
+CB	Campobasso
+Latium (Lazio)
+FR	Frosinone
+LT	Latina
+RI	Rieti
+RM	Roma
+VT	Viterbo
+Umbria
+PG	Perugia
+TR	Terni
+Sicliy (Sicilia)
+AG	Agrigento
+CL	Caltanissetta
+CT	Catania
+EN	Enna
+ME	Messina
+PA	Palermo
+RG	Ragusa
+SR	Siracusa
+TP	Trapani
+ 
+
+ 
+
+Enumeration for Country Code 259 (Svalbard)
+Code	Primary Administrative Subdivision
+21	Svalbard
+Reference: ISO 3166-2: Norway
+ 
+
+ 
+
+Enumeration for Country Code 266 (Norway)
+Code	Primary Administrative Subdivision
+42	Agder
+34	Innlandet
+15	Møre og Romsdal
+18	Nordland
+03	Oslo
+11	Rogaland
+54	Troms og Finnmark
+50	Trøndelag
+38	Vestfold og Telemark
+46	Vestland
+30	Viken
+Reference: ISO 3166-2: Norway
+ 
+
+ 
+
+Enumeration for Country Code 256 (Madeira Is.)
+Code	Primary Administrative Subdivision
+MD	Madeira
+ 
+
+ 
+
+Enumeration for Country Code 263 (Netherlands)
+Code	Primary Administrative Subdivision
+DR	Drenthe
+FR	Fryslân
+GR	Groningen
+NB	Noord-Brabant
+OV	Overijssel
+ZH	Zuid-Holland
+FL	Flevoland
+GD	Gelderland (import-only)
+GE	Gelderland
+LB	Limburg (import-only)
+LI	Limburg
+NH	Noord-Holland
+UT	Utrecht
+ZL	Zeeland (import-only)
+ZE	Zeeland
+Reference: ISO 3166-2: Netherlands
+ 
+
+ 
+
+Enumeration for Country Code 269 (Poland)
+Code	Primary Administrative Subdivision
+Z	Zachodnio-Pomorskie
+F	Pomorskie
+P	Kujawsko-Pomorskie
+B	Lubuskie
+W	Wielkopolskie
+J	Warminsko-Mazurskie
+O	Podlaskie
+R	Mazowieckie
+D	Dolnoslaskie
+U	Opolskie
+C	Lodzkie
+S	Swietokrzyskie
+K	Podkarpackie
+L	Lubelskie
+G	Slaskie
+M	Malopolskie
+ 
+
+ 
+
+Enumeration for Country Code 272 (Portugal)
+Code	Primary Administrative Subdivision
+AV	Aveiro
+BJ	Beja
+BR	Braga
+BG	Bragança
+CB	Castelo Branco
+CO	Coimbra
+EV	Evora
+FR	Faro
+GD	Guarda
+LR	Leiria
+LX	Lisboa
+PG	Portalegre
+PT	Porto
+SR	Santarem
+ST	Setubal
+VC	Viana do Castelo
+VR	Vila Real
+VS	Viseu
+ 
+
+ 
+
+Enumeration for Country Code 275 (Romania)
+Code	Primary Administrative Subdivision
+AR	Arad
+CS	Caraș-Severin
+HD	Hunedoara
+TM	Timiș
+BU	Bucureşti (Bucure'ti) (import-only)
+B	București
+IF	Ilfov
+BR	Brăila
+CT	Constanța
+GL	Galați
+TL	Tulcea
+VN	Vrancea
+AB	Alba
+BH	Bihor
+BN	Bistrița-Năsăud
+CJ	Cluj
+MM	Maramureș
+SJ	Sălaj
+SM	Satu Mare
+BV	Brașov
+CV	Covasna
+HR	Harghita
+MS	Mureș
+SB	Sibiu
+AG	Argeș
+DJ	Dolj
+GJ	Gorj
+MH	Mehedinți
+OT	Olt
+VL	Vâlcea
+BC	Bacău
+BT	Botoșani
+IS	Iași
+NT	Neamț
+SV	Suceava
+VS	Vaslui
+BZ	Buzău
+CL	Călărași
+DB	Dâmbovița
+GR	Giurgiu
+IL	Ialomița
+PH	Prahova
+TR	Teleorman
+Reference: ISO 3166-2: Romania
+ 
+
+ 
+
+Enumeration for Country Code 281 (Spain)
+Code	Primary Administrative Subdivision
+AV	Ávila
+BU	Burgos
+C	A Coruña
+LE	León
+LO	La Rioja
+LU	Lugo
+O	Asturias
+OU	Ourense (import-only)
+OR	Ourense
+P	Palencia
+PO	Pontevedra
+S	Cantabria
+SA	Salamanca
+SG	Segovia
+SO	Soria
+VA	Valladolid
+ZA	Zamora
+BI	Bizkaia
+HU	Huesca
+NA	Navarra
+SS	Gipuzkoa
+TE	Teruel
+VI	Álava
+Z	Zaragoza
+B	Barcelona
+GI	Girona
+L	Lleida
+T	Tarragona
+BA	Badajoz
+CC	Cáceres
+CR	Ciudad Real
+CU	Cuenca
+GU	Guadalajara
+M	Madrid
+TO	Toledo
+A	Alicante
+AB	Albacete
+CS	Castellón
+MU	Murcia
+V	València
+AL	Almeria
+CA	Cádiz
+CO	Córdoba
+GR	Granada
+H	Huelva
+J	Jaén
+MA	Málaga
+SE	Sevilla
+Reference: ISO 3166-2: Spain
+ 
+
+ 
+
+Enumeration for Country Code 284 (Sweden)
+Code	Primary Administrative Subdivision
+AB	Stockholms län
+I	Gotlands län
+BD	Norrbottens län
+AC	Västerbottens län
+X	Gävleborgs län
+Z	Jämtlands län
+Y	Västernorrlands län
+W	Dalarnas län
+S	Värmlands län
+O	Västra Götalands län
+T	Örebro län
+E	Östergötlands län
+D	Södermanlands län
+C	Uppsala län
+U	Västmanlands län
+N	Hallands län
+K	Blekinge län
+F	Jönköpings län
+H	Kalmar län
+G	Kronobergs län
+M	Skåne län
+Reference: ISO 3166-2: Sweden
+ 
+
+ 
+
+Enumeration for Country Code 287 (Switzerland)
+Code	Primary Administrative Subdivision
+AG	Aargau
+AR	Appenzell Ausserrhoden
+AI	Appenzell Innerrhoden
+BL	Basel Landschaft
+BS	Basel Stadt
+BE	Bern
+FR	Freiburg / Fribourg
+GE	Genf / Genève
+GL	Glarus
+GR	Graubuenden / Grisons
+JU	Jura
+LU	Luzern
+NE	Neuenburg / Neuchâtel
+NW	Nidwalden
+OW	Obwalden
+SH	Schaffhausen
+SZ	Schwyz
+SO	Solothurn
+SG	St. Gallen
+TI	Tessin / Ticino
+TG	Thurgau
+UR	Uri
+VD	Waadt / Vaud
+VS	Wallis / Valais
+ZH	Zuerich
+ZG	Zug
+ 
+
+ 
+
+Enumeration for Country Code 288 (Ukraine)
+Code	Primary Administrative Subdivision
+SU	Sums'ka Oblast'
+TE	Ternopil's'ka Oblast'
+CH	Cherkas'ka Oblast'
+ZA	Zakarpats'ka Oblast'
+DN	Dnipropetrovs'ka Oblast'
+OD	Odes'ka Oblast'
+HE	Khersons'ka Oblast'
+PO	Poltavs'ka Oblast'
+DO	Donets'ka Oblast'
+RI	Rivnens'ka Oblast'
+HA	Kharkivs'ka Oblast'
+LU	Luhans'ka Oblast'
+VI	Vinnyts'ka Oblast'
+VO	Volyos'ka Oblast'
+ZP	Zaporiz'ka Oblast'
+CR	Chernihivs'ka Oblast'
+IF	Ivano-Frankivs'ka Oblast'
+HM	Khmel'nyts'ka Oblast'
+KV	Kyïv
+KO	Kyivs'ka Oblast'
+KI	Kirovohrads'ka Oblast'
+LV	L'vivs'ka Oblast'
+ZH	Zhytomyrs'ka Oblast'
+CN	Chernivets'ka Oblast'
+NI	Mykolaivs'ka Oblast'
+KR	Respublika Krym
+SL	Sevastopol'
+ 
+
+ 
+
+Enumeration for Country Code 291 (United States)
+Code	Primary Administrative Subdivision	CQ Zone	ITU Zone
+CT	Connecticut	05	08
+ME	Maine	05	08
+MA	Massachusetts	05	08
+NH	New Hampshire	05	08
+RI	Rhode Island	05	08
+VT	Vermont	05	08
+NJ	New Jersey	05	08
+NY	New York	05	08
+DE	Delaware	05	08
+DC	District of Columbia	05	08
+MD	Maryland	05	08
+PA	Pennsylvania	05	08
+AL	Alabama	04	08
+FL	Florida	05	08
+GA	Georgia	05	08
+KY	Kentucky	04	08
+NC	North Carolina	04	08
+SC	South Carolina	05	08
+TN	Tennessee	04	07/08
+VA	Virginia	05	08
+AR	Arkansas	04	07/08
+LA	Louisiana	04	07/08
+MS	Mississippi	04	07/08
+NM	New Mexico	04	07
+OK	Oklahoma	04	07
+TX	Texas	04	07
+CA	California	03	06
+AZ	Arizona	03	06/07
+ID	Idaho	03	06
+MT	Montana	04	06/07
+NV	Nevada	03	06
+OR	Oregon	03	06
+UT	Utah	03	06/07
+WA	Washington	03	06
+WY	Wyoming	04	07
+MI	Michigan	04	07/08
+OH	Ohio	04	08
+WV	West Virginia	05	08
+IL	Illinois	04	07/08
+IN	Indiana	04	08
+WI	Wisconsin	04	07/08
+CO	Colorado	04	07
+IA	Iowa	04	07
+KS	Kansas	04	07
+MN	Minnesota	04	07/08
+MO	Missouri	04	07/08
+NE	Nebraska	04	07
+ND	North Dakota	04	07
+SD	South Dakota	04	07
+ 
+
+ 
+
+Enumeration for Country Code 318 (China)
+Code	Primary Administrative Subdivision
+AH	Anhui
+BJ	Beijing
+CQ	Chongqing
+FJ	Fujian
+GD	Guangdong
+GS	Gansu
+GX	Guangxi Zhuangzu
+GZ	Guizhou
+HA	Henan
+HB	Hubei
+HE	Hebei
+HI	Hainan
+HL	Heilongjiang
+HN	Hunan
+JL	Jilin
+JS	Jiangsu
+JX	Jiangxi
+LN	Liaoning
+NM	Nei Mongol
+NX	Ningxia Huizu
+QH	Qinghai
+SC	Sichuan
+SD	Shandong
+SH	Shanghai
+SN	Shaanxi
+SX	Shanxi
+TJ	Tianjin
+XJ	Xinjiang Uygur
+XZ	Xizang
+YN	Yunnan
+ZJ	Zhejiang
+ 
+
+ 
+
+Enumeration for Country Code 324 (India)
+Code	Primary Administrative Subdivision
+AP	Andhra Pradesh (state)
+AR	Arunāchal Pradesh (state)
+AS	Assam (state)
+BR	Bihār (state)
+CH	Chandīgarh (Union territory)
+CG	Chhattīsgarh (state)
+DD	Damān and Diu (Union territory)
+DL	Delhi (Union territory)
+DN	Dādra and Nagar Haveli (Union territory)
+GA	Goa (state)
+GJ	Gujarāt (state)
+HR	Haryāna (state)
+HP	Himāchal Pradesh (state)
+JK	Jammu and Kashmīr (Union territory)
+JH	Jhārkhand (state)
+KA	Karnātaka (state)
+KL	Kerala (state)
+LA	Ladākh (Union territory)
+MP	Madhya Pradesh (state)
+MH	Mahārāshtra (state)
+MN	Manipur (state)
+ML	Meghālaya (state)
+MZ	Mizoram (state)
+NL	Nāgāland (state)
+OD	Odisha (state)
+PY	Puducherry (Union territory)
+PB	Punjab (state)
+RJ	Rājasthān (state)
+SK	Sikkim (state)
+TN	Tamil Nādu (state)
+TG	Telangāna (state)
+TR	Tripura (state)
+UP	Uttar Pradesh (state)
+UK	Uttarākhand (state)
+WB	West Bengal (state)
+Reference: ISO 3166-2: India
+
+Notes:
+ISO 3166-2: India merges codes DD and DN into DH but the above list reflects the ARSI website's lists of codes for their VU-DX Contest.
+ISO 3166-2: India has Telangāna as code TS but the above list reflects the ARSI website's code TG for their VU-DX Contest.
+ 
+
+ 
+
+Enumeration for Country Code 339 (Japan)
+Code	Primary Administrative Subdivision
+Kanto
+12	Chiba
+16	Gunma
+14	Ibaraki
+11	Kanagawa
+13	Saitama
+15	Tochigi
+10	Tokyo
+17	Yamanashi
+Tokai
+20	Aichi
+19	Gifu
+21	Mie
+18	Shizuoka
+Kansai
+27	Hyogo
+22	Kyoto
+24	Nara
+25	Osaka
+23	Shiga
+26	Wakayama
+Chugoku
+35	Hiroshima
+31	Okayama
+32	Shimane
+34	Tottori
+33	Yamaguchi
+Shikoku
+38	Ehime
+36	Kagawa
+39	Kochi
+37	Tokushima
+Kyushu
+40	Fukuoka
+46	Kagoshima
+43	Kumamoto
+45	Miyazaki
+42	Nagasaki
+44	Oita
+47	Okinawa
+41	Saga
+Tohoku
+04	Akita
+02	Aomori
+07	Fukushima
+03	Iwate
+06	Miyagi
+05	Yamagata
+Hokkaido
+01	Hokkaido
+Hokuriku
+29	Fukui
+30	Ishikawa
+28	Toyama
+Shin'estu
+09	Nagano
+08	Niigata
+ 
+
+ 
+
+Enumeration for Country Code 375 (Philippines)
+Code	Primary Administrative Subdivision
+Southern Tagalog
+AUR	Aurora
+BTG	Batangas
+CAV	Cavite
+LAG	Laguna
+MAD	Marinduque
+MDC	Mindoro Occidental
+MDR	Mindoro Oriental
+PLW	Palawan
+QUE	Quezon
+RIZ	Rizal
+ROM	Romblon
+Ilocos
+ILN	Ilocos Norte
+ILS	Ilocos Sur
+LUN	La Union
+PAN	Pangasinan
+Cagayan Valley
+BTN	Batanes
+CAG	Cagayan
+ISA	Isabela
+NUV	Nueva Vizcaya
+QUI	Quirino
+Cordillera Administrative Region
+ABR	Abra
+APA	Apayao
+BEN	Benguet
+IFU	Ifugao
+KAL	Kalinga
+MOU	Mountain Province
+Central Luzon
+BAN	Bataan
+BUL	Bulacan
+NUE	Nueva Ecija
+PAM	Pampanga
+TAR	Tarlac
+ZMB	Zambales
+Bicol
+ALB	Albay
+CAN	Camarines Norte
+CAS	Camarines Sur
+CAT	Catanduanes
+MAS	Masbate
+SOR	Sorsogon
+Eastern Visayas
+BIL	Biliran
+EAS	Eastern Samar
+LEY	Leyte
+NSA	Northern Samar
+SLE	Southern Leyte
+WSA	Western Samar
+Western Visayas
+AKL	Aklan
+ANT	Antique
+CAP	Capiz
+GUI	Guimaras
+ILI	Iloilo
+NEC	Negros Occidental
+Central Visayas
+BOH	Bohol
+CEB	Cebu
+NER	Negros Oriental
+SIG	Siquijor
+Zamboanga Peninsular (Western Mindanao)
+ZAN	Zamboanga del Norte
+ZAS	Zamboanga del Sur
+ZSI	Zamboanga Sibugay
+Soccsksargen (Central Mindanao)
+NCO	Cotabato
+SUK	Sultan Kudarat
+SAR	Sarangani
+SCO	South Cotabato
+Autonomous Region in Muslim Mindanao
+BAS	Basilan
+LAS	Lanao del Sur
+MAG	Maguindanao
+SLU	Sulu
+TAW	Tawi-Tawi
+Northern Mindanao
+LAN	Lanao del Norte
+BUK	Bukidnon
+CAM	Camiguin
+MSC	Misamis Occidental
+MSR	Misamis Oriental
+Davao (Southern Mindanao)
+COM	Davao de Oro
+DAV	Davao del Norte
+DAS	Davao del Sur
+DAO	Davao Oriental
+CARAGA
+AGN	Agusan del Norte
+AGS	Agusan del Sur
+SUN	Surigao del Norte
+SUR	Surigao del Sur
+Reference: ISO 3166-2: Philippines
+ 
+
+ 
+
+Enumeration for Country Code 386 (Taiwan)
+Code	Primary Administrative Subdivision
+CHA	Changhua (county)
+CYI	Chiayi (city)
+CYQ	Chiayi (county)
+HSZ	Hsinchu (city)
+HSQ	Hsinchu (county)
+HUA	Hualien (county)
+KHH	Kaohsiung (special municipality)
+KEE	Keelung (city)
+KIN	Kinmen (county)
+LIE	Lienchiang (county)
+MIA	Miaoli (county)
+NAN	Nantou (county)
+NWT	New Taipei (special municipality)
+PEN	Penghu (county)
+PIF	Pingtung (county)
+TXG	Taichung (special municipality)
+TNN	Tainan (special municipality)
+TPE	Taipei (special municipality)
+TTT	Taitung (county)
+TAO	Taoyuan (special municipality)
+ILA	Yilan (county)
+YUN	Yunlin (county)
+ 
+
+ 
+
+Enumeration for Country Code 497 (Croatia)
+Code	Primary Administrative Subdivision
+01	Zagrebačka županija
+02	Krapinsko-Zagorska županija
+03	Sisačko-Moslavačka županija
+04	Karlovačka županija
+05	Varaždinska županija
+06	Koprivničko-Križevačka županija
+07	Bjelovarsko-Bilogorska županija
+08	Primorsko-Goranska županija
+09	Ličko-Senjska županija
+10	Virovitičko-Podravska županija
+11	Požeško-Slavonska županija
+12	Brodsko-Posavska županija
+13	Zadarska županija
+14	Osječko-Baranjska županija
+15	Šibensko-Kninska županija
+16	Vukovarsko-Srijemska županija
+17	Splitsko-Dalmatinska županija
+18	Istarska županija
+19	Dubrovačko-Neretvanska županija
+20	Međimurska županija
+21	Grad Zagreb
+ 
+
+ 
+
+Enumeration for Country Code 503 (Czech Republic)
+Code	Primary Administrative Subdivision
+Prague (Praha)
+APA	Praha 1
+APB	Praha 2
+APC	Praha 3
+APD	Praha 4
+APE	Praha 5
+APF	Praha 6
+APG	Praha 7
+APH	Praha 8
+API	Praha 9
+APJ	Praha 10
+Central Bohemia (Středoceský kraj)
+BBN	Benesov
+BBE	Beroun
+BKD	Kladno
+BKO	Kolin
+BKH	Kutna Hora
+BME	Melnik
+BMB	Mlada Boleslav
+BNY	Nymburk
+BPZ	Praha zapad
+BPV	Praha vychod
+BPB	Pribram
+BRA	Rakovnik
+Southern Bohemia (Jihočeský kraj)
+CBU	Ceske Budejovice
+CCK	Cesky Krumlov
+CJH	Jindrichuv Hradec
+CPE	Pelhrimov
+CPI	Pisek
+CPR	Prachatice
+CST	Strakonice
+CTA	Tabor
+Western Bohemia (Západocesky kraj)
+DDO	Domazlice
+DCH	Cheb
+DKV	Karlovy Vary
+DKL	Klatovy
+DPM	Plzen mesto
+DPJ	Plzen jih
+DPS	Plzen sever
+DRO	Rokycany
+DSO	Sokolov
+DTA	Tachov
+Northern Bohemia (Severoceaky kraj)
+ECL	Ceska Lipa
+EDE	Decin
+ECH	Chomutov
+EJA	Jablonec n. Nisou
+ELI	Liberec
+ELT	Litomerice
+ELO	Louny
+EMO	Most
+ETE	Teplice
+EUL	Usti nad Labem
+Eastern Bohemia (Vychodocesky kraj)
+FHB	Havlickuv Brod
+FHK	Hradec Kralove
+FCR	Chrudim
+FJI	Jicin
+FNA	Nachod
+FPA	Pardubice
+FRK	Rychn n. Kneznou
+FSE	Semily
+FSV	Svitavy
+FTR	Trutnov
+FUO	Usti nad Orlici
+Southern Moravia (Jihomoravský kraj)
+GBL	Blansko
+GBM	Brno mesto
+GBV	Brno venkov
+GBR	Breclav
+GHO	Hodonin
+GJI	Jihlava
+GKR	Kromeriz
+GPR	Prostejov
+GTR	Trebic
+GUH	Uherske Hradiste
+GVY	Vyskov
+GZL	Zlin
+GZN	Znojmo
+GZS	Zdar nad Sazavou
+Northern Moravia (Soveromoravsky kraj)
+HBR	Bruntal
+HFM	Frydek-Mistek
+HJE	Jesenik
+HKA	Karvina
+HNJ	Novy Jicin
+HOL	Olomouc
+HOP	Opava
+HOS	Ostrava
+HPR	Prerov
+HSU	Sumperk
+HVS	Vsetin
+ 
+
+ 
+
+Enumeration for Country Code 504 (Slovak Republic)
+Code	Primary Administrative Subdivision
+Bratislava (Bratislavský kraj)
+BAA	Bratislava 1
+BAB	Bratislava 2
+BAC	Bratislava 3
+BAD	Bratislava 4
+BAE	Bratislava 5
+MAL	Malacky
+PEZ	Pezinok
+SEN	Senec
+Trnava (Trnavský kraj)
+DST	Dunajska Streda
+GAL	Galanta
+HLO	Hlohovec
+PIE	Piestany
+SEA	Senica
+SKA	Skalica
+TRN	Trnava
+Trencin (Trenčiansky kraj)
+BAN	Banovce n. Bebr.
+ILA	Ilava
+MYJ	Myjava
+NMV	Nove Mesto n. Vah
+PAR	Partizanske
+PBY	Povazska Bystrica
+PRI	Prievidza
+PUC	Puchov
+TNC	Trencin
+Nitra (Nitrianaky kraj)
+KOM	Komarno
+LVC	Levice
+NIT	Nitra
+NZA	Nove Zamky
+SAL	Sala
+TOP	Topolcany
+ZMO	Zlate Moravce
+Zilina (Žilinský kraj)
+BYT	Bytca
+CAD	Cadca
+DKU	Dolny Kubin
+KNM	Kysucke N. Mesto
+LMI	Liptovsky Mikulas
+MAR	Martin
+NAM	Namestovo
+RUZ	Ruzomberok
+TTE	Turcianske Teplice
+TVR	Tvrdosin
+ZIL	Zilina
+Banska Bystrica (Banskobystrický kraj)
+BBY	Banska Bystrica
+BST	Banska Stiavnica
+BRE	Brezno
+DET	Detva
+KRU	Krupina
+LUC	Lucenec
+POL	Poltar
+REV	Revuca
+RSO	Rimavska Sobota
+VKR	Velky Krtis
+ZAR	Zarnovica
+ZIH	Ziar nad Hronom
+ZVO	Zvolen
+Kosice (Košický kraj)
+GEL	Gelnica
+KEA	Kosice 1
+KEB	Kosice 2
+KEC	Kosice 3
+KED	Kosice 4
+KEO	Kosice-okolie
+MIC	Michalovce
+ROZ	Roznava
+SOB	Sobrance
+SNV	Spisska Nova Ves
+TRE	Trebisov
+Presov (Prešovský kraj)
+BAR	Bardejov
+HUM	Humenne
+KEZ	Kezmarok
+LEV	Levoca
+MED	Medzilaborce
+POP	Poprad
+PRE	Presov
+SAB	Sabinov
+SNI	Snina
+SLU	Stara Lubovna
+STR	Stropkov
+SVI	Svidnik
+VRT	Vranov nad Toplou
+ 
+
+III.B.13. Propagation Mode Enumeration
+Enumeration	Description
+AS	Aircraft Scatter
+AUE	Aurora-E
+AUR	Aurora
+BS	Back scatter
+ECH	EchoLink
+EME	Earth-Moon-Earth
+ES	Sporadic E
+F2	F2 Reflection
+FAI	Field Aligned Irregularities
+GWAVE	Ground Wave
+INTERNET	Internet-assisted
+ION	Ionoscatter
+IRL	IRLP
+LOS	Line of Sight (includes transmission through obstacles such as walls)
+MS	Meteor scatter
+RPT	Terrestrial or atmospheric repeater or transponder
+RS	Rain scatter
+SAT	Satellite
+TEP	Trans-equatorial
+TR	Tropospheric ducting
+
+The following examples show some recommendations for representing VHF voice communications using the MODE, SUBMODE, and PROP_MODE fields.
+
+FM voice unassisted (direct RF to RF) transmission by unspecified propagation mode:
+<MODE:2>FM
+
+FM voice unassisted (direct RF to RF) transmission by line of sight:
+<MODE:2>FM <PROP_MODE:3>LOS
+
+FM voice transmission to C4FM repeater, gateway, hotspot, or similar:
+<MODE:2>FM <PROP_MODE:3>RPT
+
+DMR voice unassisted (direct RF to RF) transmission by line of sight:
+<MODE:12>DIGITALVOICE <SUBMODE:3>DMR <PROP_MODE:3>LOS
+
+C4FM voice transmission to C4FM repeater, gateway, hotspot, or similar:
+<MODE:12>DIGITALVOICE <SUBMODE:4>C4FM <PROP_MODE:3>RPT
+ 
+
+III.B.14. QSL Medium Enumeration
+Medium	Description
+CARD	QSO confirmation via paper QSL card
+EQSL	QSO confirmation via eQSL.cc
+LOTW	QSO confirmation via ARRL Logbook of the World
+ 
+
+III.B.15. QSL Rcvd Enumeration
+Status	Meaning	Description
+Y	yes (confirmed)	
+an incoming QSL card has been received
+the QSO has been confirmed by the online service
+N	no	
+an incoming QSL card has not been received
+the QSO has not been confirmed by the online service
+R	requested	
+the logging station has requested a QSL card
+the logging station has requested the QSO be uploaded to the online service
+I	ignore or invalid	 
+V  (import-only)	verified	
+DXCC award credit granted for the QSL card - instead use
+<CREDIT_GRANTED:39>DXCC:card,DXCC_BAND:card,DXCC_MODE:card
+DXCC credit granted for the LoTW confirmation - instead use <CREDIT_GRANTED:39>DXCC:lotw,DXCC_BAND:lotw,DXCC_MODE:lotw
+ 
+
+III.B.16. QSL Sent Enumeration
+Status	Meaning	Description
+Y	yes	
+an outgoing QSL card has been sent
+the QSO has been uploaded to, and accepted by, the online service
+N	no	
+do not send an outgoing QSL card
+do not upload the QSO to the online service
+R	requested	
+the contacted station has requested a QSL card
+the contacted station has requested the QSO be uploaded to the online service
+Q	queued	
+an outgoing QSL card has been selected to be sent
+a QSO has been selected to be uploaded to the online service
+I	ignore or invalid	 
+ 
+
+III.B.17. QSL Via Enumeration
+Via	Description
+B	bureau
+D	direct
+E	electronic
+M  (import-only)	manager  (import-only)
+ 
+
+III.B.18. QSO Complete Enumeration
+Abbreviation	Meaning
+Y	yes
+N	no
+NIL	not heard
+?	uncertain
+ 
+
+III.B.19. QSO Download Status Enumeration
+Status	Description
+Y	the QSO has been downloaded from the online service
+N	the QSO has not been downloaded from the online service
+I	ignore or invalid
+ 
+
+III.B.20. QSO Upload Status Enumeration
+Status	Description
+Y	the QSO has been uploaded to, and accepted by, the online service
+N	do not upload the QSO to the online service
+M	the QSO has been modified since being uploaded to the online service
+ 
+
+III.B.21. Region Enumeration
+Region Entity Code	DXCC Entity Code	Region	Prefix	Applicability	Start Date	End Date
+NONE	 	Not within a WAE or CQ region that is within a DXCC entity	 	 	 	 
+IV	206	ITU Vienna	4U1V	CQ, WAE	 	 
+AI	248	African Italy	IG9	CQ	 	 
+SY	248	Sicily	IT9	CQ, WAE	 	 
+BI	259	Bear Island	JW/B	CQ, WAE	 	 
+SI	279	Shetland Islands	GM/S	CQ, WAE	 	 
+KO	296	Kosovo	YU8	CQ, WAE	 	2012-09-11
+KO	0	Kosovo	Z6	CQ, WAE	2012-09-12	2018-01-20
+KO	522	Kosovo	Z6	CQ, WAE	2018-01-21	 
+ET	390	European Turkey	TA1	CQ, WAE	 	 
+
+ 
+
+III.B.22. Secondary Administrative Subdivision Enumeration
+Secondary Subdivision	Country Code	DXCC Entity	Number of secondary subdivisions	Award	Subdivision List	Award Sponsor	Sponsor Defined Code Format	Examples
+U.S. Counties	6	Alaska	 	USA-CA	Alaskan Counties	CQ Magazine	<Two-letter state abbr.>
+ 
+COMMA
+ 
+<county name>	MA,Middlesex → Massachusetts state, Middlesex county
+110	Hawaii	5	CountyHunter
+ 
+FIPS 6-4
+291	United States	3068
+Russian Districts	15	Asiatic Russia	2644
+ 
+(+ 180 deleted)	RDA	RDA List	Tambov award group ("TAG")	<Two-letter Oblast abbr.>
+ 
+DASH
+ 
+<Two-digit district code>	AB-01 → Aginsky Buryatsky Autonomous Okrug,Aginsky Area
+54	European Russia
+61	Franz Josef Land
+126	Kaliningrad
+151	Malyj Vysotski Is
+Ukrainian Districts	288	Ukraine	761	URDA	URDA List	UARL	<Two-letter Oblast abbr.>
+ 
+DASH
+ 
+<Two-digit district code>	CH-01 → Cherkasy Oblast, Prydniprovs'kyi district
+Japanese Cities	339	Japan	815
+
+(+ 99 deleted)
+ 
+JCC	JCC List	JARL	<Two-digit prefecture code>
+ 
+<Two-digit or four-digit city code>	0101→ Hokkaido Prefecture, City of Sapporo
+
+100101→ Chiyoda Ku in Tokyo
+Japanese Ku	175
+
+(+ 7 deleted)	WAKU	Ku List	JARL	<Two-digit prefecture code>
+ 
+<Two-digit city code>
+ 
+<Two-digit Ku code>	010101→ Hokkaido Prefecture, City of Sapporo, Chuo Ku
+Japanese Guns	379
+
+(+ 244 deleted)	JCG	JCG List	JARL	<Two-digit prefecture code>
+ 
+<Three-digit gun code>	01001 → Hokkaido Prefecture, Akan Gun
+Japanese Cities / Ku / Guns	See Japanese Cities, Japanese Ku, & Japanese Guns	AJA	JCC List
+
+Ku List
+
+JCG List	JARL	See Japanese Cities, Japanese Ku, & Japanese Guns	See Japanese Cities, Japanese Ku, & Japanese Guns
+NZ Counties	170	New Zealand	112	NZ Counties	NZART Lists
+ 
+North Island
+ 
+South Island	NZART	<Three-digit county code>	001→ Mangonui county
+Spanish DMEs	21	Balearic Is.	67	DME	DME List	URE	<Two-digit province code>
+ 
+<Three-digit city code>	33024 → Asturias province, Gijón city
+29	Canary Is.	88
+32	Ceuta & Melilla	2
+281	Spain	7967
+ 
+
+III.B.22.a. U.S. Counties (Alaska) Enumeration
+Enumeration for U.S. Counties DXCC Entity Code 6 (Alaska)
+Code	Secondary Administrative Subdivision	Alaska Judicial District	Deleted
+AK,Aleutians East	Aleutians East	Alaska Third Judicial District	 
+AK,Aleutians Islands	Aleutians Islands	Alaska Third Judicial District	Deleted
+AK,Aleutians West	Aleutians West	Alaska Third Judicial District	 
+AK,Anchorage	Anchorage	Alaska Third Judicial District	 
+AK,Angoon	Angoon	Alaska First Judicial District	Deleted
+AK,Barrow	Barrow	Alaska Second Judicial District	Deleted
+AK,Bethel	Bethel	Alaska Fourth Judicial District	 
+AK,Bristol Bay	Bristol Bay	Alaska Third Judicial District	 
+AK,Cordova-McCarthy	Cordova-McCarthy	Alaska Third Judicial District	Deleted
+AK,Denali	Denali	Alaska Fourth Judicial District	 
+AK,Dillingham	Dillingham	Alaska Third Judicial District	 
+AK,Fairbanks	Fairbanks	Alaska Fourth Judicial District	 
+AK,Fairbanks North Star	Fairbanks North Star	Alaska Fourth Judicial District	 
+AK,First Judicial District	First Judicial District	Alaska First Judicial District	Deleted
+AK,Fourth Judicial District	Fourth Judicial District	Alaska Fourth Judicial District	Deleted
+AK,Haines	Haines	Alaska First Judicial District	 
+AK,Juneau	Juneau	Alaska First Judicial District	 
+AK,Hoonah-Angoon	Hoonah-Angoon	Alaska First Judicial District	 
+AK,Kenai Peninsula	Kenai Peninsula	Alaska Third Judicial District	 
+AK,Kenai-Cook Inlet	Kenai-Cook Inlet	Alaska Third Judicial District	Deleted
+AK,Ketchikan	Ketchikan	Alaska First Judicial District	Deleted
+AK,Ketchikan Gateway	Ketchikan Gateway	Alaska First Judicial District	 
+AK,Kobuk	Kobuk	Alaska Second Judicial District	Deleted
+AK,Kodiak Island	Kodiak Island	Alaska Third Judicial District	 
+AK,Kuskokwim	Kuskokwim	Alaska Fourth Judicial District	Deleted
+AK,Kusilvak	Kusilvak	Alaska Second Judicial District	 
+AK,Lake and Peninsula	Lake and Peninsula	Alaska Third Judicial District	 
+AK,Lynn Canal-Icy Straits	Lynn Canal-Icy Straits	Alaska First Judicial District	Deleted
+AK,Matanuska-Susitna	Matanuska-Susitna	Alaska Third Judicial District	 
+AK,Nome	Nome	Alaska Second Judicial District	 
+AK,North Slope	North Slope	Alaska Second Judicial District	 
+AK,Northwest Arctic	Northwest Arctic	Alaska Second Judicial District	 
+AK,Outer Ketchikan	Outer Ketchikan	Alaska First Judicial District	Deleted
+AK,Palmer-Wasilla-Talkeetna	Palmer-Wasilla-Talkeetna	Alaska Third Judicial District	Deleted
+AK,Petersburg	Petersburg	Alaska First Judicial District	 
+AK,Pribilof Islands	Pribilof Islands	Alaska Third Judicial District	 
+AK,Prince of Wales	Prince of Wales	Alaska First Judicial District	Deleted
+AK,Prince of Wales-Hyder	Prince of Wales-Hyder	Alaska First Judicial District	 
+AK,Prince of Wales-Outer Ketchikan	Prince of Wales-Outer Ketchikan	Alaska First Judicial District	Deleted
+AK,Saint Matthew Island	Saint Matthew Island	Alaska Fourth Judicial District	 
+AK,Second Judicial District	Second Judicial District	Alaska Second Judicial District	Deleted
+AK,Seward	Seward	Alaska Third Judicial District	Deleted
+AK,Sitka	Sitka	Alaska First Judicial District	 
+AK,Skagway-Hoonah-Angoon	Skagway-Hoonah-Angoon	Alaska First Judicial District	Deleted
+AK,Skagway	Skagway	Alaska First Judicial District	 
+AK,Skagway-Yakuta	Skagway-Yakutat	Alaska First Judicial District	Deleted
+AK,Skagway-Yakutat-Angoon	Skagway-Yakutat-Angoon	Alaska First Judicial District	Deleted
+AK,Southeast Fairbanks	Southeast Fairbanks	Alaska Fourth Judicial District	 
+AK,Third Judicial District	Third Judicial District	Alaska Second Judicial District	Deleted
+AK,Upper Yukon	Upper Yukon	Alaska Fourth Judicial District	Deleted
+AK,Valdez-Chitina-Whittier	Valdez-Chitina-Whittier	Alaska Third Judicial District	Deleted
+AK,Valdez-Cordova	Valdez-Cordova	Alaska Third Judicial District	 
+AK,Wade Hampton	Wade Hampton	Alaska Second Judicial District	Deleted
+AK,Wales-Hyder	Wales-Hyder	Alaska First Judicial District	 
+AK,Wrangell	Wrangell	Alaska First Judicial District	 
+AK,Wrangell-Petersburg	Wrangell-Petersburg	Alaska First Judicial District	Deleted
+AK,Yakutat	Yakutat	Alaska First Judicial District	 
+AK,Yukon-Koyukuk	Yukon-Koyukuk	Alaska Fourth Judicial District	 
+ 
+
+III.B.23. Secondary Administrative Subdivision Alt Enumeration
+Secondary Subdivision	Country Code	DXCC Entity	Award	Subdivision Enumeration	Award Sponsor		Examples
+NZ_Regions	New Zealand	170	NZ Regions	NZ_Regions	NZART	<Enumeration>:<Region>/<District>	NZ_Regions:Hawkes Bay/Wairoa
+→
+Hawkes Bay region, Wairoa district
+ 
+
+III.B.23.a. NZ Regions Enumeration
+Code	Region	District
+NZ_Regions:Northland/Far North	Northland	Far North
+NZ_Regions:Northland/Whangarei	Northland	Whangarei
+NZ_Regions:Northland/Kaipara	Northland	Kaipara
+NZ_Regions:Auckland/Rodney	Auckland	Rodney
+NZ_Regions:Auckland/North Shore	Auckland	North Shore
+NZ_Regions:Auckland/Waitakere	Auckland	Waitakere
+NZ_Regions:Auckland/Auckland	Auckland	Auckland
+NZ_Regions:Auckland/Manukau	Auckland	Manukau
+NZ_Regions:Auckland/Papakura	Auckland	Papakura
+NZ_Regions:Auckland/Franklin	Auckland	Franklin
+NZ_Regions:Waikato/Thames-Coromandel	Waikato	Thames-Coromandel
+NZ_Regions:Waikato/Hauraki	Waikato	Hauraki
+NZ_Regions:Waikato/Waikato	Waikato	Waikato
+NZ_Regions:Waikato/Matamata Piako	Waikato	Matamata Piako
+NZ_Regions:Waikato/Hamilton	Waikato	Hamilton
+NZ_Regions:Waikato/Waipa	Waikato	Waipa
+NZ_Regions:Waikato/Otorohanga	Waikato	Otorohanga
+NZ_Regions:Waikato/South Waikato	Waikato	South Waikato
+NZ_Regions:Waikato/Waitomo	Waikato	Waitomo
+NZ_Regions:Waikato/Taupo	Waikato	Taupo
+NZ_Regions:Bay of Plenty/Western Bay of Plenty	Bay of Plenty	Western Bay of Plenty
+NZ_Regions:Bay of Plenty/Tauranga	Bay of Plenty	Tauranga
+NZ_Regions:Bay of Plenty/Rotorua	Bay of Plenty	Rotorua
+NZ_Regions:Bay of Plenty/Kawerau	Bay of Plenty	Kawerau
+NZ_Regions:Bay of Plenty/Whakatane	Bay of Plenty	Whakatane
+NZ_Regions:Bay of Plenty/Opotiki	Bay of Plenty	Opotiki
+NZ_Regions:Gisborne/Gisborne	Gisborne	Gisborne
+NZ_Regions:Hawkes Bay/Wairoa	Hawkes Bay	Wairoa
+NZ_Regions:Hawkes Bay/Hastings	Hawkes Bay	Hastings
+NZ_Regions:Hawkes Bay/Napier	Hawkes Bay	Napier
+NZ_Regions:Hawkes Bay/Central Hawkes Bay	Hawkes Bay	Central Hawkes Bay
+NZ_Regions:Taranaki/New Plymouth	Taranaki	New Plymouth
+NZ_Regions:Taranaki/Stratford	Taranaki	Stratford
+NZ_Regions:Taranaki/South Taranaki	Taranaki	South Taranaki
+NZ_Regions:Wanganui-Manawatu/Ruapehu	Wanganui-Manawatu	Ruapehu
+NZ_Regions:Wanganui-Manawatu/Wanganui	Wanganui-Manawatu	Wanganui
+NZ_Regions:Wanganui-Manawatu/Rangitikei	Wanganui-Manawatu	Rangitikei
+NZ_Regions:Wanganui-Manawatu/Manawatu	Wanganui-Manawatu	Manawatu
+NZ_Regions:Wanganui-Manawatu/Palmerston North	Wanganui-Manawatu	Palmerston North
+NZ_Regions:Wanganui-Manawatu/Horowhenua	Wanganui-Manawatu	Horowhenua
+NZ_Regions:Wanganui-Manawatu/Tararua	Wanganui-Manawatu	Tararua
+NZ_Regions:Wellington/Masterton	Wellington	Masterton
+NZ_Regions:Wellington/Carterton	Wellington	Carterton
+NZ_Regions:Wellington/South Wairarapa	Wellington	South Wairarapa
+NZ_Regions:Wellington/Kapiti Coast	Wellington	Kapiti Coast
+NZ_Regions:Wellington/Porirua	Wellington	Porirua
+NZ_Regions:Wellington/Upper Hutt	Wellington	Upper Hutt
+NZ_Regions:Wellington/Lower Hutt	Wellington	Lower Hutt
+NZ_Regions:Wellington/Wellington	Wellington	Wellington
+NZ_Regions:Nelson/Nelson	Nelson	Nelson
+NZ_Regions:Marlborough/Marlborough	Marlborough	Marlborough
+NZ_Regions:Tasman/Tasman	Tasman	Tasman
+NZ_Regions:West Coast/Buller	West Coast	Buller
+NZ_Regions:West Coast/Grey	West Coast	Grey
+NZ_Regions:West Coast/Westland	West Coast	Westland
+NZ_Regions:Canterbury/Kaikoura	Canterbury	Kaikoura
+NZ_Regions:Canterbury/Hurunui	Canterbury	Hurunui
+NZ_Regions:Canterbury/Selwyn	Canterbury	Selwyn
+NZ_Regions:Canterbury/Waimakariri	Canterbury	Waimakariri
+NZ_Regions:Canterbury/Christchurch	Canterbury	Christchurch
+NZ_Regions:Canterbury/Banks Peninsula	Canterbury	Banks Peninsula
+NZ_Regions:Canterbury/Ashburton	Canterbury	Ashburton
+NZ_Regions:Canterbury/Mackenzie	Canterbury	Mackenzie
+NZ_Regions:Canterbury/Timaru	Canterbury	Timaru
+NZ_Regions:Canterbury/Waimate	Canterbury	Waimate
+NZ_Regions:Otago/Waitaki	Otago	Waitaki
+NZ_Regions:Otago/Queenstown-Lakes	Otago	Queenstown-Lakes
+NZ_Regions:Otago/Central Otago	Otago	Central Otago
+NZ_Regions:Otago/Dunedin	Otago	Dunedin
+NZ_Regions:Otago/Clutha	Otago	Clutha
+NZ_Regions:Southland/Gore	Southland	Gore
+NZ_Regions:Southland/Southland	Southland	Southland
+NZ_Regions:Southland/Invercargill	Southland	Invercargill
+ 
+
+III.B.24. Sponsored Award Enumeration
+Members of this enumeration follow a SPONSOR_PROGRAM_AWARD format.
+
+The PROGRAM_AWARD parts of the enumeration are delegated to the sponsoring organization for definition.  The first part (SPONSOR_) is one of the following values:
+
+Sponsor	Sponsoring Organization
+ADIF_	ADIF Development Group
+ARI_	ARI - l'Associazione Radioamatori Italiani
+ARRL_	ARRL - American Radio Relay League
+CQ_	CQ Magazine
+DARC_	DARC - Deutscher Amateur-Radio-Club e.V.
+EQSL_	eQSL
+IARU_	IARU - International Amateur Radio Union
+JARL_	JARL - Japan Amateur Radio League
+RSGB_	RSGB - Radio Society of Great Britain
+TAG_	TAG - Tambov award group
+WABAG_	WAB - Worked all Britain
+
+
+(Note: ADIF_ is used in examples in this specification and in test QSO records only.)
+ 
+III.B.25. Submode Enumeration
+Submode	Mode	Description
+8PSK125	PSK	 
+8PSK125F	PSK	 
+8PSK125FL	PSK	 
+8PSK250	PSK	 
+8PSK250F	PSK	 
+8PSK250FL	PSK	 
+8PSK500	PSK	 
+8PSK500F	PSK	 
+8PSK1000	PSK	 
+8PSK1000F	PSK	 
+8PSK1200F	PSK	 
+AMTORFEC	TOR	 
+ASCI	RTTY	 
+C4FM	DIGITALVOICE	C4FM 4-level FSK
+
+See the Propagation_Mode enumeration section for examples of representing C4FM voice transmissions.
+CHIP64	CHIP	 
+CHIP128	CHIP	 
+DMR	DIGITALVOICE	Digital Mobile Radio
+
+See the Propagation_Mode enumeration section for examples of representing DMR voice transmissions.
+DOM-M	DOMINO	 
+DOM4	DOMINO	 
+DOM5	DOMINO	 
+DOM8	DOMINO	 
+DOM11	DOMINO	 
+DOM16	DOMINO	 
+DOM22	DOMINO	 
+DOM44	DOMINO	 
+DOM88	DOMINO	 
+DOMINOEX	DOMINO	 
+DOMINOF	DOMINO	 
+DSTAR	DIGITALVOICE	Digital Smart Technologies for Amateur Radio
+
+See the Propagation_Mode enumeration section for examples of representing DSTAR voice transmissions.
+FMHELL	HELL	 
+FREEDATA	DYNAMIC	Data communications leveraging Codec2 HF modems
+FREEDV	DIGITALVOICE	Digital voice mode for HF radio implemented with open source
+FSK31	PSK	 
+FSKH105	HELL	 
+FSKH245	HELL	 
+FSKHELL	HELL	 
+FSQCALL	MFSK	FSQCall protocol used with FSQ (Fast Simple QSO) transmission mode
+FST4	MFSK	This is a digital mode supported by the WSJT-X software
+FST4W	MFSK	This is a digital mode supported by the WSJT-X software that is for quasi-beacon transmissions of WSPR-style messages
+FT2	MFSK	 
+FT4	MFSK	FT4 is a digital mode designed specifically for radio contesting
+GTOR	TOR	 
+HELL80	HELL	 
+HELLX5	HELL	 
+HELLX9	HELL	 
+HFSK	HELL	 
+ISCAT-A	ISCAT	 
+ISCAT-B	ISCAT	 
+JS8	MFSK	Jordan Sherer designed 8-FSK modulation
+JT4A	JT4	 
+JT4B	JT4	 
+JT4C	JT4	 
+JT4D	JT4	 
+JT4E	JT4	 
+JT4F	JT4	 
+JT4G	JT4	 
+JT9-1	JT9	 
+JT9-2	JT9	 
+JT9-5	JT9	 
+JT9-10	JT9	 
+JT9-30	JT9	 
+JT9A	JT9	 
+JT9B	JT9	 
+JT9C	JT9	 
+JT9D	JT9	 
+JT9E	JT9	 
+JT9E FAST	JT9	 
+JT9F	JT9	 
+JT9F FAST	JT9	 
+JT9G	JT9	 
+JT9G FAST	JT9	 
+JT9H	JT9	 
+JT9H FAST	JT9	 
+JT65A	JT65	 
+JT65B	JT65	 
+JT65B2	JT65	 
+JT65C	JT65	 
+JT65C2	JT65	 
+JTMS	MFSK	 
+JTTY	MFSK	 
+LSB	SSB	Amplitude modulated voice telephony, lower-sideband, suppressed-carrier
+M17	DIGITALVOICE	Digital radio protocol using the Codec 2 voice encoder
+MFSK4	MFSK	 
+MFSK8	MFSK	 
+MFSK11	MFSK	 
+MFSK16	MFSK	 
+MFSK22	MFSK	 
+MFSK31	MFSK	 
+MFSK32	MFSK	 
+MFSK64	MFSK	 
+MFSK64L	MFSK	 
+MFSK128	MFSK	 
+MFSK128L	MFSK	 
+NAVTEX	TOR	 
+OLIVIA 4/125	OLIVIA	 
+OLIVIA 4/250	OLIVIA	 
+OLIVIA 8/250	OLIVIA	 
+OLIVIA 8/500	OLIVIA	 
+OLIVIA 16/500	OLIVIA	 
+OLIVIA 16/1000	OLIVIA	 
+OLIVIA 32/1000	OLIVIA	 
+OPERA-BEACON	OPERA	 
+OPERA-QSO	OPERA	 
+PAC2	PAC	 
+PAC3	PAC	 
+PAC4	PAC	 
+PAX2	PAX	 
+PCW	CW	Coherent CW
+PSK10	PSK	 
+PSK31	PSK	 
+PSK63	PSK	 
+PSK63F	PSK	 
+PSK63RC10	PSK	 
+PSK63RC20	PSK	 
+PSK63RC32	PSK	 
+PSK63RC4	PSK	 
+PSK63RC5	PSK	 
+PSK125	PSK	 
+PSK125RC10	PSK	 
+PSK125RC12	PSK	 
+PSK125RC16	PSK	 
+PSK125RC4	PSK	 
+PSK125RC5	PSK	 
+PSK250	PSK	 
+PSK250RC2	PSK	 
+PSK250RC3	PSK	 
+PSK250RC5	PSK	 
+PSK250RC6	PSK	 
+PSK250RC7	PSK	 
+PSK500	PSK	 
+PSK500RC2	PSK	 
+PSK500RC3	PSK	 
+PSK500RC4	PSK	 
+PSK800RC2	PSK	 
+PSK1000	PSK	 
+PSK1000RC2	PSK	 
+PSKAM10	PSK	 
+PSKAM31	PSK	 
+PSKAM50	PSK	 
+PSKFEC31	PSK	 
+PSKHELL	HELL	 
+QPSK31	PSK	 
+Q65	MFSK	 
+QPSK63	PSK	 
+QPSK125	PSK	 
+QPSK250	PSK	 
+QPSK500	PSK	 
+QRA64A	QRA64	 
+QRA64B	QRA64	 
+QRA64C	QRA64	 
+QRA64D	QRA64	 
+QRA64E	QRA64	 
+RIBBIT_PIX	OFDM	Images transmitted using Ribbit
+RIBBIT_SMS	OFDM	Short text messages transmitted using Ribbit
+ROS-EME	ROS	 
+ROS-HF	ROS	 
+ROS-MF	ROS	 
+SCAMP_FAST	FSK	SCAMP fast FSK
+SCAMP_OO	MTONE	SCAMP single modulated tone on/off keying
+SCAMP_OO_SLW	MTONE	SCAMP single modulated tone on/off slow keying
+SCAMP_SLOW	FSK	SCAMP slow FSK
+SCAMP_VSLOW	FSK	SCAMP very slow FSK
+SIM31	PSK	 
+SITORB	TOR	 
+SLOWHELL	HELL	 
+THOR-M	THOR	 
+THOR4	THOR	 
+THOR5	THOR	 
+THOR8	THOR	 
+THOR11	THOR	 
+THOR16	THOR	 
+THOR22	THOR	 
+THOR25X4	THOR	 
+THOR50X1	THOR	 
+THOR50X2	THOR	 
+THOR100	THOR	 
+THRBX	THRB	 
+THRBX1	THRB	 
+THRBX2	THRB	 
+THRBX4	THRB	 
+THROB1	THRB	 
+THROB2	THRB	 
+THROB4	THRB	 
+USB	SSB	Amplitude modulated voice telephony, upper-sideband, suppressed-carrier
+VARA HF	DYNAMIC	Channel adaptive high-speed modem for HF
+VARA SATELLITE	DYNAMIC	Channel adaptive high-speed modem for satellite operations
+VARA FM 1200	DYNAMIC	Channel adaptive high-speed modem for FM transceivers
+VARA FM 9600	DYNAMIC	Channel adaptive high-speed modem for FM transceivers
+ 
+
+III.C. Fields
+III.C.1. ADIF-defined Fields
+ADIF Field Names are case-insensitive.
+
+III.C.1.a Header Fields
+
+In the header, no field name may appear in more than one Data Specifier.
+
+Field Name	Data Type	Enumeration	Description
+ADIF_VER	String	 	Identifies the version of ADIF used in this file in the format X.Y.Z where
+X is an integer designating the ADIF epoch.
+Y is an integer between 0 and 9 designating the major version.
+Z is an integer between 0 and 9 designating the minor version.
+CREATED_TIMESTAMP	String	 	Identifies the UTC date and time that the file was created in the format of 15 characters YYYYMMDD HHMMSS where
+YYYYMMDD is a Date data type.
+HHMMSS is a 6 character Time data type.
+PROGRAMID	String	 	Identifies the name of the logger, converter, or utility that created or processed this ADIF content.
+
+To help avoid name clashes, the ADIF PROGRAMID Register provides a voluntary list of PROGRAMID values.
+PROGRAMVERSION	String	 	Identifies the version of the logger, converter, or utility that created or processed this ADIF file.
+USERDEFn	String	 	Specifies the name and optional enumeration or range of the nth user-defined field, where n is a positive integer.
+
+The name of a user-defined field may not
+be an ADIF Field name.
+contain
+a comma.
+a colon.
+an open-angle-bracket or close-angle-bracket character.
+an open-curly-bracket or close-curly-bracket character.
+begin or end with a space character.
+ 
+
+III.C.1.b QSO Fields
+
+A Field can specify a Default Value to be assumed when that Field is not specified in a QSO record, or when a Data-Specifier for that Field contains no data.
+
+In a record, no field name may appear in more than one Data Specifier.
+
+Field Name	Data Type	Enumeration	Description
+ADDRESS	MultilineString	 	the contacted station's complete mailing address: full name, street address, city, postal code, and country
+ADDRESS_INTL	IntlMultilineString	 	the contacted station's complete mailing address: full name, street address, city, postal code, and country
+AGE	Number	 	the contacted station's operator's age in years in the range 0 to 120 (inclusive)
+ALTITUDE	Number	 	the height of the contacted station in meters relative to Mean Sea Level (MSL).
+
+For example 1.5 km is <ALTITUDE:4>1500 and 10.5 m is <ALTITUDE:4>10.5
+ANT_AZ	Number	 	the logging station's antenna azimuth, in degrees with a value between 0 to 360 (inclusive).  Values outside this range are import-only and must be normalized for export (e.g. 370 is exported as 10).
+True north is 0 degrees with values increasing in a clockwise direction.
+ANT_EL	Number	 	the logging station's antenna elevation, in degrees with a value between -90 to 90 (inclusive).  Values outside this range are import-only and must be normalized for export (e.g. 100 is exported as 80).
+The horizon is 0 degrees with values increasing as the angle moves in an upward direction.
+ANT_PATH	Enumeration	Ant Path	the signal path
+ARRL_SECT	Enumeration	ARRL Section	the contacted station's ARRL section
+AWARD_SUBMITTED	SponsoredAwardList	Sponsored Award	the list of awards submitted to a sponsor.
+
+note that this field might not be used in a QSO record.  It might be used to convey information about a user's "Award Account" between an award sponsor and the user.  For example, AA6YQ might submit a request for awards by sending the following:
+
+<CALL:5>AA6YQ
+<AWARD_SUBMITTED:64>ADIF_CENTURY_BASIC,ADIF_CENTURY_SILVER,
+ADIF_SPECTRUM_100-160m
+AWARD_GRANTED	SponsoredAwardList	Sponsored Award	the list of awards granted by a sponsor.
+
+note that this field might not be used in a QSO record.  It might be used to convey information about a user's "Award Account" between an award sponsor and the user.  For example, in response to a request "send me a list of the awards granted to AA6YQ", this might be received:
+
+<CALL:5>AA6YQ
+<AWARD_GRANTED:64>ADIF_CENTURY_BASIC,ADIF_CENTURY_SILVER,
+ADIF_SPECTRUM_100-160m
+A_INDEX	Number	 	the geomagnetic A index at the time of the QSO in the range 0 to 400 (inclusive)
+BAND	Enumeration	Band	QSO Band
+BAND_RX	Enumeration	Band	in a split frequency QSO, the logging station's receiving band
+CALL	String	 	the contacted station's callsign
+CHECK	String	 	contest check (e.g. for ARRL Sweepstakes)
+CLASS	String	 	contest class (e.g. for ARRL Field Day)
+CLUBLOG_QSO_UPLOAD_DATE	Date	 	the date the QSO was last uploaded to the Club Log online service
+CLUBLOG_QSO_UPLOAD_STATUS	Enumeration	QSO Upload Status	the upload status of the QSO on the Club Log online service
+CNTY	Enumeration	(Secondary Administrative Subdivision, function of DXCC field's value)	the contacted station's Secondary Administrative Subdivision (e.g. US county, JA Gun), in the specified format
+CNTY_ALT	Secondary
+Administrative
+SubdivisionListAlt	 	a semicolon (;) delimited, unordered list of Secondary Administrative Subdivision Alt codes for the contacted station
+
+See the Data Type for details.
+COMMENT	String	 	comment field for QSO
+
+for a message to be incorporated in a paper or electronic QSL for the contacted station's operator, use the QSLMSG field
+
+recommended use: information of interest to the contacted station's operator
+COMMENT_INTL	IntlString	 	comment field for QSO
+
+for a message to be incorporated in a paper or electronic QSL for the contacted station's operator, use the QSLMSG_INTL field
+
+recommended use: information of interest to the contacted station's operator
+CONT	Enumeration	Continent	the contacted station's Continent
+CONTACTED_OP	String	 	the callsign of the individual operating the contacted station
+CONTEST_ID	String	Contest ID	QSO Contest Identifier
+use enumeration values for interoperability
+COUNTRY	String	 	the contacted station's DXCC entity name
+COUNTRY_INTL	IntlString	 	the contacted station's DXCC entity name
+CQZ	PositiveInteger	 	the contacted station's CQ Zone in the range 1 to 40 (inclusive)
+CREDIT_SUBMITTED	CreditList
+
+AwardList  (import-only)	Credit
+
+Award  (import-only)	the list of credits sought for this QSO
+
+Use of data type AwardList and enumeration Award are import-only
+CREDIT_GRANTED	CreditList
+
+AwardList  (import-only)	Credit
+
+Award  (import-only)	the list of credits granted to this QSO
+
+Use of data type AwardList and enumeration Award are import-only
+DARC_DOK	Enumeration	(DOKs and Special DOKs listed on the DARC website)	the contacted station's DARC DOK (District Location Code)
+
+A DOK comprises letters and numbers, e.g. <DARC_DOK:3>A01
+Note that DARC provides two different lists - one for DOKs and one for Special DOKs.
+DCL_QSLRDATE	Date	 	date QSL received from DCL
+
+(only valid if DCL_QSL_RCVD is Y, I, or V)
+(V import-only)
+DCL_QSLSDATE	Date	 	date QSL sent to DCL
+
+(only valid if DCL_QSL_SENT is Y, Q, or I)
+DCL_QSL_RCVD	Enumeration	QSL Rcvd	DCL QSL received status
+
+Default Value: N
+DCL_QSL_SENT	Enumeration	QSL Sent	DCL QSL sent status
+
+Default Value: N
+DISTANCE	Number	 	the distance between the logging station and the contacted station in kilometers via the specified signal path with a value greater than or equal to 0
+DXCC	Enumeration	DXCC Entity Code	the contacted station's DXCC Entity Code
+
+<DXCC:1>0 means that the contacted station is known not to be within a DXCC entity.
+EMAIL	String	 	the contacted station's email address
+EQ_CALL	String	 	the contacted station's owner's callsign
+EQSL_AG	Enumeration	EQSL_AG	indicates whether the QSO is known to be "Authenticity Guaranteed" by eQSL
+
+Default value: U
+EQSL_QSLRDATE	Date	 	date QSL received from eQSL.cc
+(only valid if EQSL_QSL_RCVD is Y, I, or V)
+(V import-only)
+
+EQSL_QSLSDATE	Date	 	date QSL sent to eQSL.cc
+(only valid if EQSL_QSL_SENT is Y, Q, or I)
+
+EQSL_QSL_RCVD	Enumeration	QSL Rcvd	eQSL.cc QSL received status
+
+instead of V (import-only) use
+<CREDIT_GRANTED:42>CQWAZ:eqsl,CQWAZ_BAND:eqsl,CQWAZ_MODE:eqsl
+
+Default Value: N
+EQSL_QSL_SENT	Enumeration	QSL Sent	eQSL.cc QSL sent status
+
+Default Value: N
+FISTS	PositiveInteger	 	the contacted station's FISTS CW Club member number with a value greater than 0.
+FISTS_CC	PositiveInteger	 	the contacted station's FISTS CW Club Century Certificate (CC) number with a value greater than 0.
+FORCE_INIT	Boolean	 	new EME "initial"
+FREQ	Number	 	QSO frequency in Megahertz
+FREQ_RX	Number	 	in a split frequency QSO, the logging station's receiving frequency in Megahertz
+GRIDSQUARE	GridSquare	 	the contacted station's 2-character, 4-character, 6-character, or 8-character Maidenhead Grid Square
+
+For 10 or 12 character locators, store the first 8 characters in GRIDSQUARE and the additional 2 or 4 characters in the GRIDSQUARE_EXT field
+GRIDSQUARE_EXT	GridSquareExt	 	for a contacted station's 10-character Maidenhead locator, supplements the GRIDSQUARE field by containing characters 9 and 10.  For a contacted station's 12-character Maidenhead locator, supplements the GRIDSQUARE field by containing characters 9, 10, 11 and 12.
+Characters 9 and 10 are case-insensitive ASCII letters in the range A-X.  Characters 11 and 12 are Digits in the range 0 to 9.
+On export, the field length must be 2 or 4.
+On import, if the field length is greater than 4, the additional characters must be ignored.
+Example of exporting the 10-character locator FN01MH42BQ:
+<GRIDSQUARE:8>FN01MH42 <GRIDSQUARE_EXT:2>BQ
+GUEST_OP	String	 	import-only: use OPERATOR instead
+HAMLOGEU_QSO_UPLOAD_DATE	Date	 	the date the QSO was last uploaded to the HAMLOG.EU online service
+HAMLOGEU_QSO_UPLOAD_STATUS	Enumeration	QSO Upload Status	the upload status of the QSO on the HAMLOG.EU online service
+HAMQTH_QSO_UPLOAD_DATE	Date	 	the date the QSO was last uploaded to the HamQTH.com online service
+HAMQTH_QSO_UPLOAD_STATUS	Enumeration	QSO Upload Status	the upload status of the QSO on the HamQTH.com online service
+HRDLOG_QSO_UPLOAD_DATE	Date	 	the date the QSO was last uploaded to the HRDLog.net online service
+HRDLOG_QSO_UPLOAD_STATUS	Enumeration	QSO Upload Status	the upload status of the QSO on the HRDLog.net online service
+IOTA	IOTARefNo	 	the contacted station's IOTA designator, in format CC-XXX, where
+CC is a member of the Continent enumeration
+XXX is the island group designator, where 1 <= XXX <= 999  [use leading zeroes]
+IOTA_ISLAND_ID	PositiveInteger	 	the contacted station's IOTA Island Identifier, an 8-digit integer in the range 1 to 99999999 [leading zeroes optional]
+ITUZ	PositiveInteger	 	the contacted station's ITU zone in the range 1 to 90 (inclusive)
+K_INDEX	Integer	 	the geomagnetic K index at the time of the QSO in the range 0 to 9 (inclusive)
+LAT	Location	 	the contacted station's latitude
+LON	Location	 	the contacted station's longitude
+LOTW_QSLRDATE	Date	 	date QSL received from ARRL Logbook of the World
+(only valid if LOTW_QSL_RCVD is Y, I, or V)
+(V import-only)
+
+LOTW_QSLSDATE	Date	 	date QSL sent to ARRL Logbook of the World
+(only valid if LOTW_QSL_SENT is Y, Q, or I)
+
+LOTW_QSL_RCVD	Enumeration	QSL Rcvd	ARRL Logbook of the World QSL received status
+
+instead of V (import-only) use
+<CREDIT_GRANTED:39>DXCC:lotw,DXCC_BAND:lotw,DXCC_MODE:lotw
+
+Default Value: N
+LOTW_QSL_SENT	Enumeration	QSL Sent	ARRL Logbook of the World QSL sent status
+
+Default Value: N
+MAX_BURSTS	Number	 	maximum length of meteor scatter bursts heard by the logging station, in seconds with a value greater than or equal to 0
+MODE	Enumeration	Mode	QSO Mode
+MORSE_KEY_INFO	String	 	details of the contacted station's Morse key (e.g. make, model, etc).
+
+Example:
+<MORSE_KEY_INFO:16>Begali Sculpture
+MORSE_KEY_TYPE	Enumeration	Morse Key Type	the contacted station's Morse key type (e.g. straight key, bug, etc).
+
+Example for a dual-lever paddle:
+<MORSE_KEY_TYPE:2>DP
+MS_SHOWER	String	 	For Meteor Scatter QSOs, the name of the meteor shower in progress
+MY_ALTITUDE	Number	 	the height of the logging station in meters relative to Mean Sea Level (MSL).
+
+For example 1.5 km is <MY_ALTITUDE:4>1500 and 10.5 m is <MY_ALTITUDE:4>10.5
+MY_ANTENNA	String	 	the logging station's antenna
+MY_ANTENNA_INTL	IntlString	 	the logging station's antenna
+MY_ARRL_SECT	Enumeration	ARRL Section	the logging station's ARRL section
+MY_CITY	String	 	the logging station's city
+MY_CITY_INTL	IntlString	 	the logging station's city
+MY_CNTY	Enumeration	(Secondary Administrative Subdivision, function of MY_DXCC field's value)	the logging station's Secondary Administrative Subdivision (e.g. US county, JA Gun), in the specified format
+MY_CNTY_ALT	Secondary
+Administrative
+SubdivisionListAlt	 	a semicolon (;) delimited, unordered list of Secondary Administrative Subdivision Alt codes for the logging station
+
+See the Data Type for details.
+MY_COUNTRY	String	Country	the logging station's DXCC entity name
+MY_COUNTRY_INTL	IntlString	Country	the logging station's DXCC entity name
+MY_CQ_ZONE	PositiveInteger	 	the logging station's CQ Zone in the range 1 to 40 (inclusive)
+MY_DARC_DOK	Enumeration	(DOKs and Special DOKs listed on the DARC website)	the logging station's DARC DOK (District Location Code)
+
+A DOK comprises letters and numbers, e.g. <MY_DARC_DOK:3>A01
+Note that DARC provides two different lists - one for DOKs and one for Special DOKs.
+MY_DXCC	Enumeration	DXCC Entity Code	the logging station's DXCC Entity Code
+
+<MY_DXCC:1>0 means that the logging station is known not to be within a DXCC entity.
+MY_FISTS	PositiveInteger	 	the logging station's FISTS CW Club member number with a value greater than 0.
+MY_GRIDSQUARE	GridSquare	 	the logging station's 2-character, 4-character, 6-character, or 8-character Maidenhead Grid Square
+
+For 10 or 12 character locators, store the first 8 characters in MY_GRIDSQUARE and the additional 2 or 4 characters in the MY_GRIDSQUARE_EXT field
+MY_GRIDSQUARE_EXT	GridSquareExt	 	for a logging station's 10-character Maidenhead locator, supplements the MY_GRIDSQUARE field by containing characters 9 and 10.  For a logging station's 12-character Maidenhead locator, supplements the MY_GRIDSQUARE field by containing characters 9, 10, 11 and 12.
+Characters 9 and 10 are case-insensitive ASCII letters in the range A-X.  Characters 11 and 12 are Digits in the range 0 to 9.
+On export, the field length must be 2 or 4.
+On import, if the field length is greater than 4, the additional characters must be ignored.
+Example of exporting the 10-character locator FN01MH42BQ:
+<MY_GRIDSQUARE:8>FN01MH42 <MY_GRIDSQUARE_EXT:2>BQ
+MY_IOTA	IOTARefNo	 	the logging station's IOTA designator, in format CC-XXX, where
+CC is a member of the Continent enumeration
+XXX is the island group designator, where 1 <= XXX <= 999  [use leading zeroes]
+MY_IOTA_ISLAND_ID	PositiveInteger	 	the logging station's IOTA Island Identifier, an 8-digit integer in the range 1 to 99999999 [leading zeroes optional]
+MY_ITU_ZONE	PositiveInteger	 	the logging station's ITU zone in the range 1 to 90 (inclusive)
+MY_LAT	Location	 	the logging station's latitude
+MY_LON	Location	 	the logging station's longitude
+MY_MORSE_KEY_INFO	String	 	details of the logging station's Morse key (e.g. make, model, etc).
+
+Example:
+<MY_MORSE_KEY_INFO:16>Begali Sculpture
+MY_MORSE_KEY_TYPE	Enumeration	Morse Key Type	the logging station's Morse key type (e.g. straight key, bug, etc).
+
+Example for a dual-lever paddle:
+<MORSE_KEY_TYPE:2>DP
+MY_NAME	String	 	the logging operator's name
+MY_NAME_INTL	IntlString	 	the logging operator's name
+MY_POSTAL_CODE	String	 	the logging station's postal code
+MY_POSTAL_CODE_INTL	IntlString	 	the logging station's postal code
+MY_POTA_REF	POTARefList	 	a comma-delimited list of one or more of the logging station's POTA (Parks on the Air) reference(s).
+
+Examples:
+<MY_POTA_REF:6>K-0059
+<MY_POTA_REF:7>K-10000
+<MY_POTA_REF:40>K-0817,K-4566,K-4576,K-4573,K-4578@US-WY
+MY_RIG	String	 	description of the logging station's equipment
+MY_RIG_INTL	IntlString	 	description of the logging station's equipment
+MY_SIG	String	 	special interest activity or event
+MY_SIG_INTL	IntlString	 	special interest activity or event
+MY_SIG_INFO	String	 	special interest activity or event information
+MY_SIG_INFO_INTL	IntlString	 	special interest activity or event information
+MY_SOTA_REF	SOTARef	 	the logging station's International SOTA Reference.
+MY_STATE	Enumeration	(Primary Administrative Subdivision, function of MY_DXCC field's value)	the code for the logging station's Primary Administrative Subdivision (e.g. US State, JA Island, VE Province)
+MY_STREET	String	 	the logging station's street
+MY_STREET_INTL	IntlString	 	the logging station's street
+MY_USACA_COUNTIES	SecondarySubdivisionList	 	two US counties in the case where the logging station is located on a border between two counties, representing counties that the contacted station may claim for the CQ Magazine USA-CA award program.  E.g.
+
+MA,Franklin:MA,Hampshire
+MY_VUCC_GRIDS	GridSquareList	 	two or four adjacent Maidenhead grid locators, each four or six characters long, representing the logging station's grid squares that the contacted station may claim for the ARRL VUCC award program.  E.g.
+
+EM98,FM08,EM97,FM07
+MY_WWFF_REF	WWFFRef	 	the logging station's WWFF (World Wildlife Flora & Fauna) reference
+NAME	String	 	the contacted station's operator's name
+NAME_INTL	IntlString	 	the contacted station's operator's name
+NOTES	MultilineString	 	QSO notes
+
+recommended use: information of interest to the logging station's operator
+NOTES_INTL	IntlMultilineString	 	QSO notes
+
+recommended use: information of interest to the logging station's operator
+NR_BURSTS	Integer	 	the number of meteor scatter bursts heard by the logging station with a value greater than or equal to 0
+NR_PINGS	Integer	 	the number of meteor scatter pings heard by the logging station with a value greater than or equal to 0
+OPERATOR	String	 	the logging operator's callsign
+if STATION_CALLSIGN is absent, OPERATOR shall be treated as both the logging station's callsign and the logging operator's callsign
+OWNER_CALLSIGN	String	 	the callsign of the owner of the station used to log the contact (the
+callsign of the OPERATOR's host)
+if OWNER_CALLSIGN is absent, STATION_CALLSIGN shall be treated as both the logging station's callsign and the callsign of the owner of the station
+PFX	String	 	the contacted station's WPX prefix
+POTA_REF	POTARefList	 	a comma-delimited list of one or more of the contacted station's POTA (Parks on the Air) reference(s).
+
+Examples:
+<POTA_REF:6>K-5033
+<POTA_REF:13>VE-5082@CA-AB
+<POTA_REF:40>K-0817,K-4566,K-4576,K-4573,K-4578@US-WY
+PRECEDENCE	String	 	contest precedence (e.g. for ARRL Sweepstakes)
+PROP_MODE	Enumeration	Propagation Mode	QSO propagation mode
+PUBLIC_KEY	String	 	public encryption key
+QRZCOM_QSO_DOWNLOAD_DATE	Date	 	date QSO downloaded from QRZ.COM logbook
+QRZCOM_QSO_DOWNLOAD_STATUS	Enumeration	QSO Download Status	QRZ.COM logbook QSO download status
+QRZCOM_QSO_UPLOAD_DATE	Date	 	the date the QSO was last uploaded to the QRZ.COM online service
+QRZCOM_QSO_UPLOAD_STATUS	Enumeration	QSO Upload Status	the upload status of the QSO on the QRZ.COM online service
+QSLMSG	MultilineString	 	a message for the contacted station's operator to be incorporated in a paper or electronic QSL
+QSLMSG_INTL	IntlMultilineString	 	a message for the contacted station's operator to be incorporated in a paper or electronic QSL
+QSLMSG_RCVD	MultilineString	 	a message addressed to the logging station's operator incorporated in a paper or electronic QSL
+QSLRDATE	Date	 	QSL received date
+(only valid if QSL_RCVD is Y, I, or V)
+(V import-only)
+
+QSLSDATE	Date	 	QSL sent date
+(only valid if QSL_SENT is Y, Q, or I)
+
+QSL_RCVD	Enumeration	QSL Rcvd	QSL received status
+
+instead of V (import-only) use
+<CREDIT_GRANTED:39>DXCC:card,DXCC_BAND:card,DXCC_MODE:card
+
+Default Value: N
+QSL_RCVD_VIA	Enumeration	QSL Via	if QSL_RCVD is set to 'Y' or 'V', the means by which the QSL was received by the logging station; otherwise, the means by which the logging station requested or intends to request that the QSL be conveyed.  (Note: 'V' is import-only)
+
+use of M (manager) is import-only
+QSL_SENT	Enumeration	QSL Sent	QSL sent status
+
+Default Value: N
+QSL_SENT_VIA	Enumeration	QSL Via	if QSL_SENT is set to 'Y', the means by which the QSL was sent by the logging station; otherwise, the means by which the logging station intends to convey the QSL
+
+use of M (manager) is import-only
+QSL_VIA	String	 	the contacted station's QSL route
+QSO_COMPLETE	Enumeration	QSO Complete	indicates whether the QSO was complete from the perspective of the logging station
+Y - yes
+N - no
+NIL - not heard
+? - uncertain
+QSO_DATE	Date	 	date on which the QSO started
+QSO_DATE_OFF	Date	 	date on which the QSO ended
+QSO_RANDOM	Boolean	 	indicates whether the QSO was random or scheduled
+QTH	String	 	the contacted station's city
+QTH_INTL	IntlString	 	the contacted station's city
+REGION	Enumeration	Region	the contacted station's WAE or CQ entity contained within a DXCC entity.
+the value None indicates that the WAE or CQ entity is the DXCC entity in the DXCC field.
+nothing can be inferred from the absence of the REGION field
+RIG	MultilineString	 	description of the contacted station's equipment
+RIG_INTL	IntlMultilineString	 	description of the contacted station's equipment
+RST_RCVD	String	 	signal report from the contacted station
+RST_SENT	String	 	signal report sent to the contacted station
+RX_PWR	Number	 	the contacted station's transmitter power in Watts with a value greater than or equal to 0
+SAT_MODE	String	 	satellite mode - a code representing the satellite's uplink band and downlink band
+SAT_NAME	String	 	name of satellite
+SFI	Integer	 	the solar flux at the time of the QSO in the range 0 to 300 (inclusive).
+SIG	String	 	the name of the contacted station's special activity or interest group
+SIG_INTL	IntlString	 	the name of the contacted station's special activity or interest group
+SIG_INFO	String	 	information associated with the contacted station's activity or interest group
+SIG_INFO_INTL	IntlString	 	information associated with the contacted station's activity or interest group
+SILENT_KEY	Boolean	 	'Y' indicates that the contacted station's operator is now a Silent Key.
+SKCC	String	 	the contacted station's Straight Key Century Club (SKCC) member information
+SOTA_REF	SOTARef	 	the contacted station's International SOTA Reference.
+SRX	Integer	 	contest QSO received serial number with a value greater than or equal to 0
+SRX_STRING	String	 	contest QSO received information
+use Cabrillo format to convey contest information for which ADIF fields are not specified
+in the event of a conflict between information in a dedicated contest field and this field, information in the dedicated contest field shall prevail
+STATE	Enumeration	(Primary Administrative Subdivision, function of DXCC field's value)	the code for the contacted station's Primary Administrative Subdivision (e.g. US State, JA Island, VE Province)
+STATION_CALLSIGN	String	 	the logging station's callsign (the callsign used over the air)
+if STATION_CALLSIGN is absent, OPERATOR shall be treated as both the logging station's callsign and the logging operator's callsign
+STX	Integer	 	contest QSO transmitted serial number with a value greater than or equal to 0
+STX_STRING	String	 	contest QSO transmitted information
+use Cabrillo format to convey contest information for which ADIF fields are not specified
+in the event of a conflict between information in a dedicated contest field and this field, information in the dedicated contest field shall prevail
+SUBMODE	String	Submode (function of MODE field's value)	QSO Submode
+
+use enumeration values for interoperability
+SWL	Boolean	 	indicates that the QSO information pertains to an SWL report
+TEN_TEN	PositiveInteger	 	Ten-Ten number with a value greater than 0
+TIME_OFF	Time	 	HHMM or HHMMSS in UTC
+in the absence of <QSO_DATE_OFF>, the QSO duration is less than 24 hours.  For example, the following is a QSO starting at 14 July 2020 23:55 and finishing at 15 July 2020 01:00:
+<QSO_DATE:8>20200714 <TIME_ON:4>2355 <TIME_OFF:4>0100
+
+TIME_ON	Time	 	HHMM or HHMMSS in UTC
+TX_PWR	Number	 	the logging station's power in Watts with a value greater than or equal to 0
+UKSMG	PositiveInteger	 	the contacted station's UKSMG member number with a value greater than 0
+USACA_COUNTIES	SecondarySubdivisionList	 	two US counties in the case where the contacted station is located on a border between two counties, representing counties credited to the QSO for the CQ Magazine USA-CA award program.  E.g.
+
+MA,Franklin:MA,Hampshire
+VE_PROV	String	 	import-only: use STATE instead
+VUCC_GRIDS	GridSquareList	 	two or four adjacent Maidenhead grid locators, each four or six characters long, representing the contacted station's grid squares credited to the QSO for the ARRL VUCC award program.  E.g.
+
+EM98,FM08,EM97,FM07
+WEB	String	 	the contacted station's URL
+WWFF_REF	WWFFRef	 	the contacted station's WWFF (World Wildlife Flora & Fauna) reference
+ 
+
+III.C.2 Application-defined Fields
+Applications may define their own fields.  To avoid naming collisions, such fields must include the name of the logger, converter, or utility that either created or will process the ADIF file in which they appear and the ADIF PROGRAMID Register provides a voluntary list of PROGRAMID values.
+
+Application-defined Fields in ADI files
+Application-defined Fields in ADX files
+ 
+
+III.C.3 User-defined Fields
+A user-defined field is specified by a USERDEF Header field.
+
+User-defined Fields in ADI files
+User-defined Fields in ADX files
+IV. File Formats
+IV.A. ADI File Format
+ADI files are text files that are typically exported with a .adi file name extension.  Applications should additionally accept files with a .adif file name extension.
+
+IV.A.1. ADI Data-Specifiers
+Data-Specifiers used to convey data in an ADI file are composed of a case-independent field name F, a data length L, and an optional data type indicator T separated by colons and enclosed in angle brackets, followed by data D of length L:
+
+<F:L:T>D
+The data length L is a sequence of ASCII digits representing an unsigned decimal integer with value greater than or equal to zero.  Leading zeros are import-only.
+
+<NAME:0>
+
+<NAME:3>Ray
+Field definitions do not specify a maximum length. ADI-exporting applications can place as much data in a Data-Specifier as they choose. ADI-importing applications can import as much data from a Data-Specifier as they choose.
+
+Data type indicators are case insensitive; they are optional, and typically omitted when obvious, e.g.
+
+<CALL:4>WF1B
+Fields of type IntlCharacter, IntlString, and IntlMultilineString cannot be used in ADI files.
+
+All ADIF-compliant applications must import or export ADI files.
+
+IV.A.2. ADI File Structure
+An ADI file begins with an optional Header followed by one or more Records:
+
+Header
+Record
+Record
+...
+Record
+IV.A.3. ADI Header
+A Header begins with any character other than < and terminates with a case-insensitive End-Of-Header tag:
+
+<EOH>
+If the first character in an ADI file is <, it contains no Header. A Header may contain arbitrary text of type String, as well as zero or more Header-Data-Specifiers, Data-Specifiers that convey data for a Header Field; in the Header-Data-Specifier:
+
+<adif_ver:5>3.0.5
+the field name is adif_ver, the data length is 5, and 3.0.5 is the data.
+
+Here's an ADI Header that includes text, and uses Header Fields to convey the ADIF version number, the name of the generating application, and the definitions of three user-defined fields:
+
+Generated on 2011-11-22 at 02:15:23Z for WN4AZY
+
+<adif_ver:5>3.0.5
+<programid:7>MonoLog
+<USERDEF1:8:N>QRP_ARCI
+<USERDEF2:19:E>SweaterSize,{S,M,L}
+<USERDEF3:15>ShoeSize,{5:20}
+<EOH>
+IV.A.4. Application-defined Fields
+In ADI files, the form of an Application-defined QSO Field is
+
+APP_PROGRAMID_FIELDNAME
+where
+
+PROGRAMID is replaced by the name of the logger, converter, or utility that either created or will process the ADIF file in which the Application-defined Field appears
+FIELDNAME is replaced by an application-defined field name.
+APP_PROGRAMID_FIELDNAME may not
+contain
+a comma
+a colon
+an open-angle-bracket or close-angle-bracket character
+an open-curly-bracket or close-curly-bracket character
+end with a space character
+An application whose name is MONOLOG could thus convey the contacted operator's birthday using
+
+<APP_MONOLOG_BIRTHDAY:8:D>19470726
+To facilitate importing, display, and editing by other applications, instances of application-defined fields should include the optional Data Type Indicator, as shown in the above example, which can be for any Data type except Digit and Character.  If a Data type Indicator is not included, the field contents must conform to the MultilineString data type.  Note that the first occurrence of an Application-defined field in a file determines its Data type and subsequent occurrences of the field must not attempt to change that Data type.
+
+IV.A.5. User-defined Fields
+In ADI files, the nth User-defined QSO Field is defined with USERDEFn Header field whose HeaderDataSpecifier specifies a field name and, optionally, an enumeration or range:
+
+<USERDEFn:L:D>FIELDNAME
+<USERDEFn:L:D>FIELDNAME,{Optional-Enumeration-or-Range}
+where
+
+n is a positive integer
+L is the length of the user-defined field name and optional enumeration or range
+D is the Data type indicator, which can be for any Data type except Digit and Character
+FIELDNAME is replaced by the user-defined field name
+{Optional-Enumeration-or-Range} is enclosed by curly brackets, separated from the preceding user-defined field name by a comma, and may specify
+a comma-delimited list of values of data type String, e.g. SweaterSize,{S,M,L}
+a lower bound of type Number followed by a colon followed by a larger upper bound of type Number, e.g. ShoeSize,{5:20}
+FIELDNAME may not
+be an ADIF Field name
+contain
+a comma
+a colon
+an open-angle-bracket or close-angle-bracket character
+an open-curly-bracket or close-curly-bracket character
+begin or end with a space character
+For example,
+
+<USERDEF1:3:N>EPC
+<USERDEF2:19:E>SweaterSize,{S,M,L}
+<USERDEF3:15:N>ShoeSize,{5:20}
+In a Record, user-defined fields names can directly appear in QSO-Data-Specifiers, e.g.
+
+<sweatersize:1>M
+IV.A.6. ADI Records
+A Record is one or more QSO-Data-Specifiers, Data-Specifiers that convey data for a QSO Field, followed by a case-insensitive End-Of-Record tag
+
+<EOR>
+In the QSO-Data-Specifier
+
+<CALL:6:S>WN4AZY
+the field name is CALL, the data length is 6, the optional data type indicator is S (signifying String), and the data is WN4AZY.
+
+Within a Record, QSO-Data-Specifiers may appear in any order.
+
+Characters outside QSO-Data-Specifiers and outside End-of-Record tags are ignored.  If the file contains a Header record, characters after the End-of-Header tag and prior to the first QSO-Data-Specifier are also ignored.  This permits the insertion of line break characters to improve readability by users, or the insertion of any other information an ADI-exporting application cares to provide; ADI-importing applications are free to ignore such characters.
+
+A QSO Record describing a QSO with WN4AZY made on May 13, 1996 at 1305Z could look like this
+
+<call:6>WN4AZY<band:3>20M<mode:4>RTTY<qso_date:8>19960513<time_on:4>1305<eor>
+or like this:
+
+<qso_date:8>19960513
+<time_on:4>1305
+<call:6>WN4AZY
+<band:3>20M
+<mode:4>RTTY
+<eor>
+If the first character of an ADI file is <, it is presumed to be the first character of the first QSO-Data-Specifier of the first QSO Record of an ADI file that does not include a Header.
+
+IV.A.7. Sample ADI File
+Generated on 2011-11-22 at 02:15:23Z for WN4AZY
+
+<adif_ver:5>3.0.5
+<programid:7>monolog
+<USERDEF1:3:N>EPC
+<USERDEF2:19:E>SweaterSize,{S,M,L}
+<USERDEF3:15:N>ShoeSize,{5:20}
+
+<EOH>
+
+<qso_date:8>19900620
+<time_on:4>1523
+<call:5>VK9NS
+<band:3>20M
+<mode:4>RTTY
+<sweatersize:1>M
+<shoesize:2>11
+<app_monolog_compression:3>off
+<eor>
+
+<qso_date:8>20101022
+<time_on:4>0111
+<call:5>ON4UN
+<band:3>40M
+<mode:3>PSK
+<submode:5>PSK63
+<epc:5>32123
+<app_monolog_compression:3>off
+<eor>
+ 
+
+IV.B. ADX File Format
+An ADX file employs XML syntax and UTF-8 encoding and is typically exported with a .adx file name extension.  It comprises a root ADX element that contains a HEADER element and a RECORDS element; the RECORDS element contains zero or more RECORD elements:
+
+
+<?xml version="1.0" encoding="UTF-8"?>
+<ADX>
+<HEADER><HEADERFIELDNAME>Data</HEADERFIELDNAME> ...
+<HEADERFIELDNAME>Data</HEADERFIELDNAME></HEADER>
+<RECORDS>
+<RECORD><QSOFIELDNAME>Data</QSOFIELDNAME> ...
+<QSOFIELDNAME>Data</QSOFIELDNAME></RECORD>
+<RECORD><QSOFIELDNAME>Data</QSOFIELDNAME> ...
+<QSOFIELDNAME>Data</QSOFIELDNAME></RECORD>
+...
+<RECORD><QSOFIELDNAME>Data</QSOFIELDNAME> ...
+<QSOFIELDNAME>Data</QSOFIELDNAME></RECORD>
+</RECORDS>
+</ADX>
+where HEADERFIELDNAME can be any field permitted in a HEADER element, and QSOFIELDNAME can be a name of any field permitted in a RECORD element.
+
+In ADX files,
+
+data type indicators only appear in Application-defined fields and User-defined fields.
+all element and attribute names are upper case
+ 
+
+ADIF-compliant applications need not import or export ADX files.
+
+IV.B.1. Permissible XML Constructs
+XML namespaces and processing instructions in ADX files are ignored.  CDATA sections must not be present within elements representing ADIF fields.
+
+Document declarations (<!DOCTYPE ...) and entities other than those predefined in XML are not permitted; &amp; is allowed, for example, but &topband; is not allowed.
+
+IV.B.2. Application-defined Fields
+In ADX files, an Application-defined QSO Field employs the form
+
+<APP PROGRAMID="PROGRAMID" FIELDNAME="FIELDNAME" TYPE="DATATYPEINDICATOR">DATA</APP>
+where
+
+PROGRAMID is replaced by the name of the logger, converter, or utility that either created or will process the ADIF file in which the Application-defined Field appears
+FIELDNAME is replaced by an application-defined field name
+DATATYPEINDICATOR is replaced by the data type indicator , which can be for any Data type except Digit, Character, or IntlCharacter.  Note that the first occurrence of an Application-defined field in a file determines its Data type and subsequent occurrences of the field must not attempt to change that Data type
+DATA is replaced by the data being conveyed
+An application whose name is MONOLOG could thus convey the contacted operator's birthday with
+
+<APP PROGRAMID="MONOLOG" FIELDNAME="BIRTHDAY" TYPE="d">19470726</APP>
+IV.B.3. User-defined Fields
+In ADX files, the nth User-defined QSO Field is defined in the Header by
+
+<USERDEF FIELDID="n" TYPE="DATATYPEINDICATOR" ENUM="{A,B, ... N}"
+RANGE="{LOWERBOUND:UPPERBOUND}">FIELDNAME</USERDEF>
+where
+
+n is a positive unsigned integer
+DATATYPEINDICATOR is replaced by the data type indicator , which can be for any Data type except Digit, Character, or IntlCharacter
+A,B, ... N is a comma-delimited list of values of data type String
+LOWERBOUND:UPPERBOUND specifies a lower bound of type Number followed by a colon followed by a larger upper bound of type Number
+ENUM and RANGE are optional, but must not both be present in the same definition.
+FIELDNAME is replaced by a user-defined field name in uppercase
+<HEADER>
+...
+
+<USERDEF FIELDID="1" TYPE="N">EPC</USERDEF>
+<USERDEF FIELDID="2" TYPE="E" ENUM="{S,M,L}">SWEATERSIZE</USERDEF>
+<USERDEF FIELDID="3" TYPE="N" RANGE="{5:20}">SHOESIZE</USERDEF>
+...
+</HEADER>
+In a Record, user-defined fields are conveyed using the form
+
+<USERDEF FIELDNAME="FIELDNAME">DATA</USERDEF>
+where FIELDNAME is the name of a user-defined field defined in the Header and DATA is replaced by the data being conveyed, e.g.
+
+<RECORDS>
+...
+<RECORD>
+...
+<USERDEF FIELDNAME="EPC">32123</USERDEF>
+<USERDEF FIELDNAME="SweaterSize">M</USERDEF>
+<USERDEF FIELDNAME="ShoeSize">11</USERDEF>
+...
+</RECORD>
+</RECORDS>
+If a Data Type Indicator is included in a user defined field in a Record, the Data Type Indicator is ignored.
+
+IV.B.4. Sample ADX File
+<?xml version="1.0" encoding="UTF-8"?>
+<ADX>
+<HEADER>
+<!--Generated on 2011-11-22 at 02:15:23Z for WN4AZY-->
+<ADIF_VER>3.0.5</ADIF_VER>
+<PROGRAMID>monolog</PROGRAMID>
+<USERDEF FIELDID="1" TYPE="N">EPC</USERDEF>
+<USERDEF FIELDID="2" TYPE="E" ENUM="{S,M,L}">SWEATERSIZE</USERDEF>
+<USERDEF FIELDID="3" TYPE="N" RANGE="{5:20}">SHOESIZE</USERDEF>
+</HEADER>
+<RECORDS>
+<RECORD>
+<QSO_DATE>19900620</QSO_DATE>
+<TIME_ON>1523</TIME_ON>
+<CALL>VK9NS</CALL>
+<BAND>20M</BAND>
+<MODE>RTTY</MODE>
+<USERDEF FIELDNAME="SWEATERSIZE">M</USERDEF>
+<USERDEF FIELDNAME="SHOESIZE">11</USERDEF>
+<APP PROGRAMID="MONOLOG" FIELDNAME="Compression" TYPE="s">off</APP>
+</RECORD>
+<RECORD>
+<QSO_DATE>20101022</QSO_DATE>
+<TIME_ON>0111</TIME_ON>
+<CALL>ON4UN</CALL>
+<BAND>40M</BAND>
+<MODE>PSK</MODE>
+<SUBMODE>PSK63</SUBMODE>
+<USERDEF FIELDNAME="EPC">32123</USERDEF>
+<APP PROGRAMID="MONOLOG" FIELDNAME="COMPRESSION" TYPE="s">off</APP>
+</RECORD>
+</RECORDS>
+</ADX>
+
+IV.B.5. ADX XML Schema
+XML Schemas for ADX are available - see ADX Schemas.
+
+V. ADIF Resources
+The following resources supplement the ADIF specification.
+
+ 
+
+V.A. ADX Schemas
+Two XML Schemas are provided for validating the ADX format files.  For details, see the section ADX Schemas in the ADIF Resources document.
+
+ 
+
+V.B. Implementation Notes
+Implementation notes discussing the ADIF Number Data Type, ADI Field Length specifiers, and minimum fields are available in the ADIF Resources document section Implementation Notes.
+
+ 
+
+V.C. Data Files Exported from ADIF Specification Tables
+Machine-readable files containing data exported from the ADIF Specification's tables are available so that developers of ADIF-related software can use them to generate (for example) program data or SQL files.  The formats provided are:
+Extensible Markup Language (XML, file type .xml)
+Tab-separated values (TSV, file type .tsv)
+Comma-separated values (CSV, file type .csv)
+Microsoft™ Excel™ Workbook (file type .xlsx)
+Apache™ OpenOffice™ Calc (file type .ods)
+JavaScript Object Notation (JSON, file type .json)
+A ZIP archive that includes the files is available from
+https://adif.org.uk/version/resources
+where version is the ADIF version as a 3-digit number.  For example, for ADIF 3.1.8, the link is https://adif.org.uk/318/resources
+
+For more information, see Data Files Exported from ADIF Specification Tables in the ADIF Resources document.
+ 
+
+V.D. Test QSO Files based on ADIF Specification Tables
+ADIF files containing test QSOs based on data exported from the ADIF Specification's tables are available as:
+ADIF ADI (.adi)
+ADIF ADI (.adx)
+A ZIP archive that includes the files is available from
+https://adif.org.uk/version/resources
+where version is the ADIF version as a 3-digit number.  For example, for ADIF 3.1.8, the link is https://adif.org.uk/318/resources
+
+For more information, see Test QSO Files based on ADIF Specification Tables in the ADIF Resources document.
+VI. External Links
+ADIF Developers group (ADIFDev)
+ADIF Voting group (ADIFVoting)
+ARI Associazione Radioamatori Italiani
+ARRL
+ARRL Contests
+ARRL Country Lists & Prefixes
+ARRL EME contest
+ARRL Section Abbreviations
+ARSI Amateur Radio Society of India (The)
+ARSI VU-DX Contest
+ARSI Worked All VU Award
+ASCII Codes Table
+Cabrillo
+Club Log
+Coded orthogonal frequency-division multiplexing television
+County Hunter Counties
+CQ Amateur Radio
+CQ USA-CA Awards Official Rules
+CQ WAZ List
+CVA DX
+CWops
+DARC Deutschen Amateur-Radio-Club e.V.
+DARC Community Logbook (DCL)
+DMC Digital Modes Club
+DRCG DL-DX RTTY Contest Group
+eQSL
+eQSL.cc Computer-to-Computer QSO Verification System
+Extensible Markup Language (XML) 1.0
+FIPS 6-4 (Last available copy 2014-01-28)
+FREEDATA: Open-source, customizable platform for transmitting data
+FreeDV: Open Source Amateur Digital Voice
+FSQCall protocol
+FT4 and FT8 Communication Protocols
+FT4 Protocol for Digital Contesting (The)
+HA-DX Contest
+HAMLOG.EU
+HamQTH.com API
+HRDLOG.net
+IARC Israel Amateur Radio Club
+IARU International Amateur Radio Union
+ICWC International CW Council
+INC International Naval Contest
+ISO 3166-2
+ISO 3166-2: Argentina
+ISO 3166-2: Brazil
+ISO 3166-2: Chile
+ISO 3166-2: Cuba
+ISO 3166-2: France
+ISO 3166-2: Germany
+ISO 3166-2: India
+ISO 3166-2: Ireland
+ISO 3166-2: Italy
+ISO 3166-2: Mexico
+ISO 3166-2: Netherlands
+ISO 3166-2: New Zealand
+ISO 3166-2: Norway
+ISO 3166-2: Papua New Guinea
+ISO 3166-2: Paraguay
+ISO 3166-2: Philippines
+ISO 3166-2: Romania
+ISO 3166-2: Spain
+ISO 3166-2: Sweden
+ISO 3166-2: Uruguay
+JARL Japan Amateur Radio League
+JS8Call Description
+JTDX website (T10 mode)
+K1USN Radio Club
+K1USN Slow Speed Open
+K1USN Slow Speed Test
+M17 Open Source Amateur Radio
+MDXA Magnolia DX Association
+NZART New Zealand Association of Radio Transmitters
+NZART Regions Award
+NZART Counties Award North Island Counties (Last available copy 2020-01-26 from Wayback Machine web archive)
+NZART Counties Award South Island Counties (Last available copy 2020-01-26 from Wayback Machine web archive)
+OFDM: Orthogonal Frequency-Division Multiplexing
+Open Season Ten Meter QSO Party
+ORARI Banggai DX Contest
+ORARI Bekasi Merdeka Contest
+ORARI DX Contest
+Portugal Day Contest
+POTA Parks on the Air
+POTA Parks on the Air Documentation
+POTA Parks on the Air References lookup/search
+POTA Parks on the Air References as CSV
+Pro Contest Club CW Contest Rules
+QRZ.COM
+RFBitBanger and SCAMP by Dr. Dan Marks (The)
+RSGB Radio Society of Great Britain
+RSGB IOTA
+RSGB ITU Zone List
+rttycontesting.com
+SKCC Straight Key Century Club
+SOTA General Rules
+TAG Tambov award group
+TARA Troy Amateur Radio Association
+Ten Ten International
+UARL Ukrainian Amateur Radio League
+UARL URDA List
+Unicode Consortium (The)
+URE Unión de Radioaficionados Españoles
+URE Unión de Radioaficionados Españoles Awards
+URE Unión de Radioaficionados Españoles DME List
+UTF-8 and Unicode
+Vermont QSO Party
+WAB Worked All Britain
+Winter Field Day
+Wireless Institute of Australia (WIA)
+World Wide Digi DX Contest
+World Wide Flora & Fauna in Amateur Radio
+WSJT-X Software
+YODX HF contest
