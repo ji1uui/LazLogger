@@ -60,6 +60,19 @@ jobs:
       - name: Build muninn-cli
         run: scripts/build.sh
 
+      - name: Run unit tests
+        env:
+          MUNINN_TEST_XML: build/test-results/unit-${{ matrix.os }}.xml
+        run: scripts/test.sh
+
+      - name: Upload unit test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: unit-test-results-${{ matrix.os }}
+          path: MuninnLog/build/test-results/
+          if-no-files-found: ignore
+
       - name: Smoke test muninn-cli
         run: |
           output="$(./build/muninn-cli --version | tr -d '\r')"
