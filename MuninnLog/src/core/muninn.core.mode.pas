@@ -1,6 +1,6 @@
 unit Muninn.Core.Mode;
 
-{ Operating mode as the ADIF MODE / SUBMODE pair (ADIF 3.1.4), e.g. SSB/USB or
+{ Operating mode as the ADIF MODE / SUBMODE pair (ADIF 3.1.8), e.g. SSB/USB or
   MFSK/FT4. Any syntactically valid pair is accepted so imported logs keep modes
   this table does not list; the category is only known for listed modes. }
 

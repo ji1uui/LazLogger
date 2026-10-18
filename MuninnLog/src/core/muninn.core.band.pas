@@ -1,6 +1,8 @@
 unit Muninn.Core.Band;
 
-{ Amateur bands as defined by the ADIF Band enumeration (ADIF 3.1.4).
+{ Amateur bands as defined by the ADIF Band enumeration. The table was taken from
+  the ADIF 3.1.4 exports; the ADIF 3.1.8 change list (2026-10-12) records no
+  Band changes after 3.1.4, so it matches 3.1.8.
   The ADIF band name is the stable code used for storage and exchange;
   never persist Ord(TBand). Band edges are inclusive. }
 
