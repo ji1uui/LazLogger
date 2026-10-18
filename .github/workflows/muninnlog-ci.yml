@@ -1,0 +1,71 @@
+name: MuninnLog CI
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - "MuninnLog/**"
+      - ".github/workflows/muninnlog-ci.yml"
+  pull_request:
+    paths:
+      - "MuninnLog/**"
+      - ".github/workflows/muninnlog-ci.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: muninnlog-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, macos-15, windows-2025]
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
+        working-directory: MuninnLog
+    steps:
+      - uses: actions/checkout@v4
+
+      # Toolchain: see MuninnLog/docs/adr/0001-toolchain.md
+      - name: Install Free Pascal (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes --no-install-recommends \
+            fp-compiler fp-units-rtl fp-units-base fp-units-fcl
+
+      - name: Install Free Pascal (macOS)
+        if: runner.os == 'macOS'
+        run: brew install fpc
+
+      - name: Install Lazarus and Free Pascal (Windows)
+        if: runner.os == 'Windows'
+        uses: gcarreno/setup-lazarus@v3
+        with:
+          lazarus-version: "4.4"
+
+      - name: Show toolchain
+        run: |
+          fpc -iV
+          fpc -iTP
+          fpc -iTO
+
+      - name: Build muninn-cli
+        run: scripts/build.sh
+
+      - name: Smoke test muninn-cli
+        run: |
+          output="$(./build/muninn-cli --version | tr -d '\r')"
+          echo "$output"
+          test "$output" = "MuninnLog 0.0.0"
+          if ./build/muninn-cli --unknown-option; then
+            echo "Unknown option must fail" >&2
+            exit 1
+          fi
