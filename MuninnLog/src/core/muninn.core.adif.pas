@@ -429,30 +429,36 @@ begin
   FIssues.Add(ASeverity, CurrentRecordIndex, AFieldName, AMessage);
 end;
 
-{ Reads ALength bytes of data at FPosition. When the value holds non-ASCII text
-  and the byte count does not fit (it splits a character, or leaves text before
-  the next tag) but the same count in characters does, the writer counted
-  characters: use that and warn. }
+{ Reads ALength bytes of data at FPosition. Text between data specifiers is
+  allowed and ignored (ADIF IV.A.6), so the byte count wins whenever it ends on a
+  character boundary and the text after it up to the next tag is ASCII. Only
+  when the byte count splits a character, or leaves non-ASCII text before the
+  next tag, and the same count in characters ends right before the next tag,
+  did the writer count characters: use that and warn. }
 function TAdiReader.ReadValue(const AFieldName: string;
   const ALength: Integer): string;
 var
-  ByteEnd, CharacterEnd: Integer;
-  BytesFit: Boolean;
+  ByteEnd, CharacterEnd, NextTag: Integer;
+  SplitsCharacter: Boolean;
 begin
-  ByteEnd := FPosition + ALength;
-  if ByteEnd > Length(FText) + 1 then
+  { Compare with the remaining size first so a huge length cannot overflow. }
+  if ALength > Length(FText) - FPosition + 1 then
   begin
     Issue(aisError, AFieldName, Format(
       'data length %d runs past the end of the file', [ALength]));
     ByteEnd := Length(FText) + 1;
-  end;
+  end
+  else
+    ByteEnd := FPosition + ALength;
   Result := Copy(FText, FPosition, ByteEnd - FPosition);
-  if HasNonAscii(Result) or
-    ((ByteEnd <= Length(FText)) and IsContinuationByte(FText[ByteEnd])) then
+  SplitsCharacter := (ByteEnd <= Length(FText)) and IsContinuationByte(FText[ByteEnd]);
+  if SplitsCharacter or HasNonAscii(Result) then
   begin
-    BytesFit := not ((ByteEnd <= Length(FText)) and IsContinuationByte(FText[ByteEnd]))
-      and OnlyBlanksBeforeTag(FText, ByteEnd);
-    if not BytesFit then
+    NextTag := Pos('<', FText, ByteEnd);
+    if NextTag = 0 then
+      NextTag := Length(FText) + 1;
+    if SplitsCharacter or
+      HasNonAscii(Copy(FText, ByteEnd, NextTag - ByteEnd)) then
     begin
       CharacterEnd := SkipUtf8Characters(FText, FPosition, ALength);
       if OnlyBlanksBeforeTag(FText, CharacterEnd) then

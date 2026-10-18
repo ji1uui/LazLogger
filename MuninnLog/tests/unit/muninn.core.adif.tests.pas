@@ -26,6 +26,8 @@ type
     procedure SkipsByteOrderMark;
     procedure ReadsUtf8ByteLengths;
     procedure DetectsCharacterLengths;
+    procedure KeepsByteLengthsBeforeIgnoredText;
+    procedure ReportsHugeLengths;
     procedure ReportsMalformedTags;
     procedure KeepsFirstOfRepeatedFields;
     procedure KeepsLastRecordWithoutEor;
@@ -132,6 +134,25 @@ begin
   AssertEquals(2, FIssues.Count);
   CheckIssue(0, aisWarning, 'NAME');
   CheckIssue(1, aisWarning, 'QTH');
+end;
+
+procedure TAdifTests.KeepsByteLengthsBeforeIgnoredText;
+begin
+  { Text between data specifiers is ignored (ADIF IV.A.6). }
+  Read('<NAME:3>山ab<CALL:4>WF1B<EOR>');
+  AssertEquals('山', FDocument[0].Value('NAME'));
+  AssertEquals('WF1B', FDocument[0].Value('CALL'));
+  AssertEquals('', FIssues.ToText);
+end;
+
+procedure TAdifTests.ReportsHugeLengths;
+begin
+  Read('<CALL:4>WF1B <NAME:2147483647>x<EOR>');
+  AssertEquals(1, FIssues.ErrorCount);
+  CheckIssue(0, aisError, 'NAME');
+  AssertEquals('the rest of the file is the value', 'x<EOR>',
+    FDocument[0].Value('NAME'));
+  AssertEquals('WF1B', FDocument[0].Value('CALL'));
 end;
 
 procedure TAdifTests.ReportsMalformedTags;
