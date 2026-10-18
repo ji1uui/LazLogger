@@ -6,7 +6,7 @@
 | ファイル | 内容 | 出典・版 | 注意 |
 |---|---|---|---|
 | [HamlibComponent_README_Rev6.0.md](HamlibComponent_README_Rev6.0.md) | HamlibComponent（開発者が別途開発中）の README | Rev.6.0 | 開発者が公開を許可済み |
-| [ADIF_3.1.8_excerpt.txt](ADIF_3.1.8_excerpt.txt) | ADIF 仕様の抜粋（版の履歴、データ型、列挙型の一部） | ADIF 3.1.8（2026-10-12） | 抜粋。全文は adif.org を参照 |
+| [ADIF_3.1.8_excerpt.txt](ADIF_3.1.8_excerpt.txt) | ADIF 仕様の抜粋（版の履歴、データ型、列挙型の一部） | ADIF 3.1.8（2026-10-12） | 全文 |
 | [ARRL_DXCC_List_2022-03_excerpt.txt](ARRL_DXCC_List_2022-03_excerpt.txt) | ARRL DXCC リストの冒頭（Spratly Is. から 5H-5I まで） | March 2022 Edition | 全文 |
 | [JARL_ward_JCG_JCC_lists_excerpt.txt](JARL_ward_JCG_JCC_lists_excerpt.txt) | JARL の区（政令指定都市の区）、JCG（郡）、JCC（市）のリスト | 各リストの更新日は本文を参照 | 区、郡、市の順で記載 |
 
