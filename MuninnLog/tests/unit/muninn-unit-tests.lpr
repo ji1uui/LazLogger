@@ -6,7 +6,11 @@ uses
   {$IFDEF UNIX}cthreads, cwstring,{$ENDIF}
   Classes, consoletestrunner,
   Muninn.Tests.Runtime,
-  Muninn.Core.Version.Tests;
+  Muninn.Core.Version.Tests,
+  Muninn.Core.Callsign.Tests,
+  Muninn.Core.Band.Tests,
+  Muninn.Core.Mode.Tests,
+  Muninn.Core.Time.Tests;
 
 var
   Runner: TTestRunner;
