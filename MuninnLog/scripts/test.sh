@@ -18,9 +18,13 @@ mkdir -p "$UNIT_DIR"
   tests/unit/muninn-unit-tests.lpr
 
 # The FPCUnit console runner exits with 1 when any test fails or errors.
-"./$TEST_DIR/muninn-unit-tests" --all --format=plain
+# Keep that status, but still write the XML results: they matter most on failure.
+status=0
+"./$TEST_DIR/muninn-unit-tests" --all --format=plain || status=$?
 
 if [ -n "${MUNINN_TEST_XML:-}" ]; then
   mkdir -p "$(dirname "$MUNINN_TEST_XML")"
-  "./$TEST_DIR/muninn-unit-tests" --all --format=xml --file="$MUNINN_TEST_XML" > /dev/null
+  "./$TEST_DIR/muninn-unit-tests" --all --format=xml --file="$MUNINN_TEST_XML" > /dev/null || true
 fi
+
+exit "$status"
