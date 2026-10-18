@@ -1,0 +1,42 @@
+ARRL DXCC LIST
+CURRENT ENTITIES
+March 2022 Edition
+Current Entities Total: 340 (Entry level Honor Roll is 331 current entities)
+The ARRL DXCC List is also available from our Publication Sales Department for $5.95
+each plus shipping. In addition to the List, the paper copy includes: the DXCC rules,
+DXCC Award Application, ARRL DXCC Card Checkers, Incoming and Outgoing QSL
+Bureau information and more.
+Note: * Indicates current list of entities for which QSLs may be forwarded by the ARRL
+membership Outgoing QSL Service.
+# Indicates entities with which US Amateurs may legally handle third-party message
+traffic.
+Entity
+Prefix Entity Cont ITU CQ Code
+ Spratly Is. AS 50 26 247
+ 1A 1 Sov. Mil. Order of Malta EU 28 15 246
+ 3A* Monaco EU 27 14 260
+ 3B6, 7 Agalega & St. Brandon Is. AF 53 39 004
+ 3B8 Mauritius AF 53 39 165
+ 3B9 Rodrigues I. AF 53 39 207
+ 3C Equatorial Guinea AF 47 36 049
+ 3C0 Annobon I. AF 52 36 195
+ 3D2* Fiji OC 56 32 176
+ 3D2 Conway Reef OC 56 32 489
+ 3D2* Rotuma I. OC 56 32 460
+ 3DA# Kingdom of Eswatini AF 57 38 468
+ 3V* Tunisia AF 37 33 474
+ 3W,XV Viet Nam AS 49 26 293
+ 3X Guinea AF 46 35 107
+ 3Y* Bouvet AF 67 38 024
+ 3Y* Peter 1 I. AN 72 12 199
+ 4J, 4K Azerbaijan AS 29 21 018
+ 4L* Georgia AS 29 21 075
+ 4O47* Montenegro EU 28 15 514
+ 4S* Sri Lanka AS 41 22 315
+ 4U_ITU#* ITU HQ EU 28 14 117
+ 4U_UN* United Nations HQ NA 08 05 289
+ 4W 44 Timor - Leste OC 54 28 511
+ 4X, 4Z Israel AS 39 20 336
+ 5A Libya AF 38 34 436
+ 5B, C4, P3* Cyprus AS 39 20 215
+ 5H-5I* Tanzania AF 53 37 470

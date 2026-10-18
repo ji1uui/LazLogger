@@ -1,0 +1,299 @@
+(Released ADIF Version 3.1.8, updated 2026-10-12)
+
+
+
+Amateur Data Interchange Format (ADIF) Specification
+
+
+Table of Contents
+Introduction
+Background
+Development
+Terminology
+Applicability
+Support of Fields
+Changes from Previous Versions
+Policies
+Upward Compatibility
+Deprecation
+Deletion
+Data Types, Enumerations, and Fields
+Data Types
+
+AwardList (import-only),
+Boolean,
+Character,  CreditList,
+Date,  Digit,
+Enumeration,
+GridSquare,  GridSquareExt,  GridSquareList,
+Integer,  IntlCharacter,  IntlMultilineString,  IntlString,  IOTARefNo,
+Location,
+MultilineString,
+Number,
+PositiveInteger,  POTARef,  POTARefList,
+SecondarySubdivisionList,  SecondaryAdministrativeSubdivisionListAlt,  SOTARef,  SponsoredAwardList,  String,
+Time,
+WWFFRef
+Enumerations
+
+Ant_Path,  ARRL Section,  Award (import-only),
+Band,
+Contest ID,  Continent,  Credit,
+DXCC Entity Code,
+EQSL_AG,
+Mode,  Morse Key Type,
+Primary Administrative Subdivision,  Propagation Mode,
+QSL Medium,  QSL Rcvd,  QSL Sent,  QSL Via,  QSO Complete,  QSO Download Status,  QSO Upload Status,
+Region,
+Secondary Administrative Subdivision,  Secondary Administrative Subdivision Alt,  Sponsored Award,  Submode
+Fields
+ADIF-defined Fields
+Header Fields
+
+ADIF_VER,
+CREATED_TIMESTAMP,
+PROGRAMID,  PROGRAMVERSION,
+USERDEFn
+QSO Fields
+
+ADDRESS,  ADDRESS_INTL,  AGE,  ALTITUDE,  ANT_AZ,  ANT_EL,  ANT_PATH,  ARRL_SECT,  AWARD_GRANTED,  AWARD_SUBMITTED,  A_INDEX,
+BAND,  BAND_RX,
+CALL,  CHECK,  CLASS,  CLUBLOG_QSO_UPLOAD_DATE,  CLUBLOG_QSO_UPLOAD_STATUS,  CNTY,  CNTY_ALT,  COMMENT,  COMMENT_INTL,  CONT,  CONTACTED_OP,  CONTEST_ID,  COUNTRY,  COUNTRY_INTL,  CQZ,  CREDIT_SUBMITTED,  CREDIT_GRANTED,
+DARC_DOK,  DCL_QSLRDATE,  DCL_QSLSDATE,  DCL_QSL_RCVD,  DCL_QSL_SENT,  DISTANCE,  DXCC,
+EMAIL,  EQ_CALL,  EQSL_AG,  EQSL_QSLRDATE,  EQSL_QSLSDATE,  EQSL_QSL_RCVD,  EQSL_QSL_SENT,
+FISTS,  FISTS_CC,  FORCE_INIT,  FREQ,  FREQ_RX,
+GRIDSQUARE,  GRIDSQUARE_EXT,  GUEST_OP,
+HAMLOGEU_QSO_UPLOAD_DATE,  HAMLOGEU_QSO_UPLOAD_STATUS,  HAMQTH_QSO_UPLOAD_DATE,  HAMQTH_QSO_UPLOAD_STATUS,  HRDLOG_QSO_UPLOAD_DATE,  HRDLOG_QSO_UPLOAD_STATUS,
+IOTA,  IOTA_ISLAND_ID,  ITUZ,
+K_INDEX,
+LAT,  LON,  LOTW_QSLRDATE,  LOTW_QSLSDATE,  LOTW_QSL_RCVD,  LOTW_QSL_SENT,
+MAX_BURSTS,  MODE,  MORSE_KEY_INFO,  MORSE_KEY_TYPE,  MS_SHOWER,
+MY_
+MY_ALTITUDE,  MY_ANTENNA,  MY_ANTENNA_INTL,  MY_ARRL_SECT,
+MY_CITY,  MY_CITY_INTL,  MY_CNTY,  MY_CNTY_ALT,  MY_COUNTRY,  MY_COUNTRY_INTL,  MY_CQ_ZONE,
+MY_DARC_DOK,  MY_DXCC,
+MY_FISTS,
+MY_GRIDSQUARE,  MY_GRIDSQUARE_EXT,
+MY_IOTA,  MY_IOTA_ISLAND_ID,  MY_ITU_ZONE,
+MY_LAT,  MY_LON,
+MY_MORSE_KEY_INFO,  MY_MORSE_KEY_TYPE,
+MY_NAME,  MY_NAME_INTL,
+MY_POSTAL_CODE,  MY_POSTAL_CODE_INTL,  MY_POTA_REF,
+MY_RIG,  MY_RIG_INTL,
+MY_SIG,  MY_SIG_INTL,  MY_SIG_INFO,  MY_SIG_INFO_INTL,  MY_SOTA_REF,  MY_STATE,  MY_STREET,  MY_STREET_INTL,
+MY_USACA_COUNTIES,
+MY_VUCC_GRIDS,
+MY_WWFF_REF,
+NAME,  NAME_INTL,  NOTES,  NOTES_INTL,  NR_BURSTS,  NR_PINGS,
+OPERATOR,  OWNER_CALLSIGN,
+PFX,  POTA_REF,  PRECEDENCE,  PROP_MODE,  PUBLIC_KEY,
+QRZCOM_QSO_DOWNLOAD_DATE,  QRZCOM_QSO_DOWNLOAD_STATUS,  QRZCOM_QSO_UPLOAD_DATE,  QRZCOM_QSO_UPLOAD_STATUS,  QSLMSG,  QSLMSG_INTL,  QSLMSG_RCVD,  QSLRDATE,  QSLSDATE,  QSL_RCVD,  QSL_RCVD_VIA,  QSL_SENT,  QSL_SENT_VIA,  QSL_VIA,  QSO_COMPLETE,  QSO_DATE,  QSO_DATE_OFF,  QSO_RANDOM,  QTH,  QTH_INTL,
+REGION,  RIG,  RIG_INTL,  RST_RCVD,  RST_SENT,  RX_PWR,
+SAT_MODE,  SAT_NAME,  SFI,  SIG,  SIG_INTL,  SIG_INFO,  SIG_INFO_INTL,  SILENT_KEY,  SKCC,  SOTA_REF,  SRX,  SRX_STRING,  STATE,  STATION_CALLSIGN,  STX,  STX_STRING,  SUBMODE,  SWL,
+TEN_TEN,  TIME_OFF,  TIME_ON,  TX_PWR,
+UKSMG,  USACA_COUNTIES,
+VE_PROV,  VUCC_GRIDS,
+WEB,  WWFF_REF
+Application-defined Fields
+User-defined Fields
+File Formats
+ADI file format
+ADX file format
+ADIF Resources
+ADX Schemas
+Implementation Notes
+Data Files Exported from ADIF Specification Tables
+Test QSO Files based on ADIF Specification Tables
+External Links
+I. Introduction
+I.A. Background
+Ever since software has become a part of amateur radio, there have been as many data formats as there have been ham radio software programmers.  Hams have struggled with converting data among various formats.  In early 1996 KK7A promoted the idea of a standard for exchange of ham data, and an Internet reflector was set up for discussing such a standard.  Ray WF1B and Dennis WN4AZY, publishers of commercial ham radio software, took the best suggestions from this discussion and proposed the Amateur Data Interface Format (ADIF), which Ray introduced as ADIF 1.0 at the 1996 Dayton Hamvention.  Within a year, this standard was adopted by most software publishers.
+
+Starting In 2002, ADIF 2.0.0 initiated a period of upward-compatible expansion during which new data types, formal enumerations, additional fields, and enumeration values were added.
+
+During 2010, the need to support international characters led to this proposal to define a second file format (syntax) that would introduce international data types using Unicode encoded with UTF-8, and that would employ XML syntax.  This second file format, referred to as ADX, references the same Data Types, Enumerations, and Fields as are referenced by the original ADIF file format, now referred to as ADI.
+
+I.B. Development
+If you would like to discuss the specification, request a change, or report errors, please join the ADIF Developers Group.
+
+The ADIF Developers Group produces the ADIF specification and is open to developers of logging software, web sites, amateur radio applications, and others who have a vested interest in the ADIF standard and who will actively participate in its definition, maintenance, and promotion.  Decisions are made by majority vote in the ADIF Voting group, with each application or service represented by exactly one ADIF Voting group member.
+
+I.C. Terminology
+Export: Saving data from an application or service into ADIF format.
+Import: Loading data in ADIF format into an application or service.
+I.D. Applicability
+ADIF's purpose is to enable the reliable transfer of amateur radio information from one application or service (“export”) via an intermediate form (ADIF) to another application or service (“import”).  This is accomplished by defining precise text-based representations for amateur radio information.  These representations can be conveyed in files, over networks, or as web service parameters and results.
+ADIF is not a user interface specification.
+ADIF is not a database schema definition.
+It imposes no requirements on any database or user interface employed by any application or service other than when exporting or importing ADIF.
+1.E. Support of Fields
+Each application or service can decide which fields to support; it is NOT a requirement to support all of them.
+
+There are some dependencies between fields such that a field may be meaningless without another field to set a context.  In this case, it is recommended that if the dependent field is exported, so is the field that it depends on.  An example is:
+STATE depends on DXCC
+So, DXCC can be exported without exporting STATE.  However, if STATE is exported, DXCC should be exported too.
+
+A frequently asked question is "What ADIF fields must be included to represent a QSO?".  This decision is beyond the scope of the ADIF specification and is one for application developers to make; however, a suggestion is to represent when the QSO took place, on what band or frequency, the mode, and the contacted station's callsign; the fields concerned are:
+QSO_DATE, TIME_ON, FREQ and/or BAND, CALL, MODE
+1.F. Changes from Previous Versions
+The following changes from the previous versions may necessitate application code or data changes:
+
+3.1.8
+Addition of Submode JTTY to the Mode MFSK.
+Addition of new Contest IDs:
+"SKCC Straight Key Sprint", "SKCC Straight Key Sprint Asia", "SKCC Straight Key Sprint Europe", "SKCC Weekend Sprintathon".
+Addition of "WAE" to the ET (European Turkey) row in the Region enumeration.
+3.1.7
+Addition of Submode FT2 to the Mode MFSK.
+Addition of Submode FREEDATA to the Mode DYNAMIC.
+Addition of Mode OFDM and its Submodes RIBBIT_PIX and RIBBIT_SMS.
+3.1.6
+Addition of a new QSO Field EQSL_AG.
+Additions to the Mode and Submode enumerations:
+Mode FSK with Submodes SCAMP_FAST, SCAMP_SLOW, SCAMP_VSLOW.
+Mode MTONE with Submodes SCAMP_OO, SCAMP_OO_SLW.
+Addition of new Contest IDs:
+"DARC CW Trainee Contest", "DARC 10m Contest", "DARC Trainee Contest", "DARC Hell Contest", "DARC Microwave Contest", "DARC RTTY Short Contest", "DARC UKW Spring Contest", "DARC UKW Field Day Contests", "DARC VHF-, UHF-, Microwave Contest", "DARC Easter Contest", "International Naval Contest (INC)", "ORARI Banggai DX Contest", "ORARI Bekasi Merdeka Contest", "ORARI DX Contest".
+Revisions to KO (Kosovo) in the Region Enumeration reflecting the evolution of its DXCC status.
+3.1.5
+Addition of QSO Fields: CNTY_ALT, DCL_QSLRDATE, DCL_QSLSDATE, DCL_QSL_RCVD, DCL_QSL_SENT, MORSE_KEY_INFO, MORSE_KEY_TYPE, MY_CNTY_ALT, MY_DARC_DOK, MY_MORSE_KEY_INFO, MY_MORSE_KEY_TYPE, QRZCOM_QSO_DOWNLOAD_DATE, QRZCOM_QSO_DOWNLOAD_STATUS, QSLMSG_RCVD.
+Changes to the Primary Administrative Subdivision enumeration:
+Addition of Country Codes 11 (Andaman & Nicobar Is.), 70 (Cuba), 118 (Jan Mayen), 142 (Lakshadweep Is.), 259 (Svalbard), 266 (Norway), 324 (India).
+Changes to Country Codes 21 (Balearic Is.), 29 (Canary Is.), 32 (Ceuta & Melilla), 50 (Mexico), 100 (Argentina), 108 (Brazil), 112 (Chile), 132 (Paraguay), 144 (Uruguay), 163 (Papua New Guinea), 170 (New Zealand), 225 (Sardinia), 227 (France), 230 (Germany), 245 (Ireland), 263 (Netherlands), 275 (Romania), 281 (Spain), 284 (Sweden), 375 (Philippines).
+Changes to the Region enumeration:
+Correction to AI (African Italy), which now specifies CQ rather than WAE.
+Changes to the ARRL_Section enumeration:
+Removed the deleted DXCC 134 from the PAC section.
+Added sections GH, NB, NS, TER.
+Added "Deletion Date" to sections GTA, MAR, NT.
+Changes to the Contest ID enumeration:
+Correction to the CVA-DX-SSB contest description, which specified CW instead of SSB.
+Addition of new Contest IDs:
+"ARI Italian Activity Contest (VHF)", "ARI Italian Activity Contest (UHF)", "ARI Italian Activity Contest (6m)", "ARI Italian Activity Contest (23cm)", "ARI Italian Activity Contest (13cm+)", "ARI Italian EME Trophy", "DARC FT4 Contest", "K1USN Slow Speed Open", "PCC Pro CW Contest".
+Addition to the Mode and Submode enumerations of submodes FSKH245 and FSKH105.
+Changes to the VUCC_GRIDS and MY_VUCC_GRIDS fields' descriptions to specify six as well as four character locators to bring them into line with the LoTW implementation.
+Changes to the DXCC Entity Names in the DXCC Entity Code Enumeration for DXCC entities 207, 462, 468, 502 & 518 to realign them with the ARRL DXCC list (February 2022).
+3.1.4
+Addition of new Data Types GridSquareExt, POTARef and POTARefList.
+Addition of new QSO Fields GRIDSQUARE_EXT, HAMLOGEU_QSO_UPLOAD_DATE, HAMLOGEU_QSO_UPLOAD_STATUS, HAMQTH_QSO_UPLOAD_DATE, HAMQTH_QSO_UPLOAD_STATUS, MY_GRIDSQUARE_EXT, MY_POTA_REF and POTA_REF.
+Addition of new Band submm.
+Changes to Mode and Submode enumerations:
+Addition of new Submodes FREEDV and M17 to Mode DIGITALVOICE.
+Addition of Prince Edward Island to the ARRL_Section enumeration.
+Changes to the Contest ID enumeration:
+Addition of new Contest IDs "ARRL International Digital Contest", "His Majesty The King of Spain CW Contest", "His Majesty The King of Spain SSB Contest" and "ICWC Medium Speed Test".
+Addition of end dates to "Su Majestad El Rey de España - CW" and "Su Majestad El Rey de España - SSB"".
+Addition of Country Code 386 (Taiwan) to the Primary Administrative Subdivision enumeration.
+Changes to the Secondary Administrative Subdivision enumeration for Japan DXCC 339.
+3.1.3
+Changes to Mode and Submode enumerations:
+Addition of new Submodes C4FM, DMR, & DSTAR to Mode DIGITALVOICE and deprecation of C4FM and DSTAR as Modes.
+Addition of new Mode DYNAMIC and Submodes VARA HF, VARA SATELLITE, VARA FM 1200, & VARA FM 9600.
+Changes to the Propagation Mode enumeration:
+Addition of GWAVE and LOS.
+Addition of a section after the table showing examples of representing VHF voice communications using the MODE, SUBMODE and PROP_MODE fields.
+Changes to the Primary Administrative Subdivision enumeration:
+Addition of a Primary Administrative Subdivision for China.
+Addition of Sejong and Special Island to the Primary Administrative Subdivision for Korea.
+Correction to the Code for Skåne län in the Primary Administrative Subdivision for Sweden.
+Correction to ITU Zone for Minnesota.
+Addition of Spanish DMEs to the Secondary Administrative Subdivision enumeration.
+Changes to the to the Contest ID enumeration:
+Addition of K1USN Slow Speed Test, Winter Field Day, and Vermont QSO Party.
+Addition of an end date for SPAR Winter Field Day.
+Addition of QSO Fields MY_ARRL_SECT, WWFF_REF, MY_WWFF_REF and Data Type WWFFRef.
+3.1.2
+Addition of new Submodes to Modes DOMINO, HELL, MFSK, PSK, THOR, THRB, & TOR.
+Changes to the Band enumeration for the 2.5mm and 2mm bands.
+Correction to the DXCC for Maine in the ARRL_Section enumeration.
+Addition of Submode Q65 to Mode MFSK.
+3.1.1
+Addition of the FST4 submode to the MFSK mode in the Mode and Submode Enumerations.
+Addition of the 5m and 8m bands to the Band Enumeration.
+Addition of ARRL-10-GHZ and WW-DIGI to the Contest-ID Enumeration.
+II. Policies
+II.A. Upward Compatibility
+From one version of ADIF to the next, Data Types, Enumerations, Fields, and Formats shall be upwardly compatible, meaning that an ADIF file compliant with ADIF version N will comply with any future ADIF version M where M>N.
+
+II.B. Deprecation
+Deprecated fields and enumeration values shall be accepted when importing an ADIF file, but shall not be emitted when exporting an ADIF file.  Deprecated items in this specification are characterized as "Import-only".
+
+II.C. Deletion
+Deleted enumeration values are those that are only valid for QSOs that occurred within a specified time range in the past.  They shall only be accepted when importing QSOs that occurred within that time range, and shall only be emitted when exporting QSOs that occurred within that time range.
+
+III. Data Types, Enumerations, and Fields
+III.A. Data Types
+Data Types and Data Type Indicators are case insensitive.  Individual Field definitions may impose additional restrictions on Data Types.
+
+Data Type Name	Data Type Indicator	Description (all numbers are radix 10)
+AwardList import-only	 	a comma-delimited list of members of the Award enumeration
+CreditList	 	a comma-delimited list where each list item is either:
+A member of the Credit enumeration.
+A member of the Credit enumeration followed by a colon and an ampersand-delimited list of members of the QSL_Medium enumeration.
+For example IOTA,WAS:LOTW&CARD,DXCC:CARD
+SponsoredAwardList	 	a comma-delimited list of members of the Sponsored_Award enumeration
+Boolean	B
+if True, the single ASCII character Y or y
+if False, the single ASCII character N or n
+Digit	 	an ASCII character whose code lies in the range of 48 through 57, inclusive
+Integer	 	a sequence of one or more Digits representing a decimal integer, optionally preceded by a minus sign (ASCII code 45).  Leading zeroes are allowed.
+Number	N	a sequence of one or more Digits representing a decimal number, optionally preceded by a minus sign (ASCII code 45) and optionally including a single decimal point  (ASCII  code 46)
+PositiveInteger	 	an unsigned sequence of one or more Digits representing a decimal integer that has a value greater than 0.  Leading zeroes are allowed.
+Character	 	an ASCII character whose code lies in the range of 32 through 126, inclusive
+IntlCharacter	 	a Unicode character (encoded with UTF-8) excluding line break CR (code 13) and LF (code 10) characters
+Date	D	8 Digits representing a UTC date in YYYYMMDD format, where
+YYYY is a 4-Digit year specifier, where 1930 <= YYYY
+MM is a 2-Digit month specifier, where 1 <= MM <= 12 [use leading zeroes]
+DD is a 2-Digit day specifier, where 1 <= DD <= DaysInMonth(MM)  [use leading zeroes]
+Time	T	6 Digits representing a UTC time in HHMMSS format or 4 Digits representing a time in HHMM format, where
+HH is a 2-Digit hour specifier, where 0 <= HH <= 23  [use leading zeroes]
+MM is a 2-Digit minute specifier, where 0 <= MM <= 59  [use leading zeroes]
+SS is a 2-Digit second specifier, where 0 <= SS <= 59  [use leading zeroes]
+IOTARefNo	 	IOTA designator, in format CC-XXX, where
+CC is a member of the Continent enumeration
+XXX is the island group designator, where 1 <= XXX <= 999  [use leading zeroes]
+String	S	a sequence of Characters
+IntlString	I	a sequence of International Characters.  Fields of type IntlString must only be used in ADX files
+MultilineString	M	a sequence of Characters and line-breaks, where a line break is an ASCII CR (code 13) followed immediately by an ASCII LF (code 10)
+IntlMultilineString	G	a sequence of International Characters and line breaks.  Fields of type IntlMultilineString must only be used in ADX files
+Enumeration	E	an explicit list of legal case-insensitive values represented in ASCII set forth in set notation, e.g. {A, B, C, D}, or defined in a table, from which a single value may be selected.
+GridSquare	 	a case-insensitive 2-character, 4-character, 6-character, or 8-character Maidenhead locator.
+
+Specific fields impose additional restrictions on the number of characters; see the field descriptions for the allowed numbers of characters.
+GridSquareExt	 	For a 10-character Maidenhead locator, contains characters 9 and 10.
+For a 12-character Maidenhead locator, contains characters 9, 10, 11 and 12.
+
+Characters 9 and 10 are case-insensitive ASCII letters in the range A-X.  Characters 11 and 12 are Digits in the range 0-9.
+GridSquareList	 	a comma-delimited list of GridSquare items
+Location	L	a sequence of 11 characters representing a latitude or longitude in XDDD MM.MMM format, where
+X is a directional Character from the set {E, W, N, S}
+DDD is a 3-Digit degrees specifier, where 0 <= DDD <= 180 [use leading zeroes]
+There is a single space character in between DDD and MM.MMM
+MM.MMM is an unsigned Number minutes specifier with its decimal point in the third position, where 00.000 <= MM.MMM <= 59.999  [use leading and trailing zeroes]
+POTARef	 	a sequence of case-insensitive Characters representing a Parks on the Air park reference in the form xxxx-nnnnn[@yyyyyy] comprising 6 to 17 characters where:
+xxxx is the POTA national program and is 1 to 4 characters in length, typically the default callsign prefix of the national program (rather than the DX entity)
+nnnnn represents the unique number within the national program and is either 4 or 5 characters in length (use the exact format listed on the POTA website)
+yyyyyy **Optional** is the 4 to 6 character ISO 3166-2 code to differentiate which state/province/prefecture/primary administration location the contact represents, in the case that the park reference spans more than one location (such as a trail).
+
+Examples of the POTARef Data Type:
+
+Reference	Location
+K-5033	Golden Hill State Forest
+K-10000	5-digit park numbers are reserved for future use
+VE-5082@CA-AB	The Great Trail of Canada (the Canadian Trailway) National Scenic Trail, within Alberta, Canada
+8P-0012	Chancery Lane Swamp National Park
+VK-0556	Pieman River State Reserve
+K-4562@US-CA	Pacific Crest Trail, within California, USA
+
+
+Additional Notes on POTARef:
+A browsable and searchable list of all park references is available.
+A complete CSV file is available (generated nightly).
+For more information, visit the Parks on the Air documentation website.
+POTARefList	 	a comma-delimited list of one or more POTARef items.
+SecondarySubdivisionList	 	a colon-delimited list of two or more members of the Secondary_Administrative_Subdivision enumeration.  E.g.:
+
+MA,Franklin:MA,Hampshire
+Secondary
+Administrative
+SubdivisionListAlt	 	a semicolon (;) delimited, unordered list of one or more members of a Secondary_Administrative_Subdivision_Alt
