@@ -23,6 +23,7 @@ Huginn（思考）と Muninn（記憶）は、北欧神話でオーディンに�
 | 文書 | 内容 |
 |---|---|
 | [docs/00_DEVELOPMENT_POLICY.md](docs/00_DEVELOPMENT_POLICY.md) | **開発方針（正本）**。ビジョン、原則、2 つのアイデアの統合結果、ロードマップ、決定事項と未決事項 |
+| [docs/05_DEVELOPMENT_PROCESS.md](docs/05_DEVELOPMENT_PROCESS.md) | 開発プロセス計画。作業の単位、ブランチと PR、AI エージェントとの協働、CI、テスト、外部コンポーネント連携、リリース、M0 の実行計画 |
 | [docs/04_ARCHITECTURE.md](docs/04_ARCHITECTURE.md) | コンポーネント構成、HuginnEngine との境界、Omoikane と Yata Logic、CLI |
 | [docs/03_DATA_MODEL.md](docs/03_DATA_MODEL.md) | データモデル（Person / Station / Location / Station Facility / Operation / QSO ほか） |
 | [docs/02_PRODUCT_STRATEGY.md](docs/02_PRODUCT_STRATEGY.md) | 製品方針、他アプリから取り入れる点、デザイン原則 |
