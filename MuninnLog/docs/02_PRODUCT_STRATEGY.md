@@ -1,5 +1,7 @@
 # 製品方針
 
+開発方針の正本は [00_DEVELOPMENT_POLICY.md](00_DEVELOPMENT_POLICY.md)。本書は製品の狙い、参考アプリ、デザイン原則の背景をまとめる。
+
 ## 1. 狙い
 
 いま JA の多くの局は、目的ごとにソフトを使い分け、ADIF などで手作業の受け渡しをしている。
@@ -31,10 +33,10 @@ Logbook（全 QSO。項目の意味は ADIF 3.x に揃える）
 | 領域 | 方針 | 理由 |
 |---|---|---|
 | 無線機制御 | 自前の Hamlib コンポーネント | 決定事項 D3 |
-| FT8 / FT4 | WSJT-X / JTDX と UDP で連携（QSO 記録、デコード結果、相手局の強調表示） | 主要なロギングアプリはすべてこの方式。自前デコーダは費用対効果が合わない |
-| RTTY / PSK | 最初は fldigi（XML-RPC）と連携。Windows では MMTTY にも対応 | MMTTY は Windows 専用。自前の RTTY は将来の選択肢として残す |
+| FT8 / FT4 | HuginnEngine（`THuginnInterface`）。WSJT-X / JTDX との UDP 連携も併せて提供する | 信号処理は外部エンジンに分離する（決定事項 D9）。既に WSJT-X を使っている利用者の乗り換えを妨げないため、連携も残す |
+| RTTY / PSK | HuginnEngine。fldigi（XML-RPC）、Windows では MMTTY との連携も提供する | 同上 |
 | CW 送信 | 自前（WinKeyer、Hamlib のモールス送出、ファンクションキーのメッセージ） | コンテストの操作感を左右する中核 |
-| CW 解読 | 後回し（CW Skimmer / RBN のスポットで代用） | |
+| CW 解読 | HuginnEngine（高度 CW デコード、学習機能は同意が前提） | |
 | 規約・得点・重複チェック | 自前（データで規約を定義するエンジン） | 差別化の中核 |
 | QSL / アップロード | LoTW、eQSL、Club Log、QRZ、POTA / SOTA 向け出力、JARL 電子ログ | 連携先の仕様に合わせる |
 | 局情報（DXCC、JCC / JCG） | ローカルのデータ＋外部の参照サービス | JA 向けの価値が高い |
@@ -75,6 +77,8 @@ Logbook（全 QSO。項目の意味は ADIF 3.x に揃える）
 推奨は (a)。決定前に、入力画面とバンドマップだけを試作して判断する。
 
 ## 6. リリース段階
+
+> 統合後のロードマップは [00_DEVELOPMENT_POLICY.md](00_DEVELOPMENT_POLICY.md) 第 6 節（M0〜M5）を正とする。以下は検討時点の案として残す。
 
 | 段階 | 内容 | 目的 |
 |---|---|---|

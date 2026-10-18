@@ -1,6 +1,6 @@
 # データモデル
 
-状態: 提案（決定事項 D6・D7 を反映）
+状態: 提案（決定事項 D6・D7・D10・D11 を反映。決定事項は [00_DEVELOPMENT_POLICY.md](00_DEVELOPMENT_POLICY.md) を参照）
 
 ## 1. 設計方針
 
@@ -193,7 +193,9 @@ QSO には記録時点の値をコピーとして保存する。
 | TransceiverId / AntennaId / AmplifierId | 使用した機器 |
 | RadioNumber | Radio1 / Radio2（SO2R） |
 | LicensedTransmitterId | 照合に使った登録送信機 |
-| Revision | 修正履歴（元の値、修正者、日時、理由） |
+| Revision | 修正履歴（元の値、修正者、日時、理由）。Omoikane のログエディタの Undo / Redo もこの履歴で実現する |
+| Source | 記録の出どころ（手入力、HuginnEngine、WSJT-X、取り込み）と、その取り込み元の識別子 |
+| DecodeEvidence | HuginnEngine 由来の場合、生のデコード値・信頼度・補正後の値・補正の根拠。利用者が却下した補正は生の値に戻せる |
 
 日本の JCC / JCG と ADIF の `MY_STATE` / `MY_CNTY` の対応は、ADIF 仕様の日本向け行政区分の定義で確認してから確定する。
 
@@ -234,9 +236,28 @@ QSO には記録時点の値をコピーとして保存する。
 5. アンテナ別・バンド別に、レポート、交信距離、交信数を比較する分析
 6. 機器や免許の変更履歴から、その日時に使えた設備で過去ログを検証する
 
-## 7. 未決事項
+## 7. コンテストと規約パッケージ
 
-- 保存方式（SQLite 案）と、有効期間付きデータの持ち方（履歴テーブルか、期間付きの行か）
+| エンティティ | 項目 | 説明 |
+|---|---|---|
+| RulePackage | PackageId、Name、Version、FormatVersion、Author、ValidFrom / ValidTo、Signature 状態、SHA-256 | 読み込んだ Yata Logic パッケージ（.ylg）。公式 / 自作の区別と署名検証の結果を持つ |
+| Operation（コンテスト） | RulePackageId、RulePackageVersion、Category | 使用した規約の版を記録し、過去のログを当時の規約で再計算できるようにする |
+| QsoScore | QsoId、IsDupe、Points、Multipliers、RuleIds、Explanation | 規約エンジンの計算結果。QSO 本体とは分けて保存し、再計算で作り直せるようにする |
+
+## 8. プライバシー
+
+| エンティティ | 項目 | 説明 |
+|---|---|---|
+| Consent | Purpose、State（同意 / 撤回）、GrantedAt / RevokedAt、Version | 目的ごとの同意。目的の例: オンライン同期、PSKReporter 送信、GPS 利用、CW 学習データの保存 |
+| ExternalAccount | Service、StationId、CredentialRef | 外部サービスのアカウント。資格情報そのものは OS の資格情報ストアに置き、ここには参照だけを持つ |
+| TransmissionLog | Service、Purpose、SentAt、ItemCount、Result | 外部へ送信した記録。利用者が後から確認できるようにする |
+
+同意の撤回時は、該当する目的の送信を止め、必要に応じて外部・エンジン側のデータ削除を要求する。
+QSO 記録そのもの（交信相手のコールサインを含む）は、ログの完全性とコンテスト提出の要件があるため、削除権の対象外とし、利用者自身の判断で削除できるようにする。
+
+## 9. 未決事項
+
+- 有効期間付きデータの持ち方（履歴テーブルか、期間付きの行か）。保存方式は SQLite に決定済み（D10）
 - アプリ独自項目の ADIF 出力名（`APP_<名前>_<項目>` の形式）
 - 電波の型式とモードの対応表の出典と更新方法
 - 資格情報（LoTW 証明書のパスワード、各サービスの API キー）を保存する OS ごとの仕組み
