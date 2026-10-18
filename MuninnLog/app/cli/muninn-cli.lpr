@@ -48,6 +48,17 @@ begin
   WriteLn(AOutput, '  muninn-cli --help');
 end;
 
+{ True when APath names the logbook file or one of SQLite's files next to it. }
+function WritesOverLogbook(const APath, ADatabasePath: string): Boolean;
+var
+  Target, Logbook: string;
+begin
+  Target := ExpandFileName(APath);
+  Logbook := ExpandFileName(ADatabasePath);
+  Result := SameFileName(Target, Logbook) or SameFileName(Target, Logbook + '-wal') or
+    SameFileName(Target, Logbook + '-shm') or SameFileName(Target, Logbook + '-journal');
+end;
+
 function ParseOptions: TOptions;
 var
   Index: Integer;
@@ -93,6 +104,9 @@ begin
     raise EUsageError.Create('--output is for export');
   if (Result.Command = 'export') and (Result.InputPath <> '') then
     raise EUsageError.CreateFmt('unexpected argument %s', [Result.InputPath]);
+  if (Result.OutputPath <> '') and WritesOverLogbook(Result.OutputPath,
+    Result.DatabasePath) then
+    raise EUsageError.Create('--output must not be the logbook or its journal files');
 end;
 
 function NowUtcMs: Int64;

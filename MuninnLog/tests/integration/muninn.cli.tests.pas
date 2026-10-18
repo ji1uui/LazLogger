@@ -30,6 +30,7 @@ type
     procedure RejectsInvalidArguments;
     procedure ReportsMissingFiles;
     procedure RejectsUnsupportedFormats;
+    procedure RefusesToOverwriteTheLogbook;
     procedure RefusesNewerLogbook;
     procedure KeepsUserDefinedFieldsValid;
   end;
@@ -70,6 +71,8 @@ var
 begin
   Lines := TStringList.Create;
   try
+    { Exports and golden files use LF on every OS. }
+    Lines.LineBreak := #10;
     Lines.Text := AText;
     for Index := Lines.Count - 1 downto 0 do
       if (Pos('<CREATED_TIMESTAMP:', Lines[Index]) = 1) or
@@ -266,6 +269,25 @@ begin
     RunCli(['import', '--db', Path('a.sqlite'), GoldenDirectory + 'wsjtx.adi'], Output));
   AssertEquals(ExitUnsupportedFormat,
     RunCli(['export', '--db', Path('a.sqlite'), '--format', 'cabrillo'], Output));
+end;
+
+procedure TCliTests.RefusesToOverwriteTheLogbook;
+var
+  Output: string;
+  Database: TSqliteDatabase;
+begin
+  AssertEquals(ExitSuccess,
+    RunCli(['import', '--db', Path('a.sqlite'), GoldenDirectory + 'wsjtx.adi'], Output));
+  AssertEquals(ExitInvalidArguments, RunCli(['export', '--db', Path('a.sqlite'),
+    '--output', Path('.') + PathDelim + 'a.sqlite'], Output));
+  AssertEquals(ExitInvalidArguments, RunCli(['export', '--db', Path('a.sqlite'),
+    '--output', Path('a.sqlite-wal')], Output));
+  Database := TSqliteDatabase.Open(Path('a.sqlite'));
+  try
+    AssertEquals('logbook intact', 2, Database.QueryInt64('SELECT count(*) FROM qso'));
+  finally
+    Database.Free;
+  end;
 end;
 
 procedure TCliTests.RefusesNewerLogbook;
