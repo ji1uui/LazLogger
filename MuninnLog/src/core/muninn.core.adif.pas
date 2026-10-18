@@ -46,6 +46,7 @@ type
     { Replaces the value of an existing field (keeping its position) or appends it. }
     procedure SetValue(const AName, AValue: string);
     procedure Remove(const AName: string);
+    procedure Clear;
     procedure Assign(const ASource: TAdifRecord);
     property Count: Integer read FCount;
     property Fields[const AIndex: Integer]: TAdifField read GetField; default;
@@ -199,6 +200,12 @@ begin
   for Index := Index to FCount - 1 do
     FFields[Index] := FFields[Index + 1];
   FFields[FCount] := Default(TAdifField);
+end;
+
+procedure TAdifRecord.Clear;
+begin
+  FFields := nil;
+  FCount := 0;
 end;
 
 procedure TAdifRecord.Assign(const ASource: TAdifRecord);

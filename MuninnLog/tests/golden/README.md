@@ -4,7 +4,7 @@
 
 | ディレクトリ | 内容 |
 |---|---|
-| `adif/` | ADIF の取り込み・書き出し（[ADR 0004](../../docs/adr/0004-adif-import-export.md)）。`<名前>.adi` が入力、`<名前>.expected.adi` が期待する出力、`<名前>.issues.txt` が期待する警告とエラー |
+| `adif/` | ADIF の取り込み・書き出し（[ADR 0004](../../docs/adr/0004-adif-import-export.md)）。`<名前>.adi` が入力、`<名前>.expected.adi` が期待する出力、`<名前>.issues.txt` が期待する警告とエラー、`<名前>.cli-expected.adi` が `muninn-cli` で SQLite を経由した出力（作成日時と版の行を除く。ADR 0006） |
 
 - テストは `Muninn.Core.AdifQso.Tests` にある。
 - 期待する出力を作り直すときは、`MUNINN_UPDATE_GOLDEN=1 scripts/test.sh` を実行し、差分を確認してからコミットする。

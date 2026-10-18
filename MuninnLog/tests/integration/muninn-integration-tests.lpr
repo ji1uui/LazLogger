@@ -6,7 +6,9 @@ uses
   {$IFDEF UNIX}cthreads, cwstring,{$ENDIF}
   Muninn.Core.Utf8Default,
   Classes, consoletestrunner,
-  Muninn.Storage.Schema.Tests;
+  Muninn.Storage.Schema.Tests,
+  Muninn.Storage.QsoRepository.Tests,
+  Muninn.Cli.Tests;
 
 var
   Runner: TTestRunner;

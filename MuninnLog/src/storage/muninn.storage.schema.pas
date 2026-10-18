@@ -16,7 +16,7 @@ uses
   SysUtils, Muninn.Storage.Sqlite;
 
 const
-  CurrentSchemaVersion = 2;
+  CurrentSchemaVersion = 3;
 
 type
   ESchemaError = class(Exception);
@@ -150,14 +150,28 @@ const
     'ALTER TABLE qso ADD COLUMN state TEXT;' +
     'ALTER TABLE qso ADD COLUMN cnty TEXT;';
 
+  { Lossless ADIF round trips (ADR 0006): the data type indicator and the
+    recorded order of fields without a column, and the definitions of
+    user-defined fields (ADIF USERDEFn header fields). }
+  SchemaV3 =
+    'ALTER TABLE qso_field ADD COLUMN data_type TEXT NOT NULL DEFAULT '''';' +
+    'ALTER TABLE qso_field ADD COLUMN position INTEGER NOT NULL DEFAULT 0;' +
+    'CREATE TABLE adif_user_field (' +
+    ' name TEXT PRIMARY KEY NOT NULL,' +
+    ' data_type TEXT NOT NULL,' +
+    ' definition TEXT NOT NULL' +
+    ') STRICT;';
+
 function SchemaMigrations: TMigrationArray;
 begin
   Result := nil;
-  SetLength(Result, 2);
+  SetLength(Result, 3);
   Result[0].Version := 1;
   Result[0].Sql := SchemaV1;
   Result[1].Version := 2;
   Result[1].Sql := SchemaV2;
+  Result[2].Version := 3;
+  Result[2].Sql := SchemaV3;
 end;
 
 procedure ConfigureConnection(const ADatabase: TSqliteDatabase);

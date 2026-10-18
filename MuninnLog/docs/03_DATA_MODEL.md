@@ -218,6 +218,7 @@ QSO には記録時点の値をコピーとして保存する。
 |---|---|
 | v1 | `station`、`station_location`、`operation`、`qso`、`qso_field` の 5 つのテーブル（ADR 0003） |
 | v2 | `qso` に相手局の所在地 `dxcc`（INTEGER）、`state`、`cnty`（TEXT）を追加 |
+| v3 | `qso_field` にデータ型の指示子 `data_type` と順序 `position` を追加。ユーザー定義フィールドの定義を保存する `adif_user_field` を追加（ADR 0006） |
 
 残りのエンティティ（Person、Equipment など）は、後の版のマイグレーションで追加する。
 

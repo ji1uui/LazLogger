@@ -19,6 +19,9 @@ mkdir -p "$UNIT_DIR"
   -FU"$UNIT_DIR" -FE"$TEST_DIR" \
   tests/unit/muninn-unit-tests.lpr
 
+# The CLI tests run build/muninn-cli.
+scripts/build.sh
+
 "$FPC" "${FPC_FLAGS[@]}" -Fusrc/storage -Futests/integration \
   -FU"$UNIT_DIR" -FE"$TEST_DIR" \
   tests/integration/muninn-crash-helper.lpr
