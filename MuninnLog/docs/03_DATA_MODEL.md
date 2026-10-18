@@ -111,7 +111,7 @@ erDiagram
 | GridSquare | グリッドロケーター |
 | Latitude / Longitude | 緯度・経度（任意） |
 | DXCC / CQZone / ITUZone | エンティティとゾーン |
-| Prefecture / CityCode | 都道府県、JCC / JCG / 区 |
+| Prefecture / CityCode | 都道府県と、市・郡・区のコード。ADIF の `MY_STATE` / `MY_CNTY` と同じ値（例：01 / 0101）。区分（JCC / JCG / 区）は参照データで決める（[ADR 0005](adr/0005-japanese-subdivision-reference-data.md)） |
 | PortableSuffix | 移動の表示（例: /3、/P） |
 | IsPortable | 固定 / 移動 |
 
@@ -197,11 +197,29 @@ QSO には記録時点の値をコピーとして保存する。
 | Source | 記録の出どころ（手入力、HuginnEngine、WSJT-X、取り込み）と、その取り込み元の識別子 |
 | DecodeEvidence | HuginnEngine 由来の場合、生のデコード値・信頼度・補正後の値・補正の根拠。利用者が却下した補正は生の値に戻せる |
 
-日本の JCC / JCG と ADIF の `MY_STATE` / `MY_CNTY` の対応は、ADIF 仕様の日本向け行政区分の定義で確認してから確定する。
+日本の行政区分は、ADIF 3.1.8 のコードをそのまま使う（[ADR 0004](adr/0004-adif-import-export.md)、[ADR 0005](adr/0005-japanese-subdivision-reference-data.md)）。
 
-### 3.11 SQLite での保存（スキーマ v1）
+| 区分 | 相手局 | 自局 | 値 |
+|---|---|---|---|
+| エンティティ | `DXCC` | `MY_DXCC` | 339（Japan） |
+| 都道府県 | `STATE` | `MY_STATE` | 01〜47（例：東京 10） |
+| 市・郡・区 | `CNTY` | `MY_CNTY` | JCC（例：0101 札幌市、100101 東京都千代田区）、JCG（例：01001 阿寒郡）、区（例：010101 札幌市中央区） |
 
-スキーマ v1 で作るのは `station`、`station_location`、`operation`、`qso`、`qso_field` の 5 つのテーブル。残りのエンティティ（Person、Equipment など）は、後の版のマイグレーションで追加する。
+- コードは文字列として保持し、先頭のゼロを残す。接頭辞（`JCC-` など）は付けない。
+- 交信時点のコードを保存し、合併などで変わっても書き換えない。
+
+アプリの中では、QSO を `TQsoRecord`（`Muninn.Core.Qso`）で表す。
+- 単位や暦の規則が必要な値は、型付きで持つ：コールサイン、日時、周波数、バンド、モード、出力。
+- それ以外の値は、ADIF のフィールド名のまま `OtherFields` に持つ。
+
+### 3.11 SQLite での保存
+
+| 版 | 内容 |
+|---|---|
+| v1 | `station`、`station_location`、`operation`、`qso`、`qso_field` の 5 つのテーブル（ADR 0003） |
+| v2 | `qso` に相手局の所在地 `dxcc`（INTEGER）、`state`、`cnty`（TEXT）を追加 |
+
+残りのエンティティ（Person、Equipment など）は、後の版のマイグレーションで追加する。
 
 - 定義は `src/storage/muninn.storage.schema.pas` にある。
 - 列名と単位の決まり、列挙のコードは [ADR 0003](adr/0003-storage-sqlite.md) を参照。
