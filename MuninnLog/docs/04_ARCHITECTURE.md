@@ -23,7 +23,7 @@ flowchart LR
     end
     Ylg[("Yata Logic<br/>.ylg")] --> Omo
     Int <-->|"THuginnInterface<br/>制御・デコード結果"| Huginn["HuginnEngine<br/>別プロセス"]
-    Int <-->|"無線機ポート"| Rig["Hamlib コンポーネント"]
+    Int <-->|"無線機ポート"| Rig["HamlibComponent"]
     Huginn <-->|"音声"| Audio["サウンドデバイス"]
     Int <-->|"UDP / XML-RPC"| Ext["WSJT-X・fldigi"]
 ```
@@ -38,7 +38,7 @@ flowchart LR
 | Storage | SQLite への保存、スキーマのマイグレーション、バックアップ、最適化（VACUUM） | `TLoggingSubsystem` |
 | Omoikane | Yata Logic の読み込みと検証、重複チェック、得点・マルチ、コンテスト用の出力 | `TPluginManager`、Omoikane |
 | 入出力 | ADIF、CSV、Cabrillo、JSON、JARL 電子ログ、Hamlog 取り込み | Omoikane の Import / Export |
-| 無線機アダプター | Hamlib コンポーネントの呼び出し。周波数・モード・スプリット・PTT の唯一の窓口 | `TRigControlSubsystem` |
+| 無線機アダプター | HamlibComponentの呼び出し。周波数・モード・スプリット・PTT の唯一の窓口 | `TRigControlSubsystem` |
 | Huginn アダプター | `THuginnInterface` の実装。エンジンの起動・監視・再起動、デコード結果の受信、送信要求 | `THuginnInterface` |
 | 外部アプリ連携 | WSJT-X（UDP）、fldigi（XML-RPC）、MMTTY（Windows） | — |
 | Privacy Manager | 同意の取得・撤回、外部送信の可否判定、利用者データの書き出し・削除 | `TPrivacyManager` |
@@ -81,12 +81,51 @@ HuginnEngine は **別プロセス** として動かす。
 
 M0 で通信仕様 v1 を合意し、MuninnLog 側は模擬エンジンでテストする。
 
-## 4. 無線機アダプター
+## 4. 無線機アダプター（HamlibComponent）
 
-- Hamlib コンポーネントの提供形態（未決事項 Q4）が決まるまで、中核は無線機ポートの定義だけに依存する
-- 無線機への命令は一本の順序付きキューで処理する。ポーリングと利用者の操作、HuginnEngine からの送信要求の競合はここで解決する
-- PTT には監視時間（ウォッチドッグ）を設け、異常時は必ず受信に戻す
-- 接続設定は Station Facility のトランシーバ（[03_DATA_MODEL.md](03_DATA_MODEL.md) 3.8 節）に持たせる
+無線機制御には、別途開発している **HamlibComponent（Rev.6.0）** を使う（決定事項 D3）。
+以下は [README](references/HamlibComponent_README_Rev6.0.md) に基づく。設計書・ソースは未確認。
+
+### 4.1 コンポーネントの要点
+
+| 項目 | 内容 |
+|---|---|
+| 提供形態 | Lazarus パッケージ（`HamlibComponent.lpk`）。MuninnLog と同じプロセスで動き、Hamlib の共有ライブラリを実行時に動的ロードする |
+| 中核 | LCL に依存しない。コンソールプログラムやテストでも使える |
+| スレッド | Hamlib のハンドルに触れるのは専用ワーカースレッド 1 本だけ（試験で検証済み）。UI はブロックされない |
+| API | `IRigService`（ファサード）を `TRigServiceFactory` から作る。操作は非同期（`SetFrequencyAsync` など）で、結果は値型の結果レコードとしてコールバックに届く |
+| 状態の取得 | ポーリング（`EnablePolling`）と `OnFrequencyChanged` イベント、または `CurrentState` のスナップショット |
+| 対応範囲 | 周波数、モード、PTT、スプリット、VFO の選択と操作、レベル（S メータ、RF 出力など 38 種）、機能（22 種）、能力の照会、conf トークン |
+| エラー | `TRigErrorKind`（未接続、接続失敗、ポート使用中、タイムアウト、非対応など）で分岐する。Hamlib の数値は記録用 |
+| 安全性 | 二段タイムアウト（Hamlib の再試行と、固まった I/O を解除する監視スレッド）、適応型サーキットブレーカー、Hamlib の版の検査、タイムアウトの方針（Default / FastUsb / SlowCat / VerySlowCat） |
+| 機種の選択 | 実行時のカタログ（`CreateModelCatalog`）から選ぶ。機種番号を埋め込まない |
+
+### 4.2 MuninnLog での使い方
+
+| MuninnLog 側の要素 | HamlibComponent との対応 |
+|---|---|
+| 無線機ポート（中核が依存する窓口） | `IRigService` を包むアダプター。中核は HamlibComponent の型に直接依存しない |
+| Station Facility のトランシーバの接続設定（[03](03_DATA_MODEL.md) 3.8 節） | 機種（カタログの番号と名前の両方を保存）、ポート、タイムアウトの方針、conf トークン（`ptt_type` など） |
+| QSO の周波数・モードの自動入力 | `CurrentState` とポーリング。スプリット中は送信周波数を `FREQ`、受信周波数を `FREQ_RX` に記録する。`CurrentFreq` は選択中の VFO の値であり、送信周波数とは限らない点に注意 |
+| 接続状態の表示 | `OnConnectionChanged` と `TRigErrorKind` を、UI の「未接続 / 非対応 / ポート使用中 / 一時的な障害」に対応させる |
+| 能力の表示 | 空の能力は「非対応」ではなく「未照会」として扱う（README の方針に合わせる） |
+| DX のスプリット設定 | `demo2/DxSplitSequence.pas` と同じく、途中で失敗したらスプリットを解除してから失敗を報告する |
+| SO2R | 無線機ごとに `IRigService` を 1 つ作る（同一プロセスで複数を使えるかは要確認） |
+| 起動時の版の検査 | 検証範囲外の Hamlib を拒否された場合の案内画面を用意する |
+
+### 4.3 MuninnLog 側で補うもの、または確認が必要なもの
+
+| 項目 | 内容 | 対応 |
+|---|---|---|
+| PTT の送信時間の上限 | README の二段タイムアウトは I/O の保護であり、PTT を押したままになる事態の監視ではない | MuninnLog 側で送信時間の上限を監視し、超えたら PTT を解除する（コンポーネント側に機能があれば利用） |
+| CW 送信 | README の対応範囲に `rig_send_morse` 相当が無い | CW キーヤーは WinKeyer または HuginnEngine で行う。必要ならコンポーネントへの追加を検討 |
+| Hamlib ライブラリの同梱 | README は利用者が自分でインストールする前提（Windows は DLL の配置、macOS は Homebrew） | 一般利用者向けには MuninnLog に同梱する。macOS はアプリ内に同梱して署名・公証する。読み込み先を環境変数（`VELA_HAMLIB_PATH`）ではなく API で指定できるか確認する。Hamlib は LGPL のため、同梱時の表記と入手方法を整える |
+| `cthreads` | Unix では LCL アプリでも `uses` の先頭に必要 | MuninnLog の GUI・CLI の起点で必ず指定する |
+| コールバックの届け先 | README の例では UI スレッドに届く | CLI（GUI なし）でどのように届くかを確認する |
+| 他のアプリとの無線機の共有 | WSJT-X などと同じシリアルポートは同時に開けない（`rekAccessDenied`） | Hamlib のネットワーク機種（rigctld 経由）で共有する構成を用意する |
+| HuginnEngine からの送信 | HuginnEngine は別プロセス。送信要求は MuninnLog の無線機アダプター経由とする（第 3 節） | FT8 の送信開始タイミングに対する遅延を測定して確認する |
+
+無線機への命令は HamlibComponent のワーカーが順序付きで処理する。ポーリングと利用者の操作、HuginnEngine からの送信要求は、MuninnLog の無線機アダプターで優先度を付けてから渡す。
 
 ## 5. Omoikane と Yata Logic
 

@@ -32,7 +32,7 @@ Logbook（全 QSO。項目の意味は ADIF 3.x に揃える）
 
 | 領域 | 方針 | 理由 |
 |---|---|---|
-| 無線機制御 | 自前の Hamlib コンポーネント | 決定事項 D3 |
+| 無線機制御 | HamlibComponent | 決定事項 D3 |
 | FT8 / FT4 | HuginnEngine（`THuginnInterface`）。WSJT-X / JTDX との UDP 連携も併せて提供する | 信号処理は外部エンジンに分離する（決定事項 D9）。既に WSJT-X を使っている利用者の乗り換えを妨げないため、連携も残す |
 | RTTY / PSK | HuginnEngine。fldigi（XML-RPC）、Windows では MMTTY との連携も提供する | 同上 |
 | CW 送信 | 自前（WinKeyer、Hamlib のモールス送出、ファンクションキーのメッセージ） | コンテストの操作感を左右する中核 |

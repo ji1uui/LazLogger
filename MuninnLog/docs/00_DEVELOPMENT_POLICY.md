@@ -16,7 +16,7 @@ JA コンテスター全般を主な利用者とし、海外のコンテスト�
 |---|---|---|
 | D1 | zLog の移植ではなく、新しいアプリとして構築する | 検討 |
 | D2 | 対象 OS は Windows と macOS。Linux はビルドと CI で動作確認するが、正式サポートは後で判断する | 検討、Omoikane |
-| D3 | 無線機制御は、自分たちで開発している Hamlib コンポーネントを使う | 検討、MuninnLog |
+| D3 | 無線機制御は、自分たちで開発している HamlibComponentを使う | 検討、MuninnLog |
 | D4 | JA コンテスター全般を想定し、モダンなデザインで旧来アプリと差別化する | 検討 |
 | D5 | 国内外のコンテスト、FT8・RTTY・CW など多様なモード、POTA / SOTA に対応する | 検討 |
 | D6 | 一人が複数のコールサインを持つケースに対応する | 検討 |
@@ -25,10 +25,11 @@ JA コンテスター全般を主な利用者とし、海外のコンテスト�
 | D9 | 信号処理は外部エンジン HuginnEngine に任せ、MuninnLog は `THuginnInterface` で連携する | MuninnLog |
 | D10 | 保存方式は SQLite とする | MuninnLog（旧未決事項 Q3 を解消） |
 | D11 | プライバシー・バイ・デザイン。外部への送信や位置情報の利用はすべて事前の同意（オプトイン）を前提にする | MuninnLog |
+| D12 | 無線機制御には HamlibComponent（Lazarus パッケージ、Rev.6.0 時点）を同一プロセスで使う。中核は無線機ポートを介して依存し、コンポーネントの型に直接依存しない | HamlibComponent README（旧未決事項 Q4 を解消） |
 
 ## 3. 開発原則
 
-1. **ログブックが中核、エンジンは外部。** MuninnLog は「交信を失わない・正しく記録する・使いやすい」ことに集中する。信号処理は HuginnEngine、無線機制御は Hamlib コンポーネントに任せる。
+1. **ログブックが中核、エンジンは外部。** MuninnLog は「交信を失わない・正しく記録する・使いやすい」ことに集中する。信号処理は HuginnEngine、無線機制御は HamlibComponentに任せる。
 2. **中核は GUI から独立させる。** ドメイン・保存・規約エンジンは LCL に依存しないライブラリとして作り、GUI と CLI の両方から同じものを使う。CLI はテストと自動化の入口になる。
 3. **縦に薄く、動くものから。** 基盤や文書を先に積まず、各段階で「実際に使える機能」を一本通す。完了条件は文書の更新ではなく、動く機能と合格したテストとする。
 4. **受信は止まっても続行、送信は安全側に倒す。** 受信系の障害ではログ入力を止めない。送信（PTT、CW キーイング）は異常時に必ず止める。
@@ -45,7 +46,7 @@ JA コンテスター全般を主な利用者とし、海外のコンテスト�
 | HuginnEngine への信号処理の分離 | **採用** | 原則 1 と一致。既存 `Lazarus/` の音声リングバッファや RTTY 試作は、MuninnLog ではなく HuginnEngine 側の資産として扱う |
 | `THuginnInterface` | **採用・具体化** | 通信仕様を版管理し、HuginnEngine は別プロセスで動かす案を推奨（[04](04_ARCHITECTURE.md) 第 3 節）。エンジンの異常終了でログが巻き込まれない |
 | `TAudioSubsystem`（PortAudio で音声を取り込み、Huginn へ渡す） | **変更** | 音声は高頻度データなので、アプリとエンジンの境界を流さない。音声入出力は HuginnEngine が直接持ち、MuninnLog はデバイスの選択 UI とデコード結果の受信だけを担う |
-| `TRigControlSubsystem`（Hamlib） | **採用** | D3 の Hamlib コンポーネントを使う。PTT を含む無線機の操作は一か所（単一の所有者）からだけ行い、HuginnEngine の送信要求もここを経由する |
+| `TRigControlSubsystem`（Hamlib） | **採用** | D3 の HamlibComponentを使う。PTT を含む無線機の操作は一か所（単一の所有者）からだけ行い、HuginnEngine の送信要求もここを経由する |
 | `TLoggingSubsystem`（SQLite） | **採用** | D10 |
 | `TPluginManager`（JSON の規約・アワード定義） | **統合** | Omoikane の Yata Logic と一本化する |
 | `TScriptEngine`（Lua / Python） | **変更・後回し** | 規約の計算は Yata Logic の Pascal Script で行う。汎用の自動化スクリプトは需要を見て後で判断する。Python の同梱は macOS 配布の負担が大きい |
@@ -84,7 +85,7 @@ JA コンテスター全般を主な利用者とし、海外のコンテスト�
 
 - ログブック（SQLite）、プロファイル（Person / Station / Location / Station Facility / Operation）
 - QSO の入力・修正・検索、ADIF の入出力、Hamlog データの取り込み、バックアップ
-- Hamlib コンポーネントによる周波数・モードの連動
+- HamlibComponentによる周波数・モードの連動
 - Omoikane: Yata Logic ローダー、重複チェック、得点・マルチ、Cabrillo / JARL 電子ログ出力、コンテスト後のログエディタ
 - `THuginnInterface` v1（デコード結果の受信、ウォーターフォール表示、送信要求）と、WSJT-X の UDP 連携
 - `muninn-cli`
@@ -129,10 +130,10 @@ M1 と M2 の順序は未決事項 Q1 で決める。
 |---|---|---|
 | Q1 | 最初に獲得する利用者は日常運用・FT8 ユーザーか、コンテスターか | M1 と M2 の順序 |
 | Q2 | 画面の技術は LCL＋独自描画か、WebView か | デザインの自由度、入力の反応速度 |
-| Q4 | Hamlib コンポーネントの提供形態（ライブラリ / 別プロセス / Pascal ユニット） | 無線機ポートの設計 |
+| Q10 | HamlibComponent について確認したい点（PTT 送信時間の監視、CW 送信、ライブラリ読み込み先の API 指定、GUI なしでのコールバック、複数無線機）。詳細は [04](04_ARCHITECTURE.md) 4.3 節 | 無線機アダプターの実装範囲、配布方法 |
 | Q6 | HuginnEngine の提供形態（別プロセス / ライブラリ）と、開発体制・進捗 | `THuginnInterface` の設計、M3 の時期 |
 | Q7 | Yata Logic のスクリプト実行系（Pascal Script 系ライブラリの選定）と、署名鍵の管理者 | Omoikane の実装、配布の信頼モデル |
 | Q8 | Linux を正式サポートに含めるか | 配布とサポートの範囲 |
 | Q9 | 既存の `Lazarus/` を今後どう扱うか（凍結、削除、master の修復のみ） | リポジトリの整理 |
 
-旧 Q3（保存方式）は D10、旧 Q5（実装の置き場所）は `MuninnLog/` ディレクトリで解消した。
+旧 Q3（保存方式）は D10、旧 Q4（HamlibComponentの提供形態）は D12、旧 Q5（実装の置き場所）は `MuninnLog/` ディレクトリで解消した。

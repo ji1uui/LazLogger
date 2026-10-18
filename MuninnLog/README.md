@@ -13,7 +13,7 @@ Windows / macOS 向けの、新しいアマチュア無線ロギングアプリ�
 | **Omoikane** | MuninnLog 内のコンテスト機能。規約適用、重複チェック、得点計算、提出用の出力、コンテスト後のログ編集 |
 | **Yata Logic（.ylg）** | Omoikane が読み込む、コンテスト規約・アワード定義のパッケージ形式 |
 | **HuginnEngine** | 外部の信号処理エンジン。CW / RTTY / PSK / FT4 / FT8 の変復調を担当し、MuninnLog とは `THuginnInterface` で連携する |
-| **Hamlib コンポーネント** | 自分たちで開発している無線機制御コンポーネント。MuninnLog の無線機ポートの背後で使う |
+| **HamlibComponent** | 別途開発している Hamlib ラッパーの Lazarus パッケージ。MuninnLog の無線機ポートの背後で使う |
 
 Huginn（思考）と Muninn（記憶）は、北欧神話でオーディンに仕える 2 羽のワタリガラスです。
 信号を「聴いて考える」エンジンと、交信を「記憶する」ログブックという分担を表します。
@@ -28,6 +28,7 @@ Huginn（思考）と Muninn（記憶）は、北欧神話でオーディンに�
 | [docs/02_PRODUCT_STRATEGY.md](docs/02_PRODUCT_STRATEGY.md) | 製品方針、他アプリから取り入れる点、デザイン原則 |
 | [docs/01_CURRENT_STATE_REVIEW.md](docs/01_CURRENT_STATE_REVIEW.md) | 既存の `Lazarus/`（zLog Lazarus Edition 試作）のレビュー |
 | [docs/ideas/](docs/ideas/) | 元になったアイデア文書（MuninnLog 構想書 v4.0、Omoikane 実装仕様書）。原文のまま保存 |
+| [docs/references/](docs/references/) | 外部コンポーネントの資料（HamlibComponent README Rev.6.0）。原文のまま保存 |
 
 ## 予定しているディレクトリ構成
 
