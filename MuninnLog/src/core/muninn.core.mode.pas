@@ -2,7 +2,8 @@ unit Muninn.Core.Mode;
 
 { Operating mode as the ADIF MODE / SUBMODE pair (ADIF 3.1.8), e.g. SSB/USB or
   MFSK/FT4. Any syntactically valid pair is accepted so imported logs keep modes
-  this table does not list; the category is only known for listed modes. }
+  this table does not list; the category is only known for listed modes.
+  The full ADIF enumeration is in Muninn.Core.AdifModes. }
 
 {$mode objfpc}{$H+}
 {$modeswitch advancedrecords}
@@ -17,7 +18,9 @@ type
     FMode: string;
     FSubmode: string;
   public
-    { Mode is required; submode may be empty. Both are trimmed and upper-cased. }
+    { Mode is required; submode may be empty. Both are trimmed and upper-cased.
+      Mode: A-Z, 0-9, '_' and '-'. Submode also allows '/' and single inner
+      spaces, as in the ADIF submodes 'VARA HF' and 'OLIVIA 4/125'. }
     class function TryCreate(const AMode, ASubmode: string;
       out AResult: TMode): Boolean; static;
     { Parses what an operator types or a logger shows: a mode ('CW', 'FT8') or a
@@ -85,6 +88,23 @@ begin
       Exit(False);
 end;
 
+function IsValidSubmode(const AValue: string): Boolean;
+var
+  Index: Integer;
+begin
+  Result := AValue <> '';
+  for Index := 1 to Length(AValue) do
+    case AValue[Index] of
+      'A'..'Z', '0'..'9', '_', '-', '/': ;
+      ' ':
+        { Trimmed already, so a space is never first or last. }
+        if AValue[Index + 1] = ' ' then
+          Exit(False);
+    else
+      Exit(False);
+    end;
+end;
+
 function FindKnownMode(const AMode: string; out ACategory: TModeCategory): Boolean;
 var
   Index: Integer;
@@ -109,7 +129,7 @@ begin
   ModeText := UpperCase(Trim(AMode));
   SubmodeText := UpperCase(Trim(ASubmode));
   Result := IsValidToken(ModeText) and
-    ((SubmodeText = '') or IsValidToken(SubmodeText));
+    ((SubmodeText = '') or IsValidSubmode(SubmodeText));
   if Result then
   begin
     AResult.FMode := ModeText;

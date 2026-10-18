@@ -16,7 +16,7 @@ uses
   SysUtils, Muninn.Storage.Sqlite;
 
 const
-  CurrentSchemaVersion = 1;
+  CurrentSchemaVersion = 2;
 
 type
   ESchemaError = class(Exception);
@@ -143,12 +143,21 @@ const
     'CREATE INDEX qso_call_band_mode ON qso (call, band, mode);' +
     'CREATE INDEX qso_operation ON qso (operation_id);';
 
+  { The contacted station's location (ADIF DXCC, STATE, CNTY). STATE and CNTY
+    are codes kept as text, e.g. CNTY 0101 (JCC Sapporo); see ADR 0004. }
+  SchemaV2 =
+    'ALTER TABLE qso ADD COLUMN dxcc INTEGER;' +
+    'ALTER TABLE qso ADD COLUMN state TEXT;' +
+    'ALTER TABLE qso ADD COLUMN cnty TEXT;';
+
 function SchemaMigrations: TMigrationArray;
 begin
   Result := nil;
-  SetLength(Result, 1);
+  SetLength(Result, 2);
   Result[0].Version := 1;
   Result[0].Sql := SchemaV1;
+  Result[1].Version := 2;
+  Result[1].Sql := SchemaV2;
 end;
 
 procedure ConfigureConnection(const ADatabase: TSqliteDatabase);

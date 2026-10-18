@@ -29,6 +29,8 @@ JA コンテスター全般を主な利用者とし、海外のコンテスト�
 | D13 | ツールチェーンは FPC 3.2.2 と Lazarus 4.4 に固定する。CI での導入方法は Linux が apt、macOS が Homebrew、Windows が setup-lazarus | [ADR 0001](adr/0001-toolchain.md) |
 | D14 | 単体テストには FPCUnit（FPC 標準の `fcl-fpcunit`）を使い、標準のコンソールランナーで実行する | [ADR 0002](adr/0002-unit-test-framework.md) |
 | D15 | SQLite は `sqlite3dyn` で C API を直接呼ぶ。WAL・`synchronous=FULL` で使い、スキーマの版は `user_version` で管理し、前進のみのマイグレーションを 1 版ずつトランザクションで適用する。新しい版の DB は開かない | [ADR 0003](adr/0003-storage-sqlite.md) |
+| D16 | ADIF は ADI 形式を UTF-8 で読み書きし、取り込みでは値を失わない（解釈できない値も元の名前で残す）。書き出しは ADIF 3.1.8 に正規化し、データ長はバイト数で書く | [ADR 0004](adr/0004-adif-import-export.md) |
+| D17 | 日本の市郡区は ADIF の `STATE` / `CNTY` にコードのまま入れる。JCC・JCG・区の区分と有効期間は参照データで判定し、桁数では決めない | [ADR 0005](adr/0005-japanese-subdivision-reference-data.md) |
 
 ## 3. 開発原則
 
