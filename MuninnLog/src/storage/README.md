@@ -9,6 +9,8 @@ SQLite によるログブックの保存、スキーマのマイグレーショ�
 |---|---|
 | `Muninn.Storage.Sqlite` | SQLite の C API の薄いラッパー（`TSqliteDatabase`、`TSqliteStatement`、`ESqliteError`） |
 | `Muninn.Storage.Schema` | スキーマとマイグレーション。`OpenLogDatabase` で DB を開き、最新の版に移行する |
+| `Muninn.Storage.QsoRepository` | QSO の保存と読み出し。ADIF の値・データ型・順序を失わない（ADR 0006） |
+| `Muninn.Storage.AdifTransfer` | ADIF ファイルの取り込み（1 トランザクション）と書き出し |
 
 方針は [ADR 0003](../../docs/adr/0003-storage-sqlite.md) を参照。
 

@@ -31,6 +31,7 @@ JA コンテスター全般を主な利用者とし、海外のコンテスト�
 | D15 | SQLite は `sqlite3dyn` で C API を直接呼ぶ。WAL・`synchronous=FULL` で使い、スキーマの版は `user_version` で管理し、前進のみのマイグレーションを 1 版ずつトランザクションで適用する。新しい版の DB は開かない | [ADR 0003](adr/0003-storage-sqlite.md) |
 | D16 | ADIF は ADI 形式を UTF-8 で読み書きし、取り込みでは値を失わない（解釈できない値も元の名前で残す）。書き出しは ADIF 3.1.8 に正規化し、データ長はバイト数で書く | [ADR 0004](adr/0004-adif-import-export.md) |
 | D17 | 日本の市郡区は ADIF の `STATE` / `CNTY` にコードのまま入れる。JCC・JCG・区の区分と有効期間は参照データで判定し、桁数では決めない | [ADR 0005](adr/0005-japanese-subdivision-reference-data.md) |
+| D18 | `muninn-cli` の終了コードは 0 成功、1 ファイル、2 未対応形式、3 署名（予約）、4 引数、5 データの誤り、6 ログブックの誤りとする。ADIF はログブックに値・データ型・順序を失わずに保存する | [ADR 0006](adr/0006-cli-and-logbook-adif.md) |
 
 ## 3. 開発原則
 

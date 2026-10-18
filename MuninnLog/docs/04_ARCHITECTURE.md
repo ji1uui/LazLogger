@@ -171,7 +171,7 @@ example-contest.ylg   （ZIP）
 | パッケージの検証 | Yata Logic の構文と署名の検証 |
 | テスト | ゴールデンテストの実行器として CI から使う |
 
-終了コードは Omoikane 仕様書の表を基本とし、失敗の種類ごとに区別する。
+終了コードは Omoikane 仕様書の表を基本とし、失敗の種類ごとに区別する。現在のコマンド（`import`、`export`）と終了コードの一覧は [ADR 0006](adr/0006-cli-and-logbook-adif.md) を参照。
 
 ## 7. スレッドとプロセス
 
