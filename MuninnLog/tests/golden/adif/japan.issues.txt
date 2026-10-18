@@ -1,0 +1,4 @@
+record 2, MODE: warning: import-only mode C4FM exported as MODE DIGITALVOICE, SUBMODE C4FM
+record 3, MODE: warning: import-only mode PSK31 exported as MODE PSK, SUBMODE PSK31
+record 3, CNTY: warning: in prefecture 01, but STATE is 02
+record 4, QSO_DATE: error: QSO_DATE "19290101" / TIME_ON "1200" is not a valid UTC date and time

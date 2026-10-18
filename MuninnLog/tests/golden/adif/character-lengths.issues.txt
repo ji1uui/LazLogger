@@ -1,0 +1,2 @@
+record 1, NAME: warning: data length counts characters, not bytes; read as characters
+record 1, QTH: warning: data length counts characters, not bytes; read as characters

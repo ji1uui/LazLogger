@@ -11,7 +11,10 @@ uses
   Muninn.Core.Callsign.Tests,
   Muninn.Core.Band.Tests,
   Muninn.Core.Mode.Tests,
-  Muninn.Core.Time.Tests;
+  Muninn.Core.Time.Tests,
+  Muninn.Core.AdifModes.Tests,
+  Muninn.Core.Adif.Tests,
+  Muninn.Core.AdifQso.Tests;
 
 var
   Runner: TTestRunner;

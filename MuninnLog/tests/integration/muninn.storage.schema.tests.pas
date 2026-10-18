@@ -31,6 +31,7 @@ type
     procedure RejectsMisnumberedMigrations;
     procedure EnforcesSchemaConstraints;
     procedure StoresUtf8Text;
+    procedure MigratesVersion1KeepingRows;
     procedure CrashDuringMigrationLeavesVersionZero;
     procedure CrashDuringWriteKeepsCommittedRows;
   end;
@@ -302,6 +303,36 @@ begin
     finally
       Statement.Free;
     end;
+  finally
+    Database.Free;
+  end;
+end;
+
+procedure TSchemaTests.MigratesVersion1KeepingRows;
+var
+  Database: TSqliteDatabase;
+  Migrations: TMigrationArray;
+begin
+  Migrations := Copy(SchemaMigrations, 0, 1);
+  Database := TSqliteDatabase.Open(FPath);
+  try
+    ConfigureConnection(Database);
+    AssertEquals(1, MigrateDatabase(Database, Migrations));
+    InsertQso(Database, 'from-v1');
+  finally
+    Database.Free;
+  end;
+  Database := OpenLogDatabase(FPath);
+  try
+    AssertEquals(CurrentSchemaVersion, SchemaVersion(Database));
+    AssertEquals('row kept', 1, Database.QueryInt64('SELECT count(*) FROM qso'));
+    AssertEquals('new columns are NULL', 1, Database.QueryInt64(
+      'SELECT count(*) FROM qso WHERE dxcc IS NULL AND state IS NULL AND cnty IS NULL'));
+    Database.Execute('UPDATE qso SET dxcc = 339, state = ''01'', cnty = ''0101''');
+    AssertEquals('leading zero kept', '0101', Database.QueryText('SELECT cnty FROM qso'));
+    ExpectSqlFailure(Database, 'STRICT: dxcc is an INTEGER',
+      'UPDATE qso SET dxcc = ''Japan''');
+    CheckIntegrity(Database);
   finally
     Database.Free;
   end;

@@ -1,0 +1,8 @@
+WSJT-X ADIF Export
+<adif_ver:5>3.1.0
+<created_timestamp:15>20240512 093015
+<programid:6>WSJT-X
+<programversion:5>2.6.1
+<eoh>
+<call:6>JA1ZZZ <gridsquare:4>PM95 <mode:3>FT8 <rst_sent:3>-10 <rst_rcvd:3>-15 <qso_date:8>20240512 <time_on:6>091500 <qso_date_off:8>20240512 <time_off:6>091615 <band:3>20m <freq:9>14.075123 <station_callsign:6>JA9XXX <my_gridsquare:6>PM86AA <tx_pwr:2>50 <comment:24>FT8 Sent: -10  Rcvd: -15 <operator:6>JA9XXX <eor>
+<call:5>W1ZZZ <gridsquare:4>FN42 <mode:4>MFSK <submode:3>FT4 <rst_sent:3>+02 <rst_rcvd:3>-08 <qso_date:8>20240512 <time_on:6>235930 <qso_date_off:8>20240513 <time_off:6>000045 <band:3>15m <freq:9>21.140500 <station_callsign:6>JA9XXX <my_gridsquare:6>PM86AA <tx_pwr:3>100 <operator:6>JA9XXX <eor>
