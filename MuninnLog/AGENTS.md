@@ -1,0 +1,92 @@
+# MuninnLog 開発エージェント向け指示書
+
+このファイルは、MuninnLog を開発する AI コーディングエージェント（Claude Code、Codex など）と人の開発者が守る規則です。
+Claude Code は `CLAUDE.md` 経由でこのファイルを読み込みます。
+
+## 1. 作業を始める前に読むもの
+
+| 文書 | 読む理由 |
+|---|---|
+| [docs/00_DEVELOPMENT_POLICY.md](docs/00_DEVELOPMENT_POLICY.md) | 決定事項（D 番号）、未決事項（Q 番号）、ロードマップ、品質ゲート |
+| [docs/05_DEVELOPMENT_PROCESS.md](docs/05_DEVELOPMENT_PROCESS.md) | 作業の単位、完了の条件、ブランチと PR の規則 |
+| [docs/04_ARCHITECTURE.md](docs/04_ARCHITECTURE.md) | コンポーネントの責務と境界 |
+| [docs/03_DATA_MODEL.md](docs/03_DATA_MODEL.md) | データモデル |
+| 担当する Issue | 目的、範囲、完了条件 |
+
+文書と既存のコードを確認してから変更する。存在しない API、型、ユニット、仕様を推測で使わない。
+
+## 2. ディレクトリと依存の向き
+
+```text
+app/gui ─┐
+app/cli ─┼─> src/core <─ src/storage
+         │       ^  ^─── src/omoikane
+         │       └────── src/integrations
+         └─> src/ui ──> src/core
+```
+
+| ディレクトリ | 置くもの | 依存してよいもの |
+|---|---|---|
+| `src/core/` | ドメイン、ユースケース、ポート（interface） | RTL と FCL の基本ユニットのみ。LCL・OS の API・ファイル・通信を使わない |
+| `src/storage/` | SQLite の実装、マイグレーション、バックアップ | `src/core/`、FCL の SQLite 関連ユニット |
+| `src/omoikane/` | 規約エンジン、Yata Logic の読み込み | `src/core/` |
+| `src/integrations/` | HuginnEngine、HamlibComponent、WSJT-X / fldigi、GPS、オンラインサービスのアダプター | `src/core/`、各外部コンポーネント |
+| `src/ui/` | Presenter と LCL の画面 | `src/core/`。Presenter は LCL に依存しない。LCL を使うのは画面（View）だけ |
+| `app/gui/` | GUI 版の起点。部品を組み立てるだけ | すべて |
+| `app/cli/` | CLI 版の起点。部品を組み立てるだけ | `src/ui/` 以外のすべて。LCL を使わない |
+| `tests/` | テスト | テスト対象のディレクトリ |
+| `plugins/` | 同梱する Yata Logic パッケージの元データ | — |
+
+`src/core/` が外側（storage、integrations、ui、LCL）を参照したら設計違反とする。
+
+## 3. 命名
+
+| 対象 | 規則 | 例 |
+|---|---|---|
+| ユニット | `Muninn.<層>.<機能>` | `Muninn.Core.Qso`、`Muninn.Storage.Sqlite`、`Muninn.Omoikane.Rules` |
+| 型 | PascalCase、クラスは `T`、interface は `I` で始める | `TQso`、`IQsoRepository` |
+| 単位 | 名前に単位を含める | `FrequencyHz`、`OccurredAtUtcMs` |
+
+## 4. Object Pascal / Lazarus の規則
+
+- `{$mode objfpc}{$H+}` を基本とする。
+- Unix で動くプログラム（GUI・CLI・テスト）は、`uses` の先頭に `{$IFDEF UNIX}cthreads, cwstring,{$ENDIF}` を置く。
+  - `cthreads` が無いと、スレッドを使う部品（HamlibComponent など）が起動時に停止する。
+  - `cwstring` が無いと、`UnicodeUpperCase` などが実行時に失敗する（`Lazarus/` の試作で発生）。
+- リソースの所有は原則として `try..finally` で管理する。`try..except` は回復できる境界でだけ使い、例外を握りつぶさない。
+- ワーカースレッドから LCL を直接操作しない。UI への通知は UI スレッドに渡してから行う。
+- ロック中に I/O、UI への通知、外部のコールバックを呼ばない。
+- 周波数は整数 Hz（`Int64`）、時刻は UTC で保持する。表示時にだけ変換する。
+- 列挙型を `Ord()` の値のまま保存しない。保存形式では固定のコード値を使う。
+- 受信系の障害ではログ入力を止めない。送信（PTT、CW キーイング）は異常時に必ず止める。
+
+## 5. 作業の進め方
+
+1. **1 エージェント = 1 ブランチ = 1 タスク。** 同じファイルを複数のエージェントに並行して触らせない。
+2. **1 PR = 1 つの論点。** 整形、改名、無関係なリファクタリングを混ぜない。
+3. **必要な最小の変更にする。** 将来の用途のためだけの抽象化を加えない。
+4. **コンフリクトを解決したら、push する前にビルドとテストを実行する。** 両側のコードを残したままにしない。
+5. **設計の決定は人が行う。** 決定事項（D 番号）・未決事項（Q 番号）を変える必要があれば、PR で提案し、開発者の承認を待つ。
+6. **設計に影響する変更は、同じ PR で設計文書を更新する。**
+7. **公開してよいかを確認する。** このリポジトリは公開されている。未公開の資料、資格情報、個人情報をコミットしない。
+
+## 6. ビルドとテスト
+
+M0 のタスク T2〜T3 で整備する。整備後、ここに実行方法を書く。
+
+| 項目 | 状態 |
+|---|---|
+| ツールチェーン | 未固定（T2 で FPC / Lazarus の版を決め、ADR に記録する） |
+| ビルド | 未整備（T2） |
+| 単体テスト | 未整備（T3） |
+| CI | 未整備（T2）。整備後は Windows / macOS / Linux の CI 合格がマージ条件になる |
+
+## 7. 完了の報告
+
+PR の本文には、テンプレート（`.github/pull_request_template.md`）に沿って次を書く。
+
+- 実行したビルド・テストのコマンドと結果、CI のリンク
+- 実機で確認した OS と内容（利用者に見える変更の場合）
+- 未検証の項目（「未検証」と明記する）
+
+実行していない検証を成功と書かない。現在の OS だけで成功しても「全 OS で確認済み」と書かない。

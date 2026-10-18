@@ -3,7 +3,7 @@
 Windows / macOS 向けの、新しいアマチュア無線ロギングアプリです。Lazarus / Free Pascal で開発します。
 日常の交信、国内外のコンテスト、FT8・RTTY・CW などのデジタル / 電信運用、POTA / SOTA を、一つのログブックで扱います。
 
-現在は設計段階です。このディレクトリにはまだコードがありません。
+現在は M0（基盤）の段階です。ディレクトリの骨組みはありますが、まだコードはありません。
 
 ## 名前と構成要素
 
@@ -31,9 +31,10 @@ Huginn（思考）と Muninn（記憶）は、北欧神話でオーディンに�
 | [docs/ideas/](docs/ideas/) | 元になったアイデア文書（MuninnLog 構想書 v4.0、Omoikane 実装仕様書）。原文のまま保存 |
 | [docs/references/](docs/references/) | 外部コンポーネントの資料（HamlibComponent README Rev.6.0）。原文のまま保存 |
 
-## 予定しているディレクトリ構成
+## ディレクトリ構成
 
-実装を始める時点で作成します。
+各ディレクトリの役割と依存してよい範囲は、そのディレクトリの `README.md` と [AGENTS.md](AGENTS.md) 第 2 節を参照してください。
+AI エージェントと開発者が守る規則は [AGENTS.md](AGENTS.md)（Claude Code は [CLAUDE.md](CLAUDE.md) 経由）にあります。
 
 ```text
 MuninnLog/
@@ -49,6 +50,8 @@ MuninnLog/
     cli/                CLI 版の起点（GUI なしのバッチ処理）
   plugins/              Yata Logic の同梱パッケージ
   tests/                単体・結合・ゴールデンテスト
+  AGENTS.md             AI エージェントと開発者が守る規則
+  CLAUDE.md             Claude Code 向け（AGENTS.md を読み込む）
 ```
 
 ## 既存ディレクトリとの関係
