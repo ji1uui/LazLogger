@@ -62,7 +62,7 @@ jobs:
 
       - name: Smoke test muninn-cli
         run: |
-          output="$(./build/muninn-cli --version)"
+          output="$(./build/muninn-cli --version | tr -d '\r')"
           echo "$output"
           test "$output" = "MuninnLog 0.0.0"
           if ./build/muninn-cli --unknown-option; then

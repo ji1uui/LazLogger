@@ -10,7 +10,8 @@ EXPECTED_FPC_VERSION="3.2.2"
 BUILD_DIR="build"
 UNIT_DIR="$BUILD_DIR/units"
 
-actual_version="$("$FPC" -iV)"
+# Native Windows compilers print CRLF; drop the CR so the comparison is shell-independent.
+actual_version="$("$FPC" -iV | tr -d '\r')"
 if [ "$actual_version" != "$EXPECTED_FPC_VERSION" ]; then
   echo "Free Pascal $EXPECTED_FPC_VERSION is required, found $actual_version" >&2
   exit 1
