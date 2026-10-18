@@ -53,6 +53,8 @@ app/cli ─┼─> src/core <─ src/storage
 - Unix で動くプログラム（GUI・CLI・テスト）は、`uses` の先頭に `{$IFDEF UNIX}cthreads, cwstring,{$ENDIF}` を置く。
   - `cthreads` が無いと、スレッドを使う部品（HamlibComponent など）が起動時に停止する。
   - `cwstring` が無いと、`UnicodeUpperCase` などが実行時に失敗する（`Lazarus/` の試作で発生）。
+- LCL を使わないプログラム（CLI・テスト）は、その次に `Muninn.Core.Utf8Default` を置く。`string` の文字コードを UTF-8 にする（LCL は GUI で同じことを行う）。
+  - これが無いと、Windows や C ロケールで `string` に変換した日本語が失われる。
 - リソースの所有は原則として `try..finally` で管理する。`try..except` は回復できる境界でだけ使い、例外を握りつぶさない。
 - ワーカースレッドから LCL を直接操作しない。UI への通知は UI スレッドに渡してから行う。
 - ロック中に I/O、UI への通知、外部のコールバックを呼ばない。
@@ -78,16 +80,17 @@ app/cli ─┼─> src/core <─ src/storage
 |---|---|
 | ビルド | `MuninnLog/scripts/build.sh`。`build/muninn-cli` ができる。FPC が 3.2.2 でなければ失敗する |
 | 動作確認 | `MuninnLog/build/muninn-cli --version` |
-| 単体テスト | `MuninnLog/scripts/test.sh`。FPCUnit（[ADR 0002](docs/adr/0002-unit-test-framework.md)）でテストランナーをビルドして実行する。1 件でも失敗すれば終了コード 1。`MUNINN_TEST_XML=<パス>` を指定すると XML でも結果を書き出す |
-| CI | `.github/workflows/muninnlog-ci.yml`。Windows / macOS / Linux でビルド、単体テスト、動作確認を行う。テスト結果の XML は成果物（artifact）として保存する。合格がマージ条件 |
+| テスト | `MuninnLog/scripts/test.sh`。FPCUnit（[ADR 0002](docs/adr/0002-unit-test-framework.md)）で単体テストと結合テストのランナーをビルドして実行する。1 件でも失敗すれば終了コード 1。`MUNINN_TEST_RESULTS_DIR=<ディレクトリ>` を指定すると、`unit.xml` と `integration.xml` にも結果を書き出す |
+| SQLite | 結合テストと保存処理は SQLite 3.37.0 以降のライブラリを実行時に読み込む（[ADR 0003](docs/adr/0003-storage-sqlite.md)）。見つからない場合は `MUNINN_SQLITE_LIBRARY=<ライブラリのパス>` を指定する |
+| CI | `.github/workflows/muninnlog-ci.yml`。Windows / macOS / Linux でビルド、単体テスト、結合テスト、動作確認を行う。テスト結果の XML は成果物（artifact）として保存する。合格がマージ条件 |
 
 Windows では Git Bash などの bash から `scripts/build.sh` を実行する。
 
 ### テストの書き方
 
-- テストは `tests/unit/` に置き、ユニット名は `<テスト対象のユニット名>.Tests`（例：`Muninn.Core.Version.Tests`）とする。
+- 単体テストは `tests/unit/`、SQLite などを使うテストは `tests/integration/` に置く。ユニット名は `<テスト対象のユニット名>.Tests`（例：`Muninn.Core.Version.Tests`）とする。
 - `TTestCase` を継承し、`initialization` 節で `RegisterTest` を呼ぶ。
-- 新しいテストユニットは `tests/unit/muninn-unit-tests.lpr` の `uses` に追加する。
+- 新しいテストユニットは、ランナー（`tests/unit/muninn-unit-tests.lpr` または `tests/integration/muninn-integration-tests.lpr`）の `uses` に追加する。
 - 日本語などの非 ASCII 文字列を含むユニットには `{$codepage utf8}` を書く。
 
 ## 7. 完了の報告

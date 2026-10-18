@@ -199,6 +199,13 @@ QSO には記録時点の値をコピーとして保存する。
 
 日本の JCC / JCG と ADIF の `MY_STATE` / `MY_CNTY` の対応は、ADIF 仕様の日本向け行政区分の定義で確認してから確定する。
 
+### 3.11 SQLite での保存（スキーマ v1）
+
+スキーマ v1 で作るのは `station`、`station_location`、`operation`、`qso`、`qso_field` の 5 つのテーブル。残りのエンティティ（Person、Equipment など）は、後の版のマイグレーションで追加する。
+
+- 定義は `src/storage/muninn.storage.schema.pas` にある。
+- 列名と単位の決まり、列挙のコードは [ADR 0003](adr/0003-storage-sqlite.md) を参照。
+
 ## 4. 規則と検証
 
 | 規則 | 内容 |

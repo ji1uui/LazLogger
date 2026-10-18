@@ -29,7 +29,7 @@ Huginn（思考）と Muninn（記憶）は、北欧神話でオーディンに�
 | [docs/02_PRODUCT_STRATEGY.md](docs/02_PRODUCT_STRATEGY.md) | 製品方針、他アプリから取り入れる点、デザイン原則 |
 | [docs/01_CURRENT_STATE_REVIEW.md](docs/01_CURRENT_STATE_REVIEW.md) | 既存の `Lazarus/`（zLog Lazarus Edition 試作）のレビュー |
 | [docs/ideas/](docs/ideas/) | 元になったアイデア文書（MuninnLog 構想書 v4.0、Omoikane 実装仕様書）。原文のまま保存 |
-| [docs/references/](docs/references/) | 外部コンポーネントの資料（HamlibComponent README Rev.6.0）。原文のまま保存 |
+| [docs/references/](docs/references/) | 外部資料（HamlibComponent README Rev.6.0、ADIF 3.1.8 の抜粋、ARRL DXCC リストの抜粋、JARL の区・JCG・JCC リスト）。原文のまま保存 |
 
 ## ディレクトリ構成
 

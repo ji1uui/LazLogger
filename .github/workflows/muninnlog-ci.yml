@@ -39,7 +39,8 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install --yes --no-install-recommends \
-            fp-compiler fp-units-rtl fp-units-base fp-units-fcl
+            fp-compiler fp-units-rtl fp-units-base fp-units-fcl fp-units-db \
+            libsqlite3-0
 
       - name: Install Free Pascal (macOS)
         if: runner.os == 'macOS'
@@ -57,19 +58,42 @@ jobs:
           fpc -iTP
           fpc -iTO
 
+      # SQLite: see MuninnLog/docs/adr/0003-storage-sqlite.md
+      # Linux installs libsqlite3-0 above; macOS uses the system library.
+      - name: Provide SQLite (Windows)
+        if: runner.os == 'Windows'
+        env:
+          SQLITE_YEAR: "2025"
+          SQLITE_VERSION: "3500400"
+          SQLITE_SHA256: 56b8751cdbf6dcd8ac9a35508039e456692a402bc5ddf576c2b0eddb0fed8536
+        run: |
+          # The pinned hash is for the x64 DLL; setup-lazarus installs win64 FPC.
+          if [ "$(fpc -iTP)" != x86_64 ]; then
+            echo "Unsupported target: $(fpc -iTP)" >&2
+            exit 1
+          fi
+          zip="sqlite-dll-win-x64-$SQLITE_VERSION.zip"
+          dir=build/sqlite
+          mkdir -p "$dir"
+          curl --fail --silent --show-error --location --retry 3 \
+            --output "$dir/$zip" "https://www.sqlite.org/$SQLITE_YEAR/$zip"
+          echo "$SQLITE_SHA256 *$dir/$zip" | sha256sum --check
+          7z x -y -o"$dir" "$dir/$zip" sqlite3.dll
+          echo "MUNINN_SQLITE_LIBRARY=$(cygpath -w "$PWD/$dir/sqlite3.dll")" >> "$GITHUB_ENV"
+
       - name: Build muninn-cli
         run: scripts/build.sh
 
-      - name: Run unit tests
+      - name: Run unit and integration tests
         env:
-          MUNINN_TEST_XML: build/test-results/unit-${{ matrix.os }}.xml
+          MUNINN_TEST_RESULTS_DIR: build/test-results
         run: scripts/test.sh
 
-      - name: Upload unit test results
+      - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: unit-test-results-${{ matrix.os }}
+          name: test-results-${{ matrix.os }}
           path: MuninnLog/build/test-results/
           if-no-files-found: ignore
 
