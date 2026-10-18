@@ -4,6 +4,7 @@ program MuninnIntegrationTests;
 
 uses
   {$IFDEF UNIX}cthreads, cwstring,{$ENDIF}
+  Muninn.Core.Utf8Default,
   Classes, consoletestrunner,
   Muninn.Storage.Schema.Tests;
 

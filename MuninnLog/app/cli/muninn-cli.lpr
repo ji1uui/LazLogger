@@ -4,6 +4,7 @@ program MuninnCli;
 
 uses
   {$IFDEF UNIX}cthreads, cwstring,{$ENDIF}
+  Muninn.Core.Utf8Default,
   SysUtils, Muninn.Core.Version;
 
 const

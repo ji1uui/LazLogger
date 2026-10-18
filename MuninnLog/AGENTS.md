@@ -53,6 +53,8 @@ app/cli ─┼─> src/core <─ src/storage
 - Unix で動くプログラム（GUI・CLI・テスト）は、`uses` の先頭に `{$IFDEF UNIX}cthreads, cwstring,{$ENDIF}` を置く。
   - `cthreads` が無いと、スレッドを使う部品（HamlibComponent など）が起動時に停止する。
   - `cwstring` が無いと、`UnicodeUpperCase` などが実行時に失敗する（`Lazarus/` の試作で発生）。
+- LCL を使わないプログラム（CLI・テスト）は、その次に `Muninn.Core.Utf8Default` を置く。`string` の文字コードを UTF-8 にする（LCL は GUI で同じことを行う）。
+  - これが無いと、Windows や C ロケールで `string` に変換した日本語が失われる。
 - リソースの所有は原則として `try..finally` で管理する。`try..except` は回復できる境界でだけ使い、例外を握りつぶさない。
 - ワーカースレッドから LCL を直接操作しない。UI への通知は UI スレッドに渡してから行う。
 - ロック中に I/O、UI への通知、外部のコールバックを呼ばない。

@@ -65,18 +65,19 @@ jobs:
         env:
           SQLITE_YEAR: "2025"
           SQLITE_VERSION: "3500400"
+          SQLITE_SHA256: 56b8751cdbf6dcd8ac9a35508039e456692a402bc5ddf576c2b0eddb0fed8536
         run: |
-          case "$(fpc -iTP)" in
-            x86_64) arch=x64 ;;
-            i386) arch=x86 ;;
-            *) echo "Unsupported target: $(fpc -iTP)" >&2; exit 1 ;;
-          esac
-          zip="sqlite-dll-win-$arch-$SQLITE_VERSION.zip"
+          # The pinned hash is for the x64 DLL; setup-lazarus installs win64 FPC.
+          if [ "$(fpc -iTP)" != x86_64 ]; then
+            echo "Unsupported target: $(fpc -iTP)" >&2
+            exit 1
+          fi
+          zip="sqlite-dll-win-x64-$SQLITE_VERSION.zip"
           dir=build/sqlite
           mkdir -p "$dir"
           curl --fail --silent --show-error --location --retry 3 \
             --output "$dir/$zip" "https://www.sqlite.org/$SQLITE_YEAR/$zip"
-          sha256sum "$dir/$zip"
+          echo "$SQLITE_SHA256 *$dir/$zip" | sha256sum --check
           7z x -y -o"$dir" "$dir/$zip" sqlite3.dll
           echo "MUNINN_SQLITE_LIBRARY=$(cygpath -w "$PWD/$dir/sqlite3.dll")" >> "$GITHUB_ENV"
 
