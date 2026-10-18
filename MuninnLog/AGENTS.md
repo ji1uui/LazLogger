@@ -72,14 +72,16 @@ app/cli ─┼─> src/core <─ src/storage
 
 ## 6. ビルドとテスト
 
-M0 のタスク T2〜T3 で整備する。整備後、ここに実行方法を書く。
+ツールチェーンは [ADR 0001](docs/adr/0001-toolchain.md) で固定している（FPC 3.2.2、Lazarus 4.4）。
 
-| 項目 | 状態 |
+| 項目 | 方法 |
 |---|---|
-| ツールチェーン | 未固定（T2 で FPC / Lazarus の版を決め、ADR に記録する） |
-| ビルド | 未整備（T2） |
-| 単体テスト | 未整備（T3） |
-| CI | 未整備（T2）。整備後は Windows / macOS / Linux の CI 合格がマージ条件になる |
+| ビルド | `MuninnLog/scripts/build.sh`。`build/muninn-cli` ができる。FPC が 3.2.2 でなければ失敗する |
+| 動作確認 | `MuninnLog/build/muninn-cli --version` |
+| 単体テスト | 未整備（M0 のタスク T3） |
+| CI | `.github/workflows/muninnlog-ci.yml`。Windows / macOS / Linux でビルドと動作確認を行う。合格がマージ条件 |
+
+Windows では Git Bash などの bash から `scripts/build.sh` を実行する。
 
 ## 7. 完了の報告
 
