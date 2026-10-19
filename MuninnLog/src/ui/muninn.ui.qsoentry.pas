@@ -46,6 +46,8 @@ type
     FClock: TUtcClock;
     FKnownCalls: TStringList;
     FWorked: TStringList;
+    { The calls in the log, to rule out most spots without building a key. }
+    FLoggedCalls: TStringList;
     FLogged: array of TLoggedQso;
     FLoggedCount: Integer;
     FText: string;
@@ -105,12 +107,17 @@ begin
   FWorked.Sorted := True;
   FWorked.Duplicates := dupIgnore;
   FWorked.CaseSensitive := True;
+  FLoggedCalls := TStringList.Create;
+  FLoggedCalls.Sorted := True;
+  FLoggedCalls.Duplicates := dupIgnore;
+  FLoggedCalls.CaseSensitive := True;
   if not TMode.TryCreate('CW', '', FMode) then
     raise EInvalidOperation.Create('CW is not a mode');
 end;
 
 destructor TQsoEntryPresenter.Destroy;
 begin
+  FLoggedCalls.Free;
   FWorked.Free;
   FKnownCalls.Free;
   FView := nil;
@@ -185,7 +192,8 @@ function TQsoEntryPresenter.IsWorked(const ACall: string;
 var
   Index: Integer;
 begin
-  Result := (ACall <> '') and FWorked.Find(WorkedKey(ACall, AFrequency, True), Index);
+  Result := (ACall <> '') and FLoggedCalls.Find(ACall, Index) and
+    FWorked.Find(WorkedKey(ACall, AFrequency, True), Index);
 end;
 
 function TQsoEntryPresenter.CallsignProblem(const AError: TCallsignError): string;
@@ -275,6 +283,7 @@ begin
   FLogged[FLoggedCount] := Qso;
   Inc(FLoggedCount);
   FWorked.Add(WorkedKey(Qso.Call.ToString, FFrequency, FHasFrequency));
+  FLoggedCalls.Add(Qso.Call.ToString);
   FKnownCalls.Add(Qso.Call.ToString);
   FView.ShowLogged(Qso);
   FText := '';
