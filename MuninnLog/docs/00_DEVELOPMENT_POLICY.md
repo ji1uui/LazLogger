@@ -34,6 +34,7 @@ JA コンテスター全般を主な利用者とし、海外のコンテスト�
 | D18 | `muninn-cli` の終了コードは 0 成功、1 ファイル、2 未対応形式、3 署名（予約）、4 引数、5 データの誤り、6 ログブックの誤りとする。ADIF はログブックに値・データ型・順序を失わずに保存する | [ADR 0006](adr/0006-cli-and-logbook-adif.md) |
 | D19 | 既存の `Lazarus/` の試作は、クラス構成やロジックの参考にとどめる。MuninnLog から使わず、修復も削除もしない（凍結） | [ADR 0007](adr/0007-lazarus-prototype.md)（旧未決事項 Q9 を解消） |
 | D20 | 中核は無線機ポート `IRadioPort` に依存し、`THamlibRadio` が HamlibComponent（`hamlib_component/src` を直接参照）で実装する。データ用のモードは PKT-USB で設定する。CI は 3 OS で Hamlib のダミー機種を試験する | [ADR 0008](adr/0008-radio-port-hamlib.md)（旧未決事項 Q10 を解消） |
+| D21 | 画面は LCL＋独自描画で作る（WebView は使わない）。画面の判断は LCL に依存しない Presenter に置いて試験し、CI で 3 OS の反応速度を毎回測る | [ADR 0009](adr/0009-ui-technology.md)（旧未決事項 Q2 を解消） |
 
 ## 3. 開発原則
 
@@ -139,9 +140,8 @@ M1 と M2 の順序は未決事項 Q1 で決める。
 | # | 問い | 影響 |
 |---|---|---|
 | Q1 | 最初に獲得する利用者は日常運用・FT8 ユーザーか、コンテスターか | M1 と M2 の順序 |
-| Q2 | 画面の技術は LCL＋独自描画か、WebView か | デザインの自由度、入力の反応速度 |
 | Q6 | HuginnEngine の提供形態（別プロセス / ライブラリ）と、開発体制・進捗 | `THuginnInterface` の設計、M3 の時期 |
 | Q7 | Yata Logic のスクリプト実行系（Pascal Script 系ライブラリの選定）と、署名鍵の管理者 | Omoikane の実装、配布の信頼モデル |
 | Q8 | Linux を正式サポートに含めるか | 配布とサポートの範囲 |
 
-旧 Q3（保存方式）は D10、旧 Q4（HamlibComponentの提供形態）は D12、旧 Q5（実装の置き場所）は `MuninnLog/` ディレクトリ、旧 Q9（`Lazarus/` の扱い）は D19、旧 Q10（HamlibComponent について確認したい点）は D20 で解消した。
+旧 Q3（保存方式）は D10、旧 Q4（HamlibComponentの提供形態）は D12、旧 Q5（実装の置き場所）は `MuninnLog/` ディレクトリ、旧 Q9（`Lazarus/` の扱い）は D19、旧 Q10（HamlibComponent について確認したい点）は D20、旧 Q2（画面の技術）は D21 で解消した。

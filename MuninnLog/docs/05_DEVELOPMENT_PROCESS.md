@@ -186,7 +186,7 @@ M0 の完了条件：3 OS の CI で中核ライブラリと `muninn-cli` がビ
 | T7 | `muninn-cli` の骨組み（import / export / version） | T5, T6 | CLI で ADIF → SQLite → ADIF が通る。終了コードの規則を実装 |
 | T8 | 無線機ポートと HamlibComponent アダプター、CI でのダミー機種テスト | T2 | ダミー機種で周波数・モードの取得と設定のテスト合格。**完了**（[ADR 0008](adr/0008-radio-port-hamlib.md)） |
 | T9 | HuginnEngine 通信仕様 v1 の草案と模擬エンジン | T2 | 仕様書が HuginnEngine 側と合意され、模擬エンジンとの結合テストが合格。**保留**（開発者の判断、2026-10-19） |
-| T10 | 画面技術の試作（未決事項 Q2）：入力画面とバンドマップを LCL＋独自描画で作る | T2 | 3 OS で動く試作と、反応速度の測定値。ADR で決定 |
+| T10 | 画面技術の試作（未決事項 Q2）：入力画面とバンドマップを LCL＋独自描画で作る | T2 | 3 OS で動く試作と、反応速度の測定値。ADR で決定。**完了**（[ADR 0009](adr/0009-ui-technology.md)） |
 | T11 | `Lazarus/` の扱いの決定（未決事項 Q9） | — | ADR で決定し、必要なら実施。**完了**：参考にとどめ、凍結する（[ADR 0007](adr/0007-lazarus-prototype.md)） |
 
 T8〜T11 は T4〜T7 と並行して進められる。

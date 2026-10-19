@@ -76,6 +76,8 @@ Logbook（全 QSO。項目の意味は ADIF 3.x に揃える）
 
 推奨は (a)。決定前に、入力画面とバンドマップだけを試作して判断する。
 
+→ 試作と測定の結果、(a) に決めた（決定事項 D21、[ADR 0009](adr/0009-ui-technology.md)）。
+
 ## 6. リリース段階
 
 > 統合後のロードマップは [00_DEVELOPMENT_POLICY.md](00_DEVELOPMENT_POLICY.md) 第 6 節（M0〜M5）を正とする。以下は検討時点の案として残す。
