@@ -1,6 +1,7 @@
 unit Muninn.Core.Mode.Tests;
 
 {$mode objfpc}{$H+}
+{$codepage utf8}
 
 interface
 
@@ -48,8 +49,8 @@ var
   Mode: TMode;
 begin
   AssertFalse('empty mode', TMode.TryCreate('', 'USB', Mode));
-  AssertFalse('space in mode', TMode.TryCreate('S SB', '', Mode));
-  AssertFalse('invalid submode', TMode.TryCreate('SSB', 'U<SB', Mode));
+  AssertFalse('control character', TMode.TryCreate('SS'#9'B', '', Mode));
+  AssertFalse('non-ASCII', TMode.TryCreate('SSB', 'ＵＳＢ', Mode));
   AssertFalse('double space', TMode.TryCreate('DYNAMIC', 'VARA  HF', Mode));
   AssertEquals('cleared on failure', '', Mode.Mode);
 end;
@@ -58,7 +59,10 @@ procedure TModeTests.KeepsUnknownModes;
 var
   Mode: TMode;
 begin
-  AssertFalse('space is not allowed in a mode', TMode.TryCreate('VARA HF', '', Mode));
+  AssertTrue('values outside the ADIF enumeration are kept',
+    TMode.TryCreate('olivia 8-250', '', Mode));
+  AssertEquals('OLIVIA 8-250', Mode.Mode);
+  AssertFalse(Mode.IsKnown);
   AssertTrue('ADIF submodes may have spaces and slashes',
     TMode.TryCreate('olivia', 'olivia 4/125', Mode));
   AssertEquals('OLIVIA 4/125', Mode.Submode);

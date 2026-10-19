@@ -4,7 +4,8 @@ unit Muninn.Storage.QsoRepository;
   Typed values go to their columns. An ADIF field in OtherFields goes to the
   column of the same name when one exists, it carries no data type indicator,
   and (for INTEGER columns) its text is the canonical integer, so '001' or
-  '+5' stay as written. Every other field goes to qso_field with its data
+  '+5' stay as written. A recorded empty STATION_CALLSIGN also stays out of its
+  column, where '' means not recorded. Every other field goes to qso_field with its data
   type and recorded position, so loading gives back every field and value.
   Loading orders the column fields in a fixed order and the qso_field fields
   in their recorded order. }
@@ -159,7 +160,8 @@ var
   Statement, FieldStatement: TSqliteStatement;
   Placeholders: string;
   Index, ColumnIndex, Position: Integer;
-  InColumn: array[Low(FieldColumns)..High(FieldColumns)] of Boolean;
+  { The OtherFields index whose value fills each column; -1 for none. }
+  ColumnSource: array[Low(FieldColumns)..High(FieldColumns)] of Integer;
   Field: TAdifField;
   Value: Int64;
 begin
@@ -167,12 +169,13 @@ begin
   Placeholders := '?';
   for Index := 2 to TypedColumnCount + Length(FieldColumns) + 3 do
     Placeholders := Placeholders + ', ?';
+  FieldStatement := nil;
   Statement := TSqliteStatement.Create(FDatabase, 'INSERT INTO qso (' + ColumnList +
     ', source, created_at_ms, updated_at_ms) VALUES (' + Placeholders + ')');
-  FieldStatement := TSqliteStatement.Create(FDatabase,
-    'INSERT INTO qso_field (qso_id, name, value, data_type, position) ' +
-    'VALUES (?1, ?2, ?3, ?4, ?5)');
   try
+    FieldStatement := TSqliteStatement.Create(FDatabase,
+      'INSERT INTO qso_field (qso_id, name, value, data_type, position) ' +
+      'VALUES (?1, ?2, ?3, ?4, ?5)');
     Statement.BindText(1, AQso.Call);
     Statement.BindInt64(2, AQso.TimeOn.UnixMs);
     if AQso.HasTimeOff then
@@ -208,10 +211,11 @@ begin
 
     for Index := Low(FieldColumns) to High(FieldColumns) do
     begin
-      InColumn[Index] := False;
+      ColumnSource[Index] := -1;
       Statement.BindNull(TypedColumnCount + 1 + Index);
     end;
-    { station_callsign is NOT NULL; '' means not recorded and is not exported. }
+    { station_callsign is NOT NULL; '' in the column means not recorded. A
+      recorded empty STATION_CALLSIGN goes to qso_field so it is exported. }
     FindColumn('STATION_CALLSIGN', ColumnIndex);
     Statement.BindText(TypedColumnCount + 1 + ColumnIndex, '');
 
@@ -220,20 +224,21 @@ begin
     begin
       Field := AQso.OtherFields[Index];
       if FindColumn(Field.Name, ColumnIndex) and (Field.DataType = '') and
-        not InColumn[ColumnIndex] then
+        (ColumnSource[ColumnIndex] < 0) then
       begin
         case FieldColumns[ColumnIndex].Kind of
           ckText:
+            if (Field.Value <> '') or (Field.Name <> 'STATION_CALLSIGN') then
             begin
               Statement.BindText(TypedColumnCount + 1 + ColumnIndex, Field.Value);
-              InColumn[ColumnIndex] := True;
+              ColumnSource[ColumnIndex] := Index;
               Continue;
             end;
           ckInteger:
             if IsCanonicalInteger(Field.Value, Value) then
             begin
               Statement.BindInt64(TypedColumnCount + 1 + ColumnIndex, Value);
-              InColumn[ColumnIndex] := True;
+              ColumnSource[ColumnIndex] := Index;
               Continue;
             end;
         end;
@@ -250,12 +255,9 @@ begin
     for Index := 0 to AQso.OtherFields.Count - 1 do
     begin
       Field := AQso.OtherFields[Index];
-      if FindColumn(Field.Name, ColumnIndex) and InColumn[ColumnIndex] then
-      begin
-        { Only the field that filled the column is skipped. }
-        InColumn[ColumnIndex] := False;
+      { Only the field that filled a column is skipped. }
+      if FindColumn(Field.Name, ColumnIndex) and (ColumnSource[ColumnIndex] = Index) then
         Continue;
-      end;
       FieldStatement.Reset;
       FieldStatement.BindText(1, Result);
       FieldStatement.BindText(2, Field.Name);
@@ -278,12 +280,13 @@ var
   Mode: TMode;
   Index, Column: Integer;
 begin
+  FieldStatement := nil;
   Statement := TSqliteStatement.Create(FDatabase,
     'SELECT ' + ColumnList + ' FROM qso ORDER BY rowid');
-  FieldStatement := TSqliteStatement.Create(FDatabase,
-    'SELECT name, value, data_type FROM qso_field WHERE qso_id = ?1 ' +
-    'ORDER BY position, name');
   try
+    FieldStatement := TSqliteStatement.Create(FDatabase,
+      'SELECT name, value, data_type FROM qso_field WHERE qso_id = ?1 ' +
+      'ORDER BY position, name');
     while Statement.Step do
     begin
       Qso := TQsoRecord.Create;
@@ -340,11 +343,12 @@ var
   Field: TAdifField;
   Name: string;
 begin
+  Inserter := nil;
   Lookup := TSqliteStatement.Create(FDatabase,
     'SELECT data_type, definition FROM adif_user_field WHERE name = ?1');
-  Inserter := TSqliteStatement.Create(FDatabase,
-    'INSERT INTO adif_user_field (name, data_type, definition) VALUES (?1, ?2, ?3)');
   try
+    Inserter := TSqliteStatement.Create(FDatabase,
+      'INSERT INTO adif_user_field (name, data_type, definition) VALUES (?1, ?2, ?3)');
     for Index := 0 to AHeader.Count - 1 do
     begin
       Field := AHeader[Index];

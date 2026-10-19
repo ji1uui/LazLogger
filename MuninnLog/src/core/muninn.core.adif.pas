@@ -360,6 +360,16 @@ begin
   Result := True;
 end;
 
+function IsDecimalDigits(const AText: string): Boolean;
+var
+  Index: Integer;
+begin
+  Result := AText <> '';
+  for Index := 1 to Length(AText) do
+    if not (AText[Index] in ['0'..'9']) then
+      Exit(False);
+end;
+
 function HasNonAscii(const AText: string): Boolean;
 var
   Index: Integer;
@@ -436,16 +446,18 @@ begin
   FIssues.Add(ASeverity, CurrentRecordIndex, AFieldName, AMessage);
 end;
 
-{ Reads ALength bytes of data at FPosition. Text between data specifiers is
-  allowed and ignored (ADIF IV.A.6), so the byte count wins whenever it ends on a
-  character boundary and the text after it up to the next tag is ASCII. Only
-  when the byte count splits a character, or leaves non-ASCII text before the
-  next tag, and the same count in characters ends right before the next tag,
-  did the writer count characters: use that and warn. }
+{ Reads ALength bytes of data at FPosition. The byte count wins when it ends on
+  a character boundary and leaves only blanks before the next tag. Otherwise,
+  for a value with non-ASCII text, a writer that counted characters is assumed
+  when the same count in characters does end right before the next tag: the
+  value is read as characters and a warning is reported. Text between data
+  specifiers is allowed (ADIF IV.A.6), so this is ambiguous when such text
+  follows a non-ASCII value without a blank; ADR 0004 prefers not losing the
+  end of the value. }
 function TAdiReader.ReadValue(const AFieldName: string;
   const ALength: Integer): string;
 var
-  ByteEnd, CharacterEnd, NextTag: Integer;
+  ByteEnd, CharacterEnd: Integer;
   SplitsCharacter: Boolean;
 begin
   { Compare with the remaining size first so a huge length cannot overflow. }
@@ -461,11 +473,7 @@ begin
   SplitsCharacter := (ByteEnd <= Length(FText)) and IsContinuationByte(FText[ByteEnd]);
   if SplitsCharacter or HasNonAscii(Result) then
   begin
-    NextTag := Pos('<', FText, ByteEnd);
-    if NextTag = 0 then
-      NextTag := Length(FText) + 1;
-    if SplitsCharacter or
-      HasNonAscii(Copy(FText, ByteEnd, NextTag - ByteEnd)) then
+    if SplitsCharacter or not OnlyBlanksBeforeTag(FText, ByteEnd) then
     begin
       CharacterEnd := SkipUtf8Characters(FText, FPosition, ALength);
       if OnlyBlanksBeforeTag(FText, CharacterEnd) then
@@ -542,8 +550,8 @@ begin
     DataType := UpperCase(Trim(Parts[2]))
   else
     DataType := '';
-  if not TryStrToInt(LengthText, DataLength) or (DataLength < 0) or
-    (LengthText[1] in ['+', '-']) then
+  { Decimal digits only: TryStrToInt would also accept '$4', '0x4' or '-4'. }
+  if not IsDecimalDigits(LengthText) or not TryStrToInt(LengthText, DataLength) then
   begin
     Issue(aisError, Name, Format('invalid data length in <%s>; skipped', [Tag]));
     Exit;
@@ -575,7 +583,12 @@ begin
   { A UTF-8 byte order mark is not text of the header. }
   if Copy(FText, 1, 3) = #$EF#$BB#$BF then
     FPosition := 4;
-  FInHeader := (FPosition <= Length(FText)) and (FText[FPosition] <> '<');
+  { IV.A.3 decides on the first character; blank lines before the first tag of
+    a file without a header are skipped so its QSOs are not read as header. }
+  NextTag := FPosition;
+  while (NextTag <= Length(FText)) and (FText[NextTag] in [' ', #9, #10, #13]) do
+    Inc(NextTag);
+  FInHeader := (NextTag <= Length(FText)) and (FText[NextTag] <> '<');
   FDocument.HasHeader := FInHeader;
   if FInHeader then
   begin
@@ -647,7 +660,9 @@ begin
     if ADocument.HasHeader then
     begin
       { A header must not start with '<'. }
-      if (ADocument.HeaderText = '') or (ADocument.HeaderText[1] = '<') then
+      { The header text must not contain '<' (it would start a tag) and must
+        not be blank (a reader could not tell it from no header). }
+      if (Trim(ADocument.HeaderText) = '') or (Pos('<', ADocument.HeaderText) > 0) then
         Builder.Add('ADIF export')
       else
         Builder.Add(ADocument.HeaderText);

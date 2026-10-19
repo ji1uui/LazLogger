@@ -90,7 +90,11 @@ var
   Era, DayOfEra, YearOfEra, DayOfYear, ShiftedMonth: Int64;
 begin
   Inc(ADays, 719468);
-  Era := ADays div 146097;
+  { Hinnant's algorithm needs floor division; div truncates toward zero. }
+  if ADays >= 0 then
+    Era := ADays div 146097
+  else
+    Era := (ADays - 146096) div 146097;
   DayOfEra := ADays - Era * 146097;
   YearOfEra := (DayOfEra - DayOfEra div 1460 + DayOfEra div 36524 -
     DayOfEra div 146096) div 365;

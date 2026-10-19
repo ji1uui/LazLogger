@@ -11,13 +11,15 @@ unit Muninn.Cli.Tests;
 interface
 
 uses
-  fpcunit, testregistry;
+  Process, fpcunit, testregistry;
 
 type
   TCliTests = class(TTestCase)
   private
     FDirectory: string;
-    function RunCli(const AArguments: array of string; out AOutput: string): Integer;
+    function RunCli(const AArguments: array of string; out AOutput: string;
+      const AEnvironment: string = ''): Integer;
+    function StartCli(const AArguments: array of string): TProcess;
     function Path(const AName: string): string;
     procedure CheckRoundTrip(const ACase: string; const AExpectedImportExit: Integer);
   protected
@@ -31,6 +33,10 @@ type
     procedure ReportsMissingFiles;
     procedure RejectsUnsupportedFormats;
     procedure RefusesToOverwriteTheLogbook;
+    procedure RejectsFormatOnImport;
+    procedure ReportsALibraryThatIsNotSqlite;
+    procedure ImportsConcurrentlyIntoANewLogbook;
+    procedure KeepsEmptyStationCallsign;
     procedure RefusesNewerLogbook;
     procedure KeepsUserDefinedFieldsValid;
   end;
@@ -38,7 +44,8 @@ type
 implementation
 
 uses
-  Classes, SysUtils, Process, Muninn.Core.Adif, Muninn.Storage.Sqlite,
+  {$IFDEF UNIX}BaseUnix,{$ENDIF}
+  Classes, SysUtils, Muninn.Core.Adif, Muninn.Storage.Sqlite,
   Muninn.Storage.AdifTransfer;
 
 const
@@ -142,8 +149,17 @@ begin
 end;
 
 { Runs muninn-cli and returns its exit code; AOutput gets stdout and stderr. }
+{ Waits until AProcess has exited. WaitOnExit alone can return early when the
+  wait is interrupted (another child exiting), leaving ExitCode at 0. }
+procedure WaitForExit(const AProcess: TProcess);
+begin
+  while AProcess.Running do
+    Sleep(10);
+end;
+
+{ AEnvironment, when set, is one NAME=VALUE added to the inherited environment. }
 function TCliTests.RunCli(const AArguments: array of string;
-  out AOutput: string): Integer;
+  out AOutput: string; const AEnvironment: string): Integer;
 var
   Cli: TProcess;
   Argument: string;
@@ -159,6 +175,12 @@ begin
     Cli.Executable := CliPath;
     for Argument in AArguments do
       Cli.Parameters.Add(Argument);
+    if AEnvironment <> '' then
+    begin
+      for Count := 1 to GetEnvironmentVariableCount do
+        Cli.Environment.Add(GetEnvironmentString(Count));
+      Cli.Environment.Add(AEnvironment);
+    end;
     Cli.Options := [poUsePipes, poStderrToOutPut];
     Cli.Execute;
     { Drain the pipe while the process runs so it never blocks on a full pipe. }
@@ -170,11 +192,25 @@ begin
         AOutput := AOutput + Chunk;
       end;
     until (Count <= 0) and not Cli.Running;
-    Cli.WaitOnExit;
+    WaitForExit(Cli);
     Result := Cli.ExitCode;
   finally
     Cli.Free;
   end;
+end;
+
+{ Starts muninn-cli without waiting; the caller waits and frees it. Output is
+  small, so the pipe never fills. }
+function TCliTests.StartCli(const AArguments: array of string): TProcess;
+var
+  Argument: string;
+begin
+  Result := TProcess.Create(nil);
+  Result.Executable := CliPath;
+  for Argument in AArguments do
+    Result.Parameters.Add(Argument);
+  Result.Options := [poUsePipes, poStderrToOutPut];
+  Result.Execute;
 end;
 
 procedure TCliTests.CheckRoundTrip(const ACase: string;
@@ -282,12 +318,95 @@ begin
     '--output', Path('.') + PathDelim + 'a.sqlite'], Output));
   AssertEquals(ExitInvalidArguments, RunCli(['export', '--db', Path('a.sqlite'),
     '--output', Path('a.sqlite-wal')], Output));
+{$IFDEF UNIX}
+  AssertEquals('symbolic link', 0, FpSymlink(PChar(Path('a.sqlite')), PChar(Path('link.adi'))));
+  AssertEquals(ExitInvalidArguments, RunCli(['export', '--db', Path('a.sqlite'),
+    '--output', Path('link.adi')], Output));
+{$ENDIF}
   Database := TSqliteDatabase.Open(Path('a.sqlite'));
   try
     AssertEquals('logbook intact', 2, Database.QueryInt64('SELECT count(*) FROM qso'));
   finally
     Database.Free;
   end;
+end;
+
+procedure TCliTests.RejectsFormatOnImport;
+var
+  Output: string;
+begin
+  AssertEquals(ExitInvalidArguments, RunCli(['import', '--db', Path('a.sqlite'),
+    '--format', 'csv', GoldenDirectory + 'wsjtx.adi'], Output));
+  AssertFalse('nothing created', FileExists(Path('a.sqlite')));
+end;
+
+procedure TCliTests.ReportsALibraryThatIsNotSqlite;
+const
+{$IF defined(WINDOWS)}
+  OtherLibrary = 'kernel32.dll';
+{$ELSEIF defined(DARWIN)}
+  OtherLibrary = '/usr/lib/libSystem.B.dylib';
+{$ELSE}
+  OtherLibrary = 'libc.so.6';
+{$ENDIF}
+var
+  Output: string;
+begin
+  AssertEquals(Output, ExitLogbookError, RunCli(['import', '--db', Path('a.sqlite'),
+    GoldenDirectory + 'wsjtx.adi'], Output, 'MUNINN_SQLITE_LIBRARY=' + OtherLibrary));
+  AssertTrue(Output, Pos('not an SQLite library', Output) > 0);
+end;
+
+procedure TCliTests.ImportsConcurrentlyIntoANewLogbook;
+var
+  Round: Integer;
+  First, Second: TProcess;
+  Database: TSqliteDatabase;
+  LogbookName, Detail: string;
+begin
+  { Each waits for the other's lock instead of failing, and the migration is
+    applied once. }
+  for Round := 1 to 5 do
+  begin
+    LogbookName := Path(Format('c%d.sqlite', [Round]));
+    First := StartCli(['import', '--db', LogbookName, GoldenDirectory + 'wsjtx.adi']);
+    try
+      Second := StartCli(['import', '--db', LogbookName, GoldenDirectory + 'wsjtx.adi']);
+      try
+        WaitForExit(First);
+        WaitForExit(Second);
+        Detail := Format('round %d: exit codes %d and %d',
+          [Round, First.ExitCode, Second.ExitCode]);
+        AssertEquals(Detail, ExitSuccess, First.ExitCode);
+        AssertEquals(Detail, ExitSuccess, Second.ExitCode);
+      finally
+        Second.Free;
+      end;
+    finally
+      First.Free;
+    end;
+    Database := TSqliteDatabase.Open(LogbookName);
+    try
+      AssertEquals('both imports stored', 4,
+        Database.QueryInt64('SELECT count(*) FROM qso'));
+    finally
+      Database.Free;
+    end;
+  end;
+end;
+
+procedure TCliTests.KeepsEmptyStationCallsign;
+var
+  Output: string;
+begin
+  WriteFileBytes(Path('in.adi'), '<CALL:5>W1ZZZ <QSO_DATE:8>20240101 ' +
+    '<TIME_ON:4>1200 <MODE:2>CW <BAND:3>20m <STATION_CALLSIGN:0> <EOR>' + #10);
+  AssertEquals(ExitSuccess,
+    RunCli(['import', '--db', Path('a.sqlite'), Path('in.adi')], Output));
+  AssertEquals(ExitSuccess,
+    RunCli(['export', '--db', Path('a.sqlite'), '--output', Path('a.adi')], Output));
+  AssertTrue('empty STATION_CALLSIGN exported',
+    Pos('<STATION_CALLSIGN:0>', ReadFileBytes(Path('a.adi'))) > 0);
 end;
 
 procedure TCliTests.RefusesNewerLogbook;

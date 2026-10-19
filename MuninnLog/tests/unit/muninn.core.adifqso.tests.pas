@@ -32,6 +32,10 @@ type
     procedure RequiresCallTimeAndMode;
     procedure RejectsDatesBefore1930;
     procedure EndTimeBeforeStartIsNextDay;
+    procedure TreatsEmptyDateOffAsMissing;
+    procedure ComparesEndTimeAtItsPrecision;
+    procedure KeepsEndTimeAfterYear9999AsWritten;
+    procedure KeepsModesOutsideTheEnumeration;
     procedure DerivesBandFromFrequency;
     procedure WarnsOnBandMismatch;
     procedure KeepsUninterpretableValues;
@@ -194,6 +198,64 @@ begin
     '<TIME_OFF:4>0001 <MODE:2>CW <BAND:3>20m <EOR>');
   try
     AssertEquals('2024-05-13T00:01:00Z', Qso.TimeOff.ToIso8601);
+  finally
+    Qso.Free;
+  end;
+end;
+
+procedure TAdifQsoTests.TreatsEmptyDateOffAsMissing;
+var
+  Qso: TQsoRecord;
+begin
+  Qso := Convert('<CALL:5>W1ZZZ <QSO_DATE:8>20240101 <TIME_ON:4>2350 ' +
+    '<QSO_DATE_OFF:0> <TIME_OFF:4>0010 <MODE:2>CW <BAND:3>20m <EOR>');
+  try
+    AssertEquals('next day', '2024-01-02T00:10:00Z', Qso.TimeOff.ToIso8601);
+  finally
+    Qso.Free;
+  end;
+end;
+
+procedure TAdifQsoTests.ComparesEndTimeAtItsPrecision;
+var
+  Qso: TQsoRecord;
+begin
+  { TIME_OFF 1200 (minutes) is not before TIME_ON 120030. }
+  Qso := Convert('<CALL:5>W1ZZZ <QSO_DATE:8>20240101 <TIME_ON:6>120030 ' +
+    '<TIME_OFF:4>1200 <MODE:2>CW <BAND:3>20m <EOR>');
+  try
+    AssertEquals('same day', '2024-01-01T12:00:00Z', Qso.TimeOff.ToIso8601);
+  finally
+    Qso.Free;
+  end;
+end;
+
+procedure TAdifQsoTests.KeepsEndTimeAfterYear9999AsWritten;
+var
+  Qso: TQsoRecord;
+begin
+  Qso := Convert('<CALL:5>W1ZZZ <QSO_DATE:8>99991231 <TIME_ON:4>2350 ' +
+    '<TIME_OFF:4>0010 <MODE:2>CW <BAND:3>20m <EOR>');
+  try
+    AssertFalse(Qso.HasTimeOff);
+    AssertEquals('0010', Qso.OtherFields.Value('TIME_OFF'));
+    AssertEquals(1, FIssues.Count);
+    AssertEquals('TIME_OFF', FIssues[0].FieldName);
+  finally
+    Qso.Free;
+  end;
+end;
+
+procedure TAdifQsoTests.KeepsModesOutsideTheEnumeration;
+var
+  Qso: TQsoRecord;
+begin
+  Qso := Convert('<CALL:5>W1ZZZ <QSO_DATE:8>20240101 <TIME_ON:4>1200 ' +
+    '<MODE:12>OLIVIA 8-250 <BAND:3>20m <EOR>');
+  try
+    AssertEquals('OLIVIA 8-250', Qso.Mode.Mode);
+    AssertEquals(0, FIssues.ErrorCount);
+    AssertEquals('MODE', FIssues[0].FieldName);
   finally
     Qso.Free;
   end;

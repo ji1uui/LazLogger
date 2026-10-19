@@ -133,6 +133,7 @@ begin
     AssertEquals('synchronous FULL', 2,
       Database.QueryInt64('PRAGMA synchronous'));
     AssertEquals('foreign keys', 1, Database.QueryInt64('PRAGMA foreign_keys'));
+    AssertEquals('busy timeout', BusyTimeoutMs, Database.QueryInt64('PRAGMA busy_timeout'));
     AssertEquals('tables', 6, TableCount(Database));
     AssertEquals('no QSO', 0, Database.QueryInt64('SELECT count(*) FROM qso'));
     CheckIntegrity(Database);

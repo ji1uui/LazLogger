@@ -17,6 +17,8 @@ const
   MinimumSqliteVersionNumber = 3037000;
   { Set this environment variable to load a specific SQLite library file. }
   SqliteLibraryEnvironmentVariable = 'MUNINN_SQLITE_LIBRARY';
+  { How long a statement waits for another connection's lock. }
+  BusyTimeoutMs = 5000;
 
 type
   ESqliteError = class(Exception)
@@ -55,7 +57,8 @@ type
     FHandle: psqlite3;
     FPath: string;
   public
-    { Opens the database file, creating it when it does not exist. }
+    { Opens the database file, creating it when it does not exist, with a
+      busy timeout of BusyTimeoutMs. }
     constructor Open(const APath: string);
     destructor Destroy; override;
     { Runs one or more statements that return no rows. }
@@ -113,6 +116,15 @@ begin
   begin
     if TryInitializeSqlite(UnicodeString(Candidate)) > 0 then
     begin
+      { A library that is not SQLite loads but leaves the entry points nil. }
+      if (Pointer(sqlite3_libversion_number) = nil) or (Pointer(sqlite3_open_v2) = nil) or
+        (Pointer(sqlite3_prepare_v2) = nil) or (Pointer(sqlite3_busy_timeout) = nil) then
+      begin
+        ReleaseSqlite;
+        raise ESqliteError.CreateCode(0, Format(
+          '%s is not an SQLite library. Set %s to the SQLite library.',
+          [Candidate, SqliteLibraryEnvironmentVariable]));
+      end;
       if sqlite3_libversion_number() < MinimumSqliteVersionNumber then
       begin
         Tried := string(sqlite3_libversion());
@@ -286,6 +298,9 @@ begin
   if ResultCode <> SQLITE_OK then
     RaiseDatabaseError(FHandle, ResultCode, 'Cannot open ' + APath);
   sqlite3_extended_result_codes(FHandle, 1);
+  { Set before the first statement: reading the schema version or switching the
+    journal mode must also wait for another connection instead of failing. }
+  sqlite3_busy_timeout(FHandle, BusyTimeoutMs);
 end;
 
 destructor TSqliteDatabase.Destroy;

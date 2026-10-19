@@ -11,9 +11,10 @@ program MuninnCrashHelper;
 {$mode objfpc}{$H+}
 
 uses
-  {$IFDEF UNIX}cthreads, cwstring, BaseUnix,{$ENDIF}
-  {$IFDEF WINDOWS}Windows,{$ENDIF}
+  {$IFDEF UNIX}cthreads, cwstring,{$ENDIF}
   Muninn.Core.Utf8Default,
+  {$IFDEF UNIX}BaseUnix,{$ENDIF}
+  {$IFDEF WINDOWS}Windows,{$ENDIF}
   SysUtils, Muninn.Storage.Sqlite, Muninn.Storage.Schema;
 
 procedure KillSelf;

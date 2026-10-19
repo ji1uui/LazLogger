@@ -26,6 +26,8 @@ type
     procedure KeepsEveryOtherField;
     procedure KeepsNonCanonicalIntegersAsWritten;
     procedure LoadsInInsertOrder;
+    procedure KeepsEmptyStationCallsign;
+    procedure KeepsRepeatedFieldNames;
     procedure KeepsUserFieldDefinitions;
   end;
 
@@ -154,6 +156,42 @@ begin
   AssertEquals('001', Loaded.OtherFields.Value('STX'));
   AssertEquals('42', Loaded.OtherFields.Value('SRX'));
   AssertEquals('0339', Loaded.OtherFields.Value('MY_DXCC'));
+end;
+
+procedure TQsoRepositoryTests.KeepsEmptyStationCallsign;
+var
+  Qso, Loaded: TQsoRecord;
+begin
+  Qso := ParseQso('<CALL:5>W1ZZZ <QSO_DATE:8>20240512 <TIME_ON:4>1200 <MODE:2>CW ' +
+    '<STATION_CALLSIGN:0> <EOR>');
+  try
+    FRepository.Insert(Qso, 'test', 1000);
+  finally
+    Qso.Free;
+  end;
+  Loaded := LoadOnly;
+  AssertTrue('recorded as empty', Loaded.OtherFields.Has('STATION_CALLSIGN'));
+  AssertEquals('', Loaded.OtherFields.Value('STATION_CALLSIGN'));
+end;
+
+procedure TQsoRepositoryTests.KeepsRepeatedFieldNames;
+var
+  Qso, Loaded: TQsoRecord;
+begin
+  { The ADIF reader never repeats a name, but the API allows it. }
+  Qso := ParseQso('<CALL:5>W1ZZZ <QSO_DATE:8>20240512 <TIME_ON:4>1200 <MODE:2>CW <EOR>');
+  try
+    Qso.OtherFields.Add('NAME', 'first', 'S');
+    Qso.OtherFields.Add('NAME', 'second');
+    FRepository.Insert(Qso, 'test', 1000);
+  finally
+    Qso.Free;
+  end;
+  Loaded := LoadOnly;
+  AssertEquals(2, Loaded.OtherFields.Count);
+  AssertEquals('column value', 'second', Loaded.OtherFields[0].Value);
+  AssertEquals('kept in qso_field', 'first', Loaded.OtherFields[1].Value);
+  AssertEquals('S', Loaded.OtherFields[1].DataType);
 end;
 
 procedure TQsoRepositoryTests.LoadsInInsertOrder;
