@@ -14,7 +14,9 @@ uses
   Muninn.Core.Time.Tests,
   Muninn.Core.AdifModes.Tests,
   Muninn.Core.Adif.Tests,
-  Muninn.Core.AdifQso.Tests;
+  Muninn.Core.AdifQso.Tests,
+  Muninn.UI.Bandmap.Tests,
+  Muninn.UI.QsoEntry.Tests;
 
 var
   Runner: TTestRunner;

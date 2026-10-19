@@ -15,7 +15,8 @@ TEST_DIR="$BUILD_DIR/tests"
 UNIT_DIR="$TEST_DIR/units"
 mkdir -p "$UNIT_DIR"
 
-"$FPC" "${FPC_FLAGS[@]}" -Futests/unit \
+# src/ui holds the presenters, which do not use the LCL (ADR 0009).
+"$FPC" "${FPC_FLAGS[@]}" -Fusrc/ui -Futests/unit \
   -FU"$UNIT_DIR" -FE"$TEST_DIR" \
   tests/unit/muninn-unit-tests.lpr
 

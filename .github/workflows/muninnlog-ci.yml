@@ -130,3 +130,92 @@ jobs:
             echo "Unknown option must fail" >&2
             exit 1
           fi
+
+  # The UI prototype (T10): LCL with custom drawing, built with lazbuild and
+  # measured on each OS. See MuninnLog/docs/adr/0009-ui-technology.md
+  gui:
+    name: GUI prototype (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, macos-15, windows-2025]
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
+        working-directory: MuninnLog
+    env:
+      # Linux and macOS build Lazarus from the release source (ADR 0001
+      # installs FPC there without the LCL); Windows uses setup-lazarus.
+      LAZARUS_VERSION: "4.4"
+      LAZARUS_SHA256: 190edc7b7a7b18430502c964a45dfdf5418ff16bbcad5c04423b33a09d22cc06
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Free Pascal and GTK 2 (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes --no-install-recommends \
+            fpc libgtk2.0-dev xvfb xauth
+
+      - name: Install Free Pascal (macOS)
+        if: runner.os == 'macOS'
+        run: brew install fpc
+
+      - name: Install Lazarus and Free Pascal (Windows)
+        if: runner.os == 'Windows'
+        uses: gcarreno/setup-lazarus@v3
+        with:
+          lazarus-version: "4.4"
+
+      - name: Restore Lazarus (Linux, macOS)
+        if: runner.os != 'Windows'
+        id: lazarus-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/lazarus
+          key: lazarus-${{ env.LAZARUS_VERSION }}-${{ runner.os }}-${{ runner.arch }}-${{ matrix.os }}-v1
+
+      - name: Build Lazarus (Linux, macOS)
+        if: runner.os != 'Windows' && steps.lazarus-cache.outputs.cache-hit != 'true'
+        run: |
+          tarball="$RUNNER_TEMP/lazarus.tar.gz"
+          curl --fail --silent --show-error --location --retry 3 \
+            --output "$tarball" \
+            "https://downloads.sourceforge.net/project/lazarus/Lazarus%20Zip%20_%20GZip/Lazarus%20$LAZARUS_VERSION/lazarus-$LAZARUS_VERSION-0.tar.gz"
+          echo "$LAZARUS_SHA256 *$tarball" | shasum -a 256 --check
+          tar -xzf "$tarball" -C "$HOME"
+          make -C "$HOME/lazarus" lazbuild
+
+      - name: Point to lazbuild (Linux, macOS)
+        if: runner.os != 'Windows'
+        run: |
+          echo "LAZBUILD=$HOME/lazarus/lazbuild" >> "$GITHUB_ENV"
+          echo "LAZARUS_DIR=$HOME/lazarus" >> "$GITHUB_ENV"
+
+      - name: Build the prototype
+        run: scripts/build-gui.sh
+
+      - name: Measure response times
+        run: |
+          if [ "$RUNNER_OS" = Linux ]; then
+            xvfb-run -a -s "-screen 0 1280x800x24" \
+              build/muninn-gui --measure build/gui-measure.txt
+          else
+            build/muninn-gui --measure build/gui-measure.txt
+          fi
+          cat build/gui-measure.txt
+          {
+            echo '```'
+            cat build/gui-measure.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload measurements
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gui-measure-${{ matrix.os }}
+          path: MuninnLog/build/gui-measure.txt
+          if-no-files-found: ignore
