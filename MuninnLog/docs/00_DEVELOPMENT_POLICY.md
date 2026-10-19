@@ -25,7 +25,7 @@ JA コンテスター全般を主な利用者とし、海外のコンテスト�
 | D9 | 信号処理は外部エンジン HuginnEngine に任せ、MuninnLog は `THuginnInterface` で連携する | MuninnLog |
 | D10 | 保存方式は SQLite とする | MuninnLog（旧未決事項 Q3 を解消） |
 | D11 | プライバシー・バイ・デザイン。外部への送信や位置情報の利用はすべて事前の同意（オプトイン）を前提にする | MuninnLog |
-| D12 | 無線機制御には HamlibComponent（Lazarus パッケージ、Rev.6.0 時点）を同一プロセスで使う。中核は無線機ポートを介して依存し、コンポーネントの型に直接依存しない | HamlibComponent README（旧未決事項 Q4 を解消） |
+| D12 | 無線機制御には HamlibComponent（Rev.6.0 時点。現在は Rev.6.1 を `hamlib_component/` に収録）を同一プロセスで使う。中核は無線機ポートを介して依存し、コンポーネントの型に直接依存しない | HamlibComponent README（旧未決事項 Q4 を解消） |
 | D13 | ツールチェーンは FPC 3.2.2 と Lazarus 4.4 に固定する。CI での導入方法は Linux が apt、macOS が Homebrew、Windows が setup-lazarus | [ADR 0001](adr/0001-toolchain.md) |
 | D14 | 単体テストには FPCUnit（FPC 標準の `fcl-fpcunit`）を使い、標準のコンソールランナーで実行する | [ADR 0002](adr/0002-unit-test-framework.md) |
 | D15 | SQLite は `sqlite3dyn` で C API を直接呼ぶ。WAL・`synchronous=FULL` で使い、スキーマの版は `user_version` で管理し、前進のみのマイグレーションを 1 版ずつトランザクションで適用する。新しい版の DB は開かない | [ADR 0003](adr/0003-storage-sqlite.md) |
@@ -33,6 +33,7 @@ JA コンテスター全般を主な利用者とし、海外のコンテスト�
 | D17 | 日本の市郡区は ADIF の `STATE` / `CNTY` にコードのまま入れる。JCC・JCG・区の区分と有効期間は参照データで判定し、桁数では決めない | [ADR 0005](adr/0005-japanese-subdivision-reference-data.md) |
 | D18 | `muninn-cli` の終了コードは 0 成功、1 ファイル、2 未対応形式、3 署名（予約）、4 引数、5 データの誤り、6 ログブックの誤りとする。ADIF はログブックに値・データ型・順序を失わずに保存する | [ADR 0006](adr/0006-cli-and-logbook-adif.md) |
 | D19 | 既存の `Lazarus/` の試作は、クラス構成やロジックの参考にとどめる。MuninnLog から使わず、修復も削除もしない（凍結） | [ADR 0007](adr/0007-lazarus-prototype.md)（旧未決事項 Q9 を解消） |
+| D20 | 中核は無線機ポート `IRadioPort` に依存し、`THamlibRadio` が HamlibComponent（`hamlib_component/src` を直接参照）で実装する。データ用のモードは PKT-USB で設定する。CI は 3 OS で Hamlib のダミー機種を試験する | [ADR 0008](adr/0008-radio-port-hamlib.md)（旧未決事項 Q10 を解消） |
 
 ## 3. 開発原則
 
@@ -139,9 +140,8 @@ M1 と M2 の順序は未決事項 Q1 で決める。
 |---|---|---|
 | Q1 | 最初に獲得する利用者は日常運用・FT8 ユーザーか、コンテスターか | M1 と M2 の順序 |
 | Q2 | 画面の技術は LCL＋独自描画か、WebView か | デザインの自由度、入力の反応速度 |
-| Q10 | HamlibComponent について確認したい点（PTT 送信時間の監視、CW 送信、ライブラリ読み込み先の API 指定、GUI なしでのコールバック、複数無線機）。詳細は [04](04_ARCHITECTURE.md) 4.3 節 | 無線機アダプターの実装範囲、配布方法 |
 | Q6 | HuginnEngine の提供形態（別プロセス / ライブラリ）と、開発体制・進捗 | `THuginnInterface` の設計、M3 の時期 |
 | Q7 | Yata Logic のスクリプト実行系（Pascal Script 系ライブラリの選定）と、署名鍵の管理者 | Omoikane の実装、配布の信頼モデル |
 | Q8 | Linux を正式サポートに含めるか | 配布とサポートの範囲 |
 
-旧 Q3（保存方式）は D10、旧 Q4（HamlibComponentの提供形態）は D12、旧 Q5（実装の置き場所）は `MuninnLog/` ディレクトリ、旧 Q9（`Lazarus/` の扱い）は D19 で解消した。
+旧 Q3（保存方式）は D10、旧 Q4（HamlibComponentの提供形態）は D12、旧 Q5（実装の置き場所）は `MuninnLog/` ディレクトリ、旧 Q9（`Lazarus/` の扱い）は D19、旧 Q10（HamlibComponent について確認したい点）は D20 で解消した。

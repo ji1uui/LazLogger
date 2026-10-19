@@ -26,7 +26,11 @@ scripts/build.sh
   -FU"$UNIT_DIR" -FE"$TEST_DIR" \
   tests/integration/muninn-crash-helper.lpr
 
-"$FPC" "${FPC_FLAGS[@]}" -Fusrc/storage -Futests/integration \
+# HamlibComponent (../hamlib_component) and its fake loader for the radio
+# adapter tests (ADR 0008).
+"$FPC" "${FPC_FLAGS[@]}" -Fusrc/storage -Fusrc/integrations \
+  -Fu"$HAMLIB_COMPONENT_DIR/src" -Fu"$HAMLIB_COMPONENT_DIR/test" \
+  -Futests/integration \
   -FU"$UNIT_DIR" -FE"$TEST_DIR" \
   tests/integration/muninn-integration-tests.lpr
 
