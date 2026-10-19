@@ -32,6 +32,7 @@ type
     procedure EnforcesSchemaConstraints;
     procedure StoresUtf8Text;
     procedure MigratesVersion1KeepingRows;
+    procedure GivesUpOnALockedLogbook;
     procedure CrashDuringMigrationLeavesVersionZero;
     procedure CrashDuringWriteKeepsCommittedRows;
   end;
@@ -306,6 +307,36 @@ begin
     end;
   finally
     Database.Free;
+  end;
+end;
+
+procedure TSchemaTests.GivesUpOnALockedLogbook;
+var
+  Holder: TSqliteDatabase;
+  Started: QWord;
+  Elapsed: QWord;
+begin
+  { Another connection keeps the write lock on a logbook that still needs its
+    migrations: opening fails with SQLITE_BUSY after about BusyTimeoutMs,
+    not after a full busy timeout per retry. }
+  Holder := TSqliteDatabase.Open(FPath);
+  try
+    Holder.BeginTransaction;
+    Holder.Execute('CREATE TABLE lock_holder (x INTEGER)');
+    Started := GetTickCount64;
+    try
+      OpenLogDatabase(FPath).Free;
+      Fail('a locked logbook cannot be migrated');
+    except
+      on E: ESqliteError do
+        AssertEquals('SQLITE_BUSY', 5, E.ResultCode and $FF);
+    end;
+    Elapsed := GetTickCount64 - Started;
+    AssertTrue(Format('gave up after %d ms', [Elapsed]),
+      Elapsed < 3 * BusyTimeoutMs);
+    Holder.Rollback;
+  finally
+    Holder.Free;
   end;
 end;
 

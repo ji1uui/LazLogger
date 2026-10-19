@@ -583,12 +583,16 @@ begin
   { A UTF-8 byte order mark is not text of the header. }
   if Copy(FText, 1, 3) = #$EF#$BB#$BF then
     FPosition := 4;
-  { IV.A.3 decides on the first character; blank lines before the first tag of
-    a file without a header are skipped so its QSOs are not read as header. }
+  { IV.A.3 decides on the first character. When only blanks come before the
+    first tag, the file is read as headerless unless it has an <EOH> tag, so
+    neither its QSOs nor a whitespace-only header are lost. }
   NextTag := FPosition;
   while (NextTag <= Length(FText)) and (FText[NextTag] in [' ', #9, #10, #13]) do
     Inc(NextTag);
-  FInHeader := (NextTag <= Length(FText)) and (FText[NextTag] <> '<');
+  if (NextTag <= Length(FText)) and (FText[NextTag] <> '<') then
+    FInHeader := True
+  else
+    FInHeader := (NextTag > FPosition) and (Pos('<EOH>', UpperCase(FText)) > 0);
   FDocument.HasHeader := FInHeader;
   if FInHeader then
   begin

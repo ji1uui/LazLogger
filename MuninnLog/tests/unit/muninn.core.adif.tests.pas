@@ -29,6 +29,7 @@ type
     procedure KeepsByteLengthsBeforeIgnoredText;
     procedure DetectsCharacterLengthsOfMixedText;
     procedure SkipsBlankLinesBeforeFirstTag;
+    procedure ReadsWhitespaceOnlyHeader;
     procedure RejectsNonDecimalLengths;
     procedure WritesReadableHeaderText;
     procedure ReportsHugeLengths;
@@ -165,6 +166,16 @@ begin
   AssertFalse('no header', FDocument.HasHeader);
   AssertEquals(1, FDocument.RecordCount);
   AssertEquals('', FIssues.ToText);
+end;
+
+procedure TAdifTests.ReadsWhitespaceOnlyHeader;
+begin
+  Read(#10'<USERDEF1:3:S>FOO <ADIF_VER:5>3.1.8 <EOH>'#10'<CALL:4>W1AW <FOO:1>x <EOR>');
+  AssertEquals('', FIssues.ToText);
+  AssertTrue(FDocument.HasHeader);
+  AssertEquals('FOO', FDocument.Header.Value('USERDEF1'));
+  AssertEquals(1, FDocument.RecordCount);
+  AssertFalse('header fields not in the record', FDocument[0].Has('USERDEF1'));
 end;
 
 procedure TAdifTests.RejectsNonDecimalLengths;

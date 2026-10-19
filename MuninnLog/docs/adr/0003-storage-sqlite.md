@@ -54,7 +54,7 @@ D10 で保存方式を SQLite と決めた。T5 では、次の 4 点を決め�
    - `synchronous = FULL`
    - `foreign_keys = ON`
    - `busy_timeout = 5000`：`TSqliteDatabase.Open` が接続を開いた直後に設定する。版の確認や WAL への切り替えなど、最初の文も他の接続のロックを待つようにするため。
-   - 新しいログブックを WAL に切り替えるとき、2 つの接続のロックの昇格がぶつかると、SQLite は待たずに SQLITE_BUSY を返す。`OpenLogDatabase` は、この場合に最大 5 秒まで開き直す。
+   - 新しいログブックを WAL に切り替えるとき、2 つの接続のロックの昇格がぶつかると、SQLite は待たずに SQLITE_BUSY を返す。`OpenLogDatabase` は、この場合に開き直す。最初の試行からの経過時間（SQLite の待機を含む）が 5 秒を越えたら諦める。
    - WAL に切り替えられない場合は開かない。
 4. **スキーマの版**
    - `PRAGMA user_version` で管理する。

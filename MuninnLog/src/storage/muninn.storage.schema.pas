@@ -273,22 +273,25 @@ function OpenLogDatabase(const APath: string): TSqliteDatabase;
 const
   RetryDelayMs = 50;
 var
-  Waited: Integer;
+  Started: QWord;
 begin
   { While a new logbook switches to WAL, SQLite can report SQLITE_BUSY at once
     instead of waiting (lock upgrade deadlock between two connections); the
-    busy timeout does not apply then, so open again for up to BusyTimeoutMs. }
-  Waited := 0;
+    busy timeout does not apply then, so open again until BusyTimeoutMs have
+    passed since the first attempt. }
+  { The deadline counts the attempts too: each one may already have waited in
+    SQLite's busy handler. }
+  Started := GetTickCount64;
   repeat
     try
       Exit(OpenLogDatabaseOnce(APath));
     except
       on E: ESqliteError do
-        if ((E.ResultCode and $FF) <> SQLITE_BUSY_CODE) or (Waited >= BusyTimeoutMs) then
+        if ((E.ResultCode and $FF) <> SQLITE_BUSY_CODE) or
+          (GetTickCount64 - Started >= BusyTimeoutMs) then
           raise;
     end;
     Sleep(RetryDelayMs);
-    Inc(Waited, RetryDelayMs);
   until False;
 end;
 
