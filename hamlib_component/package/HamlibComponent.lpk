@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <Package Version="5">
+    <PathDelim Value="\"/>
+    <Name Value="HamlibComponent"/>
+    <Type Value="RunAndDesignTime"/>
+    <Author Value="Thor / Vela Project"/>
+    <CompilerOptions>
+      <Version Value="11"/>
+      <PathDelim Value="\"/>
+      <SearchPaths>
+        <OtherUnitFiles Value="..\src"/>
+        <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
+      </SearchPaths>
+      <Parsing>
+        <SyntaxOptions>
+          <SyntaxMode Value="ObjFPC"/>
+          <CStyleOperator Value="False"/>
+          <AllowLabel Value="False"/>
+          <CPPInline Value="False"/>
+        </SyntaxOptions>
+      </Parsing>
+      <CodeGeneration>
+        <Checks>
+          <IOChecks Value="True"/>
+          <RangeChecks Value="True"/>
+          <OverflowChecks Value="True"/>
+          <StackChecks Value="True"/>
+        </Checks>
+      </CodeGeneration>
+    </CompilerOptions>
+    <Description Value="Hamlib wrapper component for Lazarus (Rev.6.1).
+Cross-platform amateur radio rig control via dynamic Hamlib library loading.
+
+Rev.6.0 adds the surface that real Hamlib applications actually use, as
+surveyed in COVERAGE_MATRIX.md: split operation, VFO selection and VFO
+operations, levels (the S-meter and RF power) with the float/integer
+distinction made explicit, on/off functions, capability query, and
+application-supplied conf tokens applied before Open.
+
+Features: thread-isolated worker, ICancellationToken, hardware timeout
+policies, self-defending Service destructor, Pull/Push state model,
+domain types for modes, errors, levels and VFOs rather than raw Hamlib
+bitmasks and integers.
+
+Lazarus用Hamlibラッパーコンポーネント (Rev.6.1)。
+動的ライブラリロードによるクロスプラットフォームのアマチュア無線機制御。
+
+Rev.6.0 では、実際の Hamlib アプリケーションが使う機能面を追加しました
+(調査結果は COVERAGE_MATRIX.md)。スプリット運用、VFO 選択と VFO 操作、
+レベル (S メータと RF 出力) における float/整数の明示的な区別、
+オン・オフ機能、能力問い合わせ、Open 前に適用される conf トークン。
+
+特徴: スレッド分離Worker、ICancellationToken、ハードウェアタイムアウト
+ポリシー、自己防衛デストラクタ、Pull/Push状態モデル、生の Hamlib
+ビットマスクや整数ではなくモード・エラー・レベル・VFO のドメイン型。"/>
+    <License Value="MIT"/>
+    <Version Major="6" Minor="1"/>
+    <Files Count="25">
+      <Item1>
+        <Filename Value="..\src\HamlibInterfaces.pas"/>
+        <UnitName Value="HamlibInterfaces"/>
+      </Item1>
+      <Item2>
+        <Filename Value="..\src\HamlibErrors.pas"/>
+        <UnitName Value="HamlibErrors"/>
+      </Item2>
+      <Item3>
+        <Filename Value="..\src\HamlibTypes.pas"/>
+        <UnitName Value="HamlibTypes"/>
+      </Item3>
+      <Item4>
+        <Filename Value="..\src\HamlibVfoCodec.pas"/>
+        <UnitName Value="HamlibVfoCodec"/>
+      </Item4>
+      <Item5>
+        <Filename Value="..\src\HamlibModeCodec.pas"/>
+        <UnitName Value="HamlibModeCodec"/>
+      </Item5>
+      <Item6>
+        <Filename Value="..\src\HamlibTimeoutPolicy.pas"/>
+        <UnitName Value="HamlibTimeoutPolicy"/>
+      </Item6>
+      <Item7>
+        <Filename Value="..\src\HamlibLoader.pas"/>
+        <UnitName Value="HamlibLoader"/>
+      </Item7>
+      <Item8>
+        <Filename Value="..\src\HamlibCancellation.pas"/>
+        <UnitName Value="HamlibCancellation"/>
+      </Item8>
+      <Item9>
+        <Filename Value="..\src\HamlibCommandBase.pas"/>
+        <UnitName Value="HamlibCommandBase"/>
+      </Item9>
+      <Item10>
+        <Filename Value="..\src\HamlibFreqCommands.pas"/>
+        <UnitName Value="HamlibFreqCommands"/>
+      </Item10>
+      <Item11>
+        <Filename Value="..\src\HamlibModeCommands.pas"/>
+        <UnitName Value="HamlibModeCommands"/>
+      </Item11>
+      <Item12>
+        <Filename Value="..\src\HamlibPttCommands.pas"/>
+        <UnitName Value="HamlibPttCommands"/>
+      </Item12>
+      <Item13>
+        <Filename Value="..\src\HamlibCommandQueue.pas"/>
+        <UnitName Value="HamlibCommandQueue"/>
+      </Item13>
+      <Item14>
+        <Filename Value="..\src\HamlibWatchdog.pas"/>
+        <UnitName Value="HamlibWatchdog"/>
+      </Item14>
+      <Item15>
+        <Filename Value="..\src\HamlibWorker.pas"/>
+        <UnitName Value="HamlibWorker"/>
+      </Item15>
+      <Item16>
+        <Filename Value="..\src\HamlibPoller.pas"/>
+        <UnitName Value="HamlibPoller"/>
+      </Item16>
+      <Item17>
+        <Filename Value="..\src\HamlibStateHolder.pas"/>
+        <UnitName Value="HamlibStateHolder"/>
+      </Item17>
+      <Item18>
+        <Filename Value="..\src\HamlibCatalog.pas"/>
+        <UnitName Value="HamlibCatalog"/>
+      </Item18>
+      <Item19>
+        <Filename Value="..\src\HamlibDispatch.pas"/>
+        <UnitName Value="HamlibDispatch"/>
+      </Item19>
+      <Item20>
+        <Filename Value="..\src\HamlibService.pas"/>
+        <UnitName Value="HamlibService"/>
+      </Item20>
+      <Item21>
+        <Filename Value="..\src\HamlibFactory.pas"/>
+        <UnitName Value="HamlibFactory"/>
+      </Item21>
+      <Item22>
+        <Filename Value="..\src\HamlibComponent.pas"/>
+        <UnitName Value="HamlibComponent"/>
+      </Item22>
+      <Item23>
+        <Filename Value="..\src\HamlibRegister.pas"/>
+        <HasRegisterProc Value="True"/>
+        <UnitName Value="HamlibRegister"/>
+      </Item23>
+      <Item24>
+        <Filename Value="..\src\HamlibLevelCodec.pas"/>
+        <UnitName Value="HamlibLevelCodec"/>
+      </Item24>
+      <Item25>
+        <Filename Value="..\src\HamlibRigCommands.pas"/>
+        <UnitName Value="HamlibRigCommands"/>
+      </Item25>
+    </Files>
+    <RequiredPkgs Count="1">
+      <Item1>
+        <PackageName Value="FCL"/>
+      </Item1>
+    </RequiredPkgs>
+    <UsageOptions>
+      <UnitPath Value="$(PkgOutDir)"/>
+    </UsageOptions>
+    <PublishOptions>
+      <Version Value="2"/>
+      <UseFileFilters Value="True"/>
+    </PublishOptions>
+  </Package>
+</CONFIG>
