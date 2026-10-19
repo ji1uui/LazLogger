@@ -58,5 +58,5 @@ MuninnLog/
 
 ## 既存ディレクトリとの関係
 
-- `Lazarus/`：zLog Lazarus Edition の試作。MuninnLog はここを拡張せず、再利用できる設計・コードだけを選んで持ち込みます（[01_CURRENT_STATE_REVIEW.md](docs/01_CURRENT_STATE_REVIEW.md) 第 7 節）。
+- `Lazarus/`：zLog Lazarus Edition の試作。凍結し、クラス構成やロジックの参考にとどめます。MuninnLog から使わず、コードもそのまま写しません（[ADR 0007](docs/adr/0007-lazarus-prototype.md)）。
 - `zlog/` ほか：Delphi 版 zLog。仕様の参考として参照するだけで、変更しません。

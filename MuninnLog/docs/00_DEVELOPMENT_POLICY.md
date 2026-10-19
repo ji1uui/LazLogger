@@ -32,6 +32,7 @@ JA コンテスター全般を主な利用者とし、海外のコンテスト�
 | D16 | ADIF は ADI 形式を UTF-8 で読み書きし、取り込みでは値を失わない（解釈できない値も元の名前で残す）。書き出しは ADIF 3.1.8 に正規化し、データ長はバイト数で書く | [ADR 0004](adr/0004-adif-import-export.md) |
 | D17 | 日本の市郡区は ADIF の `STATE` / `CNTY` にコードのまま入れる。JCC・JCG・区の区分と有効期間は参照データで判定し、桁数では決めない | [ADR 0005](adr/0005-japanese-subdivision-reference-data.md) |
 | D18 | `muninn-cli` の終了コードは 0 成功、1 ファイル、2 未対応形式、3 署名（予約）、4 引数、5 データの誤り、6 ログブックの誤りとする。ADIF はログブックに値・データ型・順序を失わずに保存する | [ADR 0006](adr/0006-cli-and-logbook-adif.md) |
+| D19 | 既存の `Lazarus/` の試作は、クラス構成やロジックの参考にとどめる。MuninnLog から使わず、修復も削除もしない（凍結） | [ADR 0007](adr/0007-lazarus-prototype.md)（旧未決事項 Q9 を解消） |
 
 ## 3. 開発原則
 
@@ -142,6 +143,5 @@ M1 と M2 の順序は未決事項 Q1 で決める。
 | Q6 | HuginnEngine の提供形態（別プロセス / ライブラリ）と、開発体制・進捗 | `THuginnInterface` の設計、M3 の時期 |
 | Q7 | Yata Logic のスクリプト実行系（Pascal Script 系ライブラリの選定）と、署名鍵の管理者 | Omoikane の実装、配布の信頼モデル |
 | Q8 | Linux を正式サポートに含めるか | 配布とサポートの範囲 |
-| Q9 | 既存の `Lazarus/` を今後どう扱うか（凍結、削除、master の修復のみ） | リポジトリの整理 |
 
-旧 Q3（保存方式）は D10、旧 Q4（HamlibComponentの提供形態）は D12、旧 Q5（実装の置き場所）は `MuninnLog/` ディレクトリで解消した。
+旧 Q3（保存方式）は D10、旧 Q4（HamlibComponentの提供形態）は D12、旧 Q5（実装の置き場所）は `MuninnLog/` ディレクトリ、旧 Q9（`Lazarus/` の扱い）は D19 で解消した。
