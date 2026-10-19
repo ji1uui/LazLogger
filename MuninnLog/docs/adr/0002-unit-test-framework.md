@@ -1,6 +1,6 @@
 # 0002: 単体テストの仕組み
 
-- 状態：提案（この ADR を含む PR のマージで決定）
+- 状態：決定（2026-10-18 にマージ）
 - 日付：2026-10-18
 - 関連：M0 タスク T3（[05_DEVELOPMENT_PROCESS.md](../05_DEVELOPMENT_PROCESS.md) 第 13 節）、[00_DEVELOPMENT_POLICY.md](../00_DEVELOPMENT_POLICY.md) 決定事項 D14
 
@@ -23,12 +23,12 @@
 - 実行には標準のコンソールランナー（`consoletestrunner`）を使う。
   - 1 件でも失敗またはエラーがあれば、終了コード 1 で終わる（FPC 3.2.2 で確認済み）。
   - `--format=xml` で、CI の成果物として結果を残す。
-- テストは `tests/unit/` に置き、`scripts/test.sh` でビルド・実行する。
+- テストは `tests/unit/` に置き、`scripts/test.sh` でビルド・実行する。SQLite などを使う結合テストは `tests/integration/` の別のランナーで実行する（ADR 0003 で追加）。
 - ビルドとテストで同じコンパイラ設定を使うため、設定を `scripts/common.sh` に集約する。
 
 ## 結果
 
-- テストを追加するときは、テストユニットを作り、ランナー（`tests/unit/muninn-unit-tests.lpr`）の `uses` に加える。
+- テストを追加するときは、テストユニットを作り、ランナー（`tests/unit/muninn-unit-tests.lpr`、結合テストは `tests/integration/muninn-integration-tests.lpr`）の `uses` に加える。
 - 最初のテストとして、実行環境の検査を入れた。Unix で `cwstring` が欠けていると Unicode の大文字変換が失敗することを検出する（`Lazarus/` で起きた不具合）。
 - **見直す条件：**
   - テストの数が増えて実行時間が問題になったとき

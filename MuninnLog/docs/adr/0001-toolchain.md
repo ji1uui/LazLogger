@@ -1,6 +1,6 @@
 # 0001: ツールチェーンの版と CI での導入方法
 
-- 状態：提案（この ADR を含む PR のマージで決定）
+- 状態：決定（2026-10-18 にマージ）
 - 日付：2026-10-18
 - 関連：M0 タスク T2（[05_DEVELOPMENT_PROCESS.md](../05_DEVELOPMENT_PROCESS.md) 第 13 節）、[00_DEVELOPMENT_POLICY.md](../00_DEVELOPMENT_POLICY.md) 決定事項 D13
 

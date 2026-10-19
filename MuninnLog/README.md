@@ -3,7 +3,7 @@
 Windows / macOS 向けの、新しいアマチュア無線ロギングアプリです。Lazarus / Free Pascal で開発します。
 日常の交信、国内外のコンテスト、FT8・RTTY・CW などのデジタル / 電信運用、POTA / SOTA を、一つのログブックで扱います。
 
-現在は M0（基盤）の段階です。ディレクトリの骨組みはありますが、まだコードはありません。
+現在は M0（基盤）の段階です。中核ライブラリ（値オブジェクト、ADIF の読み書き）、SQLite のログブック、`muninn-cli`（ADIF の取り込み・書き出し）と、3 OS の CI があります。画面（GUI）はまだありません。
 
 ## 名前と構成要素
 
@@ -28,8 +28,9 @@ Huginn（思考）と Muninn（記憶）は、北欧神話でオーディンに�
 | [docs/03_DATA_MODEL.md](docs/03_DATA_MODEL.md) | データモデル（Person / Station / Location / Station Facility / Operation / QSO ほか） |
 | [docs/02_PRODUCT_STRATEGY.md](docs/02_PRODUCT_STRATEGY.md) | 製品方針、他アプリから取り入れる点、デザイン原則 |
 | [docs/01_CURRENT_STATE_REVIEW.md](docs/01_CURRENT_STATE_REVIEW.md) | 既存の `Lazarus/`（zLog Lazarus Edition 試作）のレビュー |
+| [docs/adr/](docs/adr/) | 設計判断の記録（ツールチェーン、テスト、SQLite、ADIF、市郡区コード、CLI） |
 | [docs/ideas/](docs/ideas/) | 元になったアイデア文書（MuninnLog 構想書 v4.0、Omoikane 実装仕様書）。原文のまま保存 |
-| [docs/references/](docs/references/) | 外部資料（HamlibComponent README Rev.6.0、ADIF 3.1.8 の抜粋、ARRL DXCC リストの抜粋、JARL の区・JCG・JCC リスト）。原文のまま保存 |
+| [docs/references/](docs/references/) | 外部資料（HamlibComponent README Rev.6.0、ADIF 3.1.8、ARRL DXCC リスト、JARL の区・JCG・JCC リスト、市郡区コードの整理）。原文のまま保存 |
 
 ## ディレクトリ構成
 
@@ -49,6 +50,7 @@ MuninnLog/
     gui/                GUI 版の起点（.lpi / .lpr）
     cli/                CLI 版の起点（GUI なしのバッチ処理）
   plugins/              Yata Logic の同梱パッケージ
+  scripts/              ビルドとテストのスクリプト（build.sh、test.sh）
   tests/                単体・結合・ゴールデンテスト
   AGENTS.md             AI エージェントと開発者が守る規則
   CLAUDE.md             Claude Code 向け（AGENTS.md を読み込む）

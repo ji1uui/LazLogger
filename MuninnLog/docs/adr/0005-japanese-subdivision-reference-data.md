@@ -1,6 +1,6 @@
 # 0005: 日本の市郡区コード（JCC / JCG / 区）の参照データ
 
-- 状態：提案（この ADR を含む PR のマージで決定。実装は M1）
+- 状態：決定（2026-10-18 にマージ。実装は M1）
 - 日付：2026-10-18
 - 関連：[00_DEVELOPMENT_POLICY.md](../00_DEVELOPMENT_POLICY.md) 決定事項 D17、[ADR 0004](0004-adif-import-export.md)、[参考資料](../references/README.md)
 

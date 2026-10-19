@@ -1,6 +1,6 @@
 # 0006: muninn-cli のコマンド・終了コードと、ログブックへの ADIF の保存
 
-- 状態：提案（この ADR を含む PR のマージで決定）
+- 状態：決定（2026-10-18 にマージ）
 - 日付：2026-10-18
 - 関連：M0 タスク T7（[05_DEVELOPMENT_PROCESS.md](../05_DEVELOPMENT_PROCESS.md) 第 13 節）、[00_DEVELOPMENT_POLICY.md](../00_DEVELOPMENT_POLICY.md) 決定事項 D18、[ADR 0003](0003-storage-sqlite.md)、[ADR 0004](0004-adif-import-export.md)
 
@@ -23,8 +23,8 @@ M0 の完了条件は、ADIF を読み込んで SQLite に保存し、ADIF に�
 
 | コマンド | 内容 |
 |---|---|
-| `muninn-cli import --db <ログブック> <ファイル.adi>` | ADIF を取り込む。ログブックが無ければ作る。結果の要約を標準出力に、警告とエラーを標準エラー出力に書く |
-| `muninn-cli export --db <ログブック> [--format adif] [--output <ファイル>]` | ログブックの全 QSO を ADIF で書き出す。`--output` が無ければ標準出力に書く。ログブック自身（とその `-wal`・`-shm`・`-journal`）を `--output` に指定すると、引数の誤りとして拒否する。標準出力にはバイト列をそのまま書く（コンソールの文字コード変換をしない） |
+| `muninn-cli import --db <ログブック> <ファイル.adi>` | ADIF を取り込む。ログブックが無ければ作る。`--format` と `--output` は指定できない（終了コード 4）。結果の要約を標準出力に、警告とエラーを標準エラー出力に書く |
+| `muninn-cli export --db <ログブック> [--format adif] [--output <ファイル>]` | ログブックの全 QSO を ADIF で書き出す。`--output` が無ければ標準出力に書く。ログブック自身（とその `-wal`・`-shm`・`-journal`）を `--output` に指定すると、引数の誤りとして拒否する。パスの文字列だけでなく、ファイルの同一性（シンボリックリンク、ハードリンク、大文字と小文字を区別しないファイルシステム）でも判定する。標準出力にはバイト列をそのまま書く（コンソールの文字コード変換をしない） |
 | `muninn-cli --version` / `--help` | 版を表示する／使い方を表示する |
 
 ### 終了コード
@@ -54,7 +54,7 @@ M0 の完了条件は、ADIF を読み込んで SQLite に保存し、ADIF に�
    - INTEGER の列で、値が正規の整数表記ではない（`001`、`0339`、`+5` など）。書かれたとおりの文字列を残すため。
 3. それ以外のフィールドは、`qso_field` に保存する。保存するもの：名前、値、データ型の指示子、記録された順序（`position`）
 4. ADIF ヘッダーの `USERDEFn`（ユーザー定義フィールドの定義）は、`adif_user_field` に保存する。書き出しのとき、ヘッダーに `USERDEF1`〜 として書く。同じ名前で別の定義が来たら、先の定義を残して警告を出す。
-5. `station_callsign` は NOT NULL の列とし、記録が無ければ空文字列を入れる。空文字列は書き出さない。
+5. `station_callsign` は NOT NULL の列とし、記録が無ければ空文字列を入れる。列の空文字列は「記録なし」として書き出さない。空の値が記録された `STATION_CALLSIGN`（`<STATION_CALLSIGN:0>`）は、列ではなく `qso_field` に保存し、そのまま書き出す（開発者の判断、2026-10-19）。
 
 ### 往復の確認
 
