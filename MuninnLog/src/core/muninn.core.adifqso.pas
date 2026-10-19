@@ -61,6 +61,7 @@ const
   FrequencyScale = 6;  { MHz -> Hz }
   PowerScale = 3;      { W -> mW }
   MsPerDay = Int64(86400000);
+  MsPerMinute = 60000;
   { Fields that TQsoRecord holds as typed values. }
   TypedFields: array[0..11] of string = ('CALL', 'QSO_DATE', 'TIME_ON',
     'QSO_DATE_OFF', 'TIME_OFF', 'BAND', 'BAND_RX', 'FREQ', 'FREQ_RX', 'MODE',
@@ -274,6 +275,8 @@ end;
 function TQsoImporter.ReadTimes: Boolean;
 var
   OffDate: string;
+  HasOffDate: Boolean;
+  StartMs: Int64;
 begin
   Result := TryParseAdifDateTime(FRecord.Value('QSO_DATE'),
     FRecord.Value('TIME_ON'), FQso.TimeOn);
@@ -293,8 +296,9 @@ begin
     end;
     Exit;
   end;
-  OffDate := FRecord.Value('QSO_DATE_OFF');
-  if OffDate = '' then
+  OffDate := Trim(FRecord.Value('QSO_DATE_OFF'));
+  HasOffDate := OffDate <> '';
+  if not HasOffDate then
     OffDate := FRecord.Value('QSO_DATE');
   if not TryParseAdifDateTime(OffDate, FRecord.Value('TIME_OFF'), FQso.TimeOff) then
   begin
@@ -303,9 +307,25 @@ begin
     KeepRaw('TIME_OFF');
     Exit;
   end;
-  { Without QSO_DATE_OFF, an end time before the start time is on the next day. }
-  if not FRecord.Has('QSO_DATE_OFF') and (FQso.TimeOff.UnixMs < FQso.TimeOn.UnixMs) then
-    FQso.TimeOff := TUtcInstant.FromUnixMs(FQso.TimeOff.UnixMs + MsPerDay);
+  { Without QSO_DATE_OFF, an end time before the start time is on the next day.
+    Compare at the precision of TIME_OFF: 1200 is not before 120030. }
+  if not HasOffDate then
+  begin
+    StartMs := FQso.TimeOn.UnixMs;
+    if Length(FRecord.Value('TIME_OFF')) = 4 then
+      StartMs := StartMs - StartMs mod MsPerMinute;
+    if FQso.TimeOff.UnixMs < StartMs then
+    begin
+      FQso.TimeOff := TUtcInstant.FromUnixMs(FQso.TimeOff.UnixMs + MsPerDay);
+      if FQso.TimeOff.Components.Year > MaximumYear then
+      begin
+        Warn('TIME_OFF', 'the next day is after 9999-12-31; kept as is');
+        KeepRaw('QSO_DATE_OFF');
+        KeepRaw('TIME_OFF');
+        Exit;
+      end;
+    end;
+  end;
   FQso.HasTimeOff := True;
 end;
 

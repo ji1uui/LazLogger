@@ -29,7 +29,8 @@ type
 
 { The migrations of this build, versions 1..CurrentSchemaVersion in order. }
 function SchemaMigrations: TMigrationArray;
-{ WAL journal, synchronous=FULL, foreign keys on, 5 s busy timeout. }
+{ WAL journal, synchronous=FULL, foreign keys on. (TSqliteDatabase.Open sets
+  the busy timeout.) }
 procedure ConfigureConnection(const ADatabase: TSqliteDatabase);
 function SchemaVersion(const ADatabase: TSqliteDatabase): Integer;
 { Applies the migrations newer than the database, in order. Returns how many
@@ -45,6 +46,7 @@ function OpenLogDatabase(const APath: string): TSqliteDatabase;
 implementation
 
 const
+  SQLITE_BUSY_CODE = 5;
   SchemaV1 =
     'CREATE TABLE station (' +
     ' id TEXT PRIMARY KEY NOT NULL,' +
@@ -184,7 +186,6 @@ begin
       [ADatabase.Path, JournalMode]);
   ADatabase.Execute('PRAGMA synchronous = FULL');
   ADatabase.Execute('PRAGMA foreign_keys = ON');
-  ADatabase.Execute('PRAGMA busy_timeout = 5000');
 end;
 
 function SchemaVersion(const ADatabase: TSqliteDatabase): Integer;
@@ -231,6 +232,13 @@ begin
       Continue;
     ADatabase.BeginTransaction;
     try
+      { Another process may have applied it while this one waited for the lock. }
+      Version := SchemaVersion(ADatabase);
+      if Migration.Version <= Version then
+      begin
+        ADatabase.Commit;
+        Continue;
+      end;
       ADatabase.Execute(Migration.Sql);
       ADatabase.Execute(Format('PRAGMA user_version = %d', [Migration.Version]));
       ADatabase.Commit;
@@ -247,7 +255,7 @@ begin
   Result := MigrateDatabase(ADatabase, SchemaMigrations);
 end;
 
-function OpenLogDatabase(const APath: string): TSqliteDatabase;
+function OpenLogDatabaseOnce(const APath: string): TSqliteDatabase;
 begin
   Result := TSqliteDatabase.Open(APath);
   try
@@ -259,6 +267,32 @@ begin
     Result.Free;
     raise;
   end;
+end;
+
+function OpenLogDatabase(const APath: string): TSqliteDatabase;
+const
+  RetryDelayMs = 50;
+var
+  Started: QWord;
+begin
+  { While a new logbook switches to WAL, SQLite can report SQLITE_BUSY at once
+    instead of waiting (lock upgrade deadlock between two connections); the
+    busy timeout does not apply then, so open again until BusyTimeoutMs have
+    passed since the first attempt. }
+  { The deadline counts the attempts too: each one may already have waited in
+    SQLite's busy handler. }
+  Started := GetTickCount64;
+  repeat
+    try
+      Exit(OpenLogDatabaseOnce(APath));
+    except
+      on E: ESqliteError do
+        if ((E.ResultCode and $FF) <> SQLITE_BUSY_CODE) or
+          (GetTickCount64 - Started >= BusyTimeoutMs) then
+          raise;
+    end;
+    Sleep(RetryDelayMs);
+  until False;
 end;
 
 end.

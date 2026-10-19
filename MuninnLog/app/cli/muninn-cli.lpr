@@ -16,6 +16,8 @@ program MuninnCli;
 uses
   {$IFDEF UNIX}cthreads, cwstring,{$ENDIF}
   Muninn.Core.Utf8Default,
+  {$IFDEF UNIX}BaseUnix,{$ENDIF}
+  {$IFDEF WINDOWS}Windows,{$ENDIF}
   Classes, SysUtils, DateUtils, Muninn.Core.Version, Muninn.Core.Adif,
   Muninn.Core.Time, Muninn.Storage.Sqlite, Muninn.Storage.Schema,
   Muninn.Storage.AdifTransfer;
@@ -48,20 +50,68 @@ begin
   WriteLn(AOutput, '  muninn-cli --help');
 end;
 
+{ True when both paths exist and are the same file, also through a symbolic or
+  hard link or a different letter case on a case-insensitive file system. }
+function IsSameExistingFile(const AFirst, ASecond: string): Boolean;
+{$IFDEF UNIX}
+var
+  First, Second: Stat;
+begin
+  First := Default(Stat);
+  Second := Default(Stat);
+  Result := (FpStat(AFirst, First) = 0) and (FpStat(ASecond, Second) = 0) and
+    (First.st_dev = Second.st_dev) and (First.st_ino = Second.st_ino);
+end;
+{$ENDIF}
+{$IFDEF WINDOWS}
+
+  function TryFileIdentity(const APath: string;
+    out AInfo: BY_HANDLE_FILE_INFORMATION): Boolean;
+  var
+    Handle: THandle;
+  begin
+    Handle := CreateFileW(PWideChar(UnicodeString(APath)), 0,
+      FILE_SHARE_READ or FILE_SHARE_WRITE or FILE_SHARE_DELETE, nil,
+      OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS, 0);
+    Result := Handle <> INVALID_HANDLE_VALUE;
+    if Result then
+    begin
+      Result := GetFileInformationByHandle(Handle, AInfo);
+      CloseHandle(Handle);
+    end;
+  end;
+
+var
+  First, Second: BY_HANDLE_FILE_INFORMATION;
+begin
+  Result := TryFileIdentity(AFirst, First) and TryFileIdentity(ASecond, Second) and
+    (First.dwVolumeSerialNumber = Second.dwVolumeSerialNumber) and
+    (First.nFileIndexHigh = Second.nFileIndexHigh) and
+    (First.nFileIndexLow = Second.nFileIndexLow);
+end;
+{$ENDIF}
+
 { True when APath names the logbook file or one of SQLite's files next to it. }
 function WritesOverLogbook(const APath, ADatabasePath: string): Boolean;
+const
+  Suffixes: array[0..3] of string = ('', '-wal', '-shm', '-journal');
 var
   Target, Logbook: string;
+  Index: Integer;
 begin
   Target := ExpandFileName(APath);
   Logbook := ExpandFileName(ADatabasePath);
-  Result := SameFileName(Target, Logbook) or SameFileName(Target, Logbook + '-wal') or
-    SameFileName(Target, Logbook + '-shm') or SameFileName(Target, Logbook + '-journal');
+  for Index := Low(Suffixes) to High(Suffixes) do
+    if SameFileName(Target, Logbook + Suffixes[Index]) or
+      IsSameExistingFile(Target, Logbook + Suffixes[Index]) then
+      Exit(True);
+  Result := False;
 end;
 
 function ParseOptions: TOptions;
 var
   Index: Integer;
+  FormatGiven: Boolean;
   Argument: string;
 
   function NextValue: string;
@@ -75,6 +125,7 @@ var
 begin
   Result := Default(TOptions);
   Result.Format := 'adif';
+  FormatGiven := False;
   if ParamCount = 0 then
     raise EUsageError.Create('no command given');
   Result.Command := ParamStr(1);
@@ -86,7 +137,10 @@ begin
     if Argument = '--db' then
       Result.DatabasePath := NextValue
     else if Argument = '--format' then
-      Result.Format := LowerCase(NextValue)
+    begin
+      Result.Format := LowerCase(NextValue);
+      FormatGiven := True;
+    end
     else if Argument = '--output' then
       Result.OutputPath := NextValue
     else if (Argument <> '') and (Argument[1] = '-') then
@@ -102,6 +156,8 @@ begin
     raise EUsageError.Create('import needs an ADIF file');
   if (Result.Command = 'import') and (Result.OutputPath <> '') then
     raise EUsageError.Create('--output is for export');
+  if (Result.Command = 'import') and FormatGiven then
+    raise EUsageError.Create('--format is for export; import reads ADIF');
   if (Result.Command = 'export') and (Result.InputPath <> '') then
     raise EUsageError.CreateFmt('unexpected argument %s', [Result.InputPath]);
   if (Result.OutputPath <> '') and WritesOverLogbook(Result.OutputPath,

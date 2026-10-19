@@ -2,7 +2,7 @@
 
 設計判断の記録（Architecture Decision Record）を置く。1 つの判断につき 1 ファイル。
 
-- ファイル名：`NNNN-<題名>.md`（例：`0001-toolchain-version.md`）
+- ファイル名：`NNNN-<題名>.md`（例：`0001-toolchain.md`）
 - 書式：[0000-template.md](0000-template.md)
 - 決定したら、[00_DEVELOPMENT_POLICY.md](../00_DEVELOPMENT_POLICY.md) の決定事項に追記する
 

@@ -19,8 +19,10 @@ type
     FSubmode: string;
   public
     { Mode is required; submode may be empty. Both are trimmed and upper-cased.
-      Mode: A-Z, 0-9, '_' and '-'. Submode also allows '/' and single inner
-      spaces, as in the ADIF submodes 'VARA HF' and 'OLIVIA 4/125'. }
+      Any printable ASCII text without doubled spaces is accepted, so imported
+      values outside the ADIF enumeration (e.g. 'OLIVIA 8-250') are kept; the
+      ADIF submodes 'VARA HF' and 'OLIVIA 4/125' are examples with a space and a
+      slash. }
     class function TryCreate(const AMode, ASubmode: string;
       out AResult: TMode): Boolean; static;
     { Parses what an operator types or a logger shows: a mode ('CW', 'FT8') or a
@@ -78,31 +80,19 @@ const
     (Submode: 'PSK31'; Mode: 'PSK'),
     (Submode: 'PSK63'; Mode: 'PSK'));
 
-function IsValidToken(const AValue: string): Boolean;
+{ Printable ASCII without leading, trailing or doubled spaces. ADIF modes and
+  submodes are ASCII; values outside the enumeration are kept (ADR 0004). }
+function IsValidModeText(const AValue: string): Boolean;
 var
   Index: Integer;
 begin
-  Result := AValue <> '';
+  Result := (AValue <> '') and (AValue[1] <> ' ') and (AValue[Length(AValue)] <> ' ');
+  if not Result then
+    Exit;
   for Index := 1 to Length(AValue) do
-    if not (AValue[Index] in ['A'..'Z', '0'..'9', '_', '-']) then
+    if not (AValue[Index] in [#32..#126]) or
+      ((AValue[Index] = ' ') and (AValue[Index + 1] = ' ')) then
       Exit(False);
-end;
-
-function IsValidSubmode(const AValue: string): Boolean;
-var
-  Index: Integer;
-begin
-  Result := AValue <> '';
-  for Index := 1 to Length(AValue) do
-    case AValue[Index] of
-      'A'..'Z', '0'..'9', '_', '-', '/': ;
-      ' ':
-        { Trimmed already, so a space is never first or last. }
-        if AValue[Index + 1] = ' ' then
-          Exit(False);
-    else
-      Exit(False);
-    end;
 end;
 
 function FindKnownMode(const AMode: string; out ACategory: TModeCategory): Boolean;
@@ -128,8 +118,8 @@ begin
   AResult.FSubmode := '';
   ModeText := UpperCase(Trim(AMode));
   SubmodeText := UpperCase(Trim(ASubmode));
-  Result := IsValidToken(ModeText) and
-    ((SubmodeText = '') or IsValidSubmode(SubmodeText));
+  Result := IsValidModeText(ModeText) and
+    ((SubmodeText = '') or IsValidModeText(SubmodeText));
   if Result then
   begin
     AResult.FMode := ModeText;

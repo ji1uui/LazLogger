@@ -21,6 +21,7 @@ type
     procedure ConvertsKnownInstants;
     procedure RoundTripsComponents;
     procedure HandlesInstantsBefore1970;
+    procedure ConvertsDaysBeforeYearZero;
     procedure ValidatesCalendar;
     procedure FormatsAdifAndIso;
   end;
@@ -91,6 +92,29 @@ procedure TTimeTests.HandlesInstantsBefore1970;
 begin
   CheckInstant(Make(1969, 12, 31, 23, 59, 59, 999), -1);
   CheckInstant(Make(1900, 1, 1, 0, 0, 0, 0), -2208988800000);
+end;
+
+procedure TTimeTests.ConvertsDaysBeforeYearZero;
+const
+  MsPerDay = Int64(86400000);
+  DaysTo0000_03_01 = Int64(-719468);
+  DaysPerEra = 146097;
+var
+  Components: TUtcComponents;
+begin
+  { Hinnant's algorithm with floor division also below 0000-03-01. }
+  Components := TUtcInstant.FromUnixMs(DaysTo0000_03_01 * MsPerDay).Components;
+  AssertEquals(0, Components.Year);
+  AssertEquals(3, Components.Month);
+  AssertEquals(1, Components.Day);
+  Components := TUtcInstant.FromUnixMs((DaysTo0000_03_01 - 1) * MsPerDay).Components;
+  AssertEquals('year 0 is a leap year', 29, Components.Day);
+  AssertEquals(2, Components.Month);
+  Components := TUtcInstant.FromUnixMs(
+    (DaysTo0000_03_01 - DaysPerEra) * MsPerDay).Components;
+  AssertEquals(-400, Components.Year);
+  AssertEquals(3, Components.Month);
+  AssertEquals(1, Components.Day);
 end;
 
 procedure TTimeTests.ValidatesCalendar;

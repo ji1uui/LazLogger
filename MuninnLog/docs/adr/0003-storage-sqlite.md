@@ -1,6 +1,6 @@
 # 0003: SQLite の使い方とスキーマのマイグレーション
 
-- 状態：提案（この ADR を含む PR のマージで決定）
+- 状態：決定（2026-10-18 にマージ）
 - 日付：2026-10-18
 - 関連：M0 タスク T5（[05_DEVELOPMENT_PROCESS.md](../05_DEVELOPMENT_PROCESS.md) 第 13 節）、[00_DEVELOPMENT_POLICY.md](../00_DEVELOPMENT_POLICY.md) 決定事項 D10・D15
 
@@ -53,12 +53,13 @@ D10 で保存方式を SQLite と決めた。T5 では、次の 4 点を決め�
    - `journal_mode = WAL`
    - `synchronous = FULL`
    - `foreign_keys = ON`
-   - `busy_timeout = 5000`
+   - `busy_timeout = 5000`：`TSqliteDatabase.Open` が接続を開いた直後に設定する。版の確認や WAL への切り替えなど、最初の文も他の接続のロックを待つようにするため。
+   - 新しいログブックを WAL に切り替えるとき、2 つの接続のロックの昇格がぶつかると、SQLite は待たずに SQLITE_BUSY を返す。`OpenLogDatabase` は、この場合に開き直す。最初の試行からの経過時間（SQLite の待機を含む）が 5 秒を越えたら諦める。
    - WAL に切り替えられない場合は開かない。
 4. **スキーマの版**
    - `PRAGMA user_version` で管理する。
    - マイグレーションは前進のみで、版 1, 2, 3, … と連番にする。
-   - 各マイグレーションは、`user_version` の更新と同じ 1 つのトランザクション（`BEGIN IMMEDIATE`）で行う。途中で失敗または強制終了しても、直前の版に戻る。
+   - 各マイグレーションは、`user_version` の更新と同じ 1 つのトランザクション（`BEGIN IMMEDIATE`）で行う。ロックを取った後に版を読み直し、待っている間に別のプロセスが適用した版は飛ばす。途中で失敗または強制終了しても、直前の版に戻る。
    - アプリより新しい版の DB は、何も変更せずに開くのを拒否する。WAL への切り替えもしない。
 5. **テーブル**
    - `STRICT` を使い、型の違う値を拒否する。

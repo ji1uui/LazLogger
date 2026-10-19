@@ -27,6 +27,11 @@ type
     procedure ReadsUtf8ByteLengths;
     procedure DetectsCharacterLengths;
     procedure KeepsByteLengthsBeforeIgnoredText;
+    procedure DetectsCharacterLengthsOfMixedText;
+    procedure SkipsBlankLinesBeforeFirstTag;
+    procedure ReadsWhitespaceOnlyHeader;
+    procedure RejectsNonDecimalLengths;
+    procedure WritesReadableHeaderText;
     procedure ReportsHugeLengths;
     procedure ReportsMalformedTags;
     procedure KeepsFirstOfRepeatedFields;
@@ -138,11 +143,62 @@ end;
 
 procedure TAdifTests.KeepsByteLengthsBeforeIgnoredText;
 begin
-  { Text between data specifiers is ignored (ADIF IV.A.6). }
-  Read('<NAME:3>山ab<CALL:4>WF1B<EOR>');
+  { Text between data specifiers is ignored (ADIF IV.A.6). 3 bytes = 山; read
+    as 3 characters the value would leave 'b' before the next tag. }
+  Read('<NAME:3>山 ab <CALL:4>WF1B<EOR>');
   AssertEquals('山', FDocument[0].Value('NAME'));
   AssertEquals('WF1B', FDocument[0].Value('CALL'));
   AssertEquals('', FIssues.ToText);
+end;
+
+procedure TAdifTests.DetectsCharacterLengthsOfMixedText;
+begin
+  { 9 characters but 11 bytes; the byte count ends inside 'abcdefg'. }
+  Read('<NAME:9>東 abcdefg <CALL:4>W1AW<EOR>');
+  AssertEquals('東 abcdefg', FDocument[0].Value('NAME'));
+  AssertEquals('W1AW', FDocument[0].Value('CALL'));
+  CheckIssue(0, aisWarning, 'NAME');
+end;
+
+procedure TAdifTests.SkipsBlankLinesBeforeFirstTag;
+begin
+  Read(#13#10'  '#10'<CALL:4>W1AW<EOR>');
+  AssertFalse('no header', FDocument.HasHeader);
+  AssertEquals(1, FDocument.RecordCount);
+  AssertEquals('', FIssues.ToText);
+end;
+
+procedure TAdifTests.ReadsWhitespaceOnlyHeader;
+begin
+  Read(#10'<USERDEF1:3:S>FOO <ADIF_VER:5>3.1.8 <EOH>'#10'<CALL:4>W1AW <FOO:1>x <EOR>');
+  AssertEquals('', FIssues.ToText);
+  AssertTrue(FDocument.HasHeader);
+  AssertEquals('FOO', FDocument.Header.Value('USERDEF1'));
+  AssertEquals(1, FDocument.RecordCount);
+  AssertFalse('header fields not in the record', FDocument[0].Has('USERDEF1'));
+end;
+
+procedure TAdifTests.RejectsNonDecimalLengths;
+begin
+  Read('<CALL:$4>W1AW <NAME:0x2>Al <MODE:2>CW <EOR>');
+  AssertEquals(2, FIssues.ErrorCount);
+  AssertFalse(FDocument[0].Has('CALL'));
+  AssertEquals('CW', FDocument[0].Value('MODE'));
+end;
+
+procedure TAdifTests.WritesReadableHeaderText;
+var
+  Text: string;
+begin
+  FDocument.HasHeader := True;
+  FDocument.HeaderText := 'Exported by <MyLogger:v2>';
+  FDocument.Header.Add('ADIF_VER', '3.1.8');
+  FDocument.AddRecord.Add('CALL', 'W1AW');
+  Text := WriteAdi(FDocument);
+  Read(Text);
+  AssertEquals('', FIssues.ToText);
+  AssertEquals('3.1.8', FDocument.Header.Value('ADIF_VER'));
+  AssertEquals('W1AW', FDocument[0].Value('CALL'));
 end;
 
 procedure TAdifTests.ReportsHugeLengths;
