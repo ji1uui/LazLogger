@@ -165,7 +165,7 @@ var
   Argument: string;
   Buffer: array[0..4095] of Byte;
   Count: Integer;
-  Chunk: string;
+  Chunk, Prefix: string;
 begin
   AssertTrue('muninn-cli is built: ' + CliPath, FileExists(CliPath));
   AOutput := '';
@@ -177,8 +177,12 @@ begin
       Cli.Parameters.Add(Argument);
     if AEnvironment <> '' then
     begin
+      { Replace an inherited variable of the same name: with two entries,
+        Windows uses the first one. }
+      Prefix := UpperCase(Copy(AEnvironment, 1, Pos('=', AEnvironment)));
       for Count := 1 to GetEnvironmentVariableCount do
-        Cli.Environment.Add(GetEnvironmentString(Count));
+        if Pos(Prefix, UpperCase(GetEnvironmentString(Count))) <> 1 then
+          Cli.Environment.Add(GetEnvironmentString(Count));
       Cli.Environment.Add(AEnvironment);
     end;
     Cli.Options := [poUsePipes, poStderrToOutPut];
