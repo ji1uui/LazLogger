@@ -239,13 +239,19 @@ end;
 procedure TBandmapControl.MouseDown(Button: TMouseButton; Shift: TShiftState;
   X, Y: Integer);
 var
-  Index: Integer;
+  Index, LabelX: Integer;
   Hz: Int64;
 begin
   inherited MouseDown(Button, Shift, X, Y);
   if (Button <> mbLeft) or not Assigned(FOnTune) then
     Exit;
+  { Only a click on a label picks its spot; a label may have been pushed
+    away from its frequency, so a click elsewhere tunes to where it is. }
+  LabelX := GutterWidth + Scale96ToFont(16);
   Index := FModel.SpotAtY(FRows, Y, RowHeight);
+  if (Index >= 0) and ((X < LabelX - Scale96ToFont(2)) or
+    (X > LabelX + Canvas.TextWidth(FModel.Spots[Index].Call) + Scale96ToFont(3))) then
+    Index := -1;
   if Index >= 0 then
     Hz := FModel.Spots[Index].Frequency.Hz
   else

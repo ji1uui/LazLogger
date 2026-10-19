@@ -7,6 +7,7 @@ unit Muninn.UI.MainForm;
   Keys: Enter logs the entry, Esc clears it. A click on the band map tunes. }
 
 {$mode objfpc}{$H+}
+{$codepage utf8}
 
 interface
 
@@ -46,6 +47,7 @@ type
     procedure BandmapTune(Sender: TObject; const AHz: Int64);
     procedure ShowStatus;
     procedure FocusCall;
+    procedure RefreshWorked;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -235,7 +237,17 @@ begin
   { USB and LSB are shown as on the radio; they stand for SSB/USB, SSB/LSB. }
   if (FModeCombo.ItemIndex >= 0) and
     TMode.TryParseDisplay(FModeCombo.Items[FModeCombo.ItemIndex], Mode) then
+  begin
     FPresenter.SetMode(Mode);
+    RefreshWorked;
+  end;
+end;
+
+procedure TMainForm.RefreshWorked;
+begin
+  { Worked depends on the band and the mode, so ask the log again. }
+  FBandmapModel.UpdateWorked(@FPresenter.IsWorked);
+  FBandmap.Invalidate;
 end;
 
 procedure TMainForm.EntryKeyDown(Sender: TObject; var Key: Word;
@@ -339,8 +351,7 @@ procedure TMainForm.ShowLogged(const AQso: TLoggedQso);
 var
   Instant: TUtcInstant;
 begin
-  FBandmapModel.MarkWorked(AQso.Call.ToString);
-  FBandmap.Invalidate;
+  RefreshWorked;
   Instant := TUtcInstant.FromUnixMs(AQso.TimeOnUtcMs);
   FLogList.Items.Insert(0, Format('%s  %-12s %10s  %-8s %s %s',
     [Instant.ToIso8601, AQso.Call.ToString,

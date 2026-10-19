@@ -53,7 +53,8 @@ type
     FFrequency: TFrequencyHz;
     FHasFrequency: Boolean;
     FMode: TMode;
-    function WorkedKey(const ACall: string): string;
+    function WorkedKey(const ACall: string; const AFrequency: TFrequencyHz;
+      const AHasFrequency: Boolean): string;
     function CallsignProblem(const AError: TCallsignError): string;
     procedure Refresh;
     function GetLogged(AIndex: Integer): TLoggedQso;
@@ -72,7 +73,10 @@ type
     { Logs the entry. Returns False and shows the problem when the callsign
       is not valid or no frequency is set. }
     function LogRequested(const ARstSent, ARstReceived: string): Boolean;
+    { ACall is in the log on the current frequency's band and mode. }
     function IsDuplicate(const ACall: string): Boolean;
+    { ACall is in the log on AFrequency's band and the current mode. }
+    function IsWorked(const ACall: string; const AFrequency: TFrequencyHz): Boolean;
     property NormalizedCall: string read FNormalized;
     property LoggedCount: Integer read FLoggedCount;
     property Logged[AIndex: Integer]: TLoggedQso read GetLogged;
@@ -154,13 +158,14 @@ begin
   Refresh;
 end;
 
-function TQsoEntryPresenter.WorkedKey(const ACall: string): string;
+function TQsoEntryPresenter.WorkedKey(const ACall: string;
+  const AFrequency: TFrequencyHz; const AHasFrequency: Boolean): string;
 var
   Band: TBand;
   BandName: string;
 begin
   { A duplicate is the same call on the same band and mode. }
-  if FHasFrequency and TryBandOfFrequency(FFrequency, Band) then
+  if AHasFrequency and TryBandOfFrequency(AFrequency, Band) then
     BandName := BandAdifName(Band)
   else
     BandName := '?';
@@ -171,7 +176,16 @@ function TQsoEntryPresenter.IsDuplicate(const ACall: string): Boolean;
 var
   Index: Integer;
 begin
-  Result := (ACall <> '') and FWorked.Find(WorkedKey(ACall), Index);
+  Result := (ACall <> '') and
+    FWorked.Find(WorkedKey(ACall, FFrequency, FHasFrequency), Index);
+end;
+
+function TQsoEntryPresenter.IsWorked(const ACall: string;
+  const AFrequency: TFrequencyHz): Boolean;
+var
+  Index: Integer;
+begin
+  Result := (ACall <> '') and FWorked.Find(WorkedKey(ACall, AFrequency, True), Index);
 end;
 
 function TQsoEntryPresenter.CallsignProblem(const AError: TCallsignError): string;
@@ -260,7 +274,7 @@ begin
     SetLength(FLogged, FLoggedCount * 2 + 16);
   FLogged[FLoggedCount] := Qso;
   Inc(FLoggedCount);
-  FWorked.Add(WorkedKey(Qso.Call.ToString));
+  FWorked.Add(WorkedKey(Qso.Call.ToString, FFrequency, FHasFrequency));
   FKnownCalls.Add(Qso.Call.ToString);
   FView.ShowLogged(Qso);
   FText := '';

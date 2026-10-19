@@ -12,6 +12,7 @@ type
   private
     FModel: TBandmapModel;
     procedure Add(const ACall: string; const AHz: Int64);
+    function WorkedOn20m(const ACall: string; const AFrequency: TFrequencyHz): Boolean;
   protected
     procedure SetUp; override;
     procedure TearDown; override;
@@ -181,13 +182,23 @@ begin
   AssertFalse(FModel.IsHighlighted(FModel.Spots[0]));
 end;
 
+function TBandmapModelTests.WorkedOn20m(const ACall: string;
+  const AFrequency: TFrequencyHz): Boolean;
+begin
+  Result := (ACall = 'JA1ABD') and (AFrequency.Hz >= 14000000);
+end;
+
 procedure TBandmapModelTests.MarksWorkedCalls;
 begin
-  Add('JA1ABC', 7010000);
-  Add('JA1ABD', 7020000);
-  FModel.MarkWorked('JA1ABD');
+  Add('JA1ABC', 14010000);
+  Add('JA1ABD', 14020000);
+  FModel.UpdateWorked(@WorkedOn20m);
   AssertFalse(FModel.Spots[0].Worked);
   AssertTrue(FModel.Spots[1].Worked);
+  { The answer depends on the spot's own frequency. }
+  Add('JA1ABD', 7020000);
+  FModel.UpdateWorked(@WorkedOn20m);
+  AssertFalse('worked on another band', FModel.Spots[0].Worked);
 end;
 
 initialization

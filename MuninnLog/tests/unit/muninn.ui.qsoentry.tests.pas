@@ -48,6 +48,7 @@ type
     procedure RefusesInvalidCallsign;
     procedure RefusesWithoutFrequency;
     procedure FlagsDuplicateOnSameBandAndMode;
+    procedure TellsWorkedForAnyFrequency;
   end;
 
 implementation
@@ -225,6 +226,23 @@ begin
   AssertTrue(TMode.TryCreate('SSB', 'LSB', Ssb));
   FPresenter.SetMode(Ssb);
   AssertFalse('other mode', FViewObject.Duplicate);
+end;
+
+procedure TQsoEntryPresenterTests.TellsWorkedForAnyFrequency;
+var
+  Other, Same: TFrequencyHz;
+  Ssb: TMode;
+begin
+  Tune(7010000);
+  FPresenter.CallsignChanged('JA1ABC');
+  AssertTrue(FPresenter.LogRequested('599', '599'));
+  AssertTrue(TFrequencyHz.TryFromHz(7025000, Same));
+  AssertTrue(TFrequencyHz.TryFromHz(14025000, Other));
+  AssertTrue('same band', FPresenter.IsWorked('JA1ABC', Same));
+  AssertFalse('other band', FPresenter.IsWorked('JA1ABC', Other));
+  AssertTrue(TMode.TryCreate('SSB', 'LSB', Ssb));
+  FPresenter.SetMode(Ssb);
+  AssertFalse('other mode', FPresenter.IsWorked('JA1ABC', Same));
 end;
 
 initialization

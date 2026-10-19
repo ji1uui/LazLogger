@@ -35,6 +35,10 @@ type
   end;
   TBandmapRows = array of TBandmapRow;
 
+  { Whether ACall is in the log on AFrequency's band (and the current mode). }
+  TSpotWorkedQuery = function(const ACall: string;
+    const AFrequency: TFrequencyHz): Boolean of object;
+
   TBandmapModel = class
   private
     FSpots: array of TBandmapSpot;
@@ -52,8 +56,9 @@ type
     { Adds a spot, or moves the call's existing spot to the new frequency. }
     procedure AddSpot(const ASpot: TBandmapSpot);
     procedure Clear;
-    { Marks the call's spot as worked (after it was logged). }
-    procedure MarkWorked(const ACall: string);
+    { Sets every spot's Worked from the log: call it after a QSO is logged
+      and when the mode changes. }
+    procedure UpdateWorked(const AIsWorked: TSpotWorkedQuery);
     { Sets the visible range. Raises EArgumentException when AHighHz is not
       above ALowHz. }
     procedure SetRange(const ALowHz, AHighHz: Int64);
@@ -126,13 +131,12 @@ begin
   FSorted := False;
 end;
 
-procedure TBandmapModel.MarkWorked(const ACall: string);
+procedure TBandmapModel.UpdateWorked(const AIsWorked: TSpotWorkedQuery);
 var
   Index: Integer;
 begin
   for Index := 0 to FCount - 1 do
-    if FSpots[Index].Call = ACall then
-      FSpots[Index].Worked := True;
+    FSpots[Index].Worked := AIsWorked(FSpots[Index].Call, FSpots[Index].Frequency);
 end;
 
 procedure TBandmapModel.Clear;
