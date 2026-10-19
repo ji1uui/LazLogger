@@ -46,7 +46,7 @@ type
     FRadio: IRadioPort;
     procedure SetUp; override;
     procedure TearDown; override;
-    procedure Attach(const AService: IRigService);
+    procedure Attach(const ACreateService: TRigServiceCreator);
     { Processes queued calls until ADone^ is set; fails after 5 s. }
     procedure WaitFor(const ADone: PBoolean; const AWhat: string);
     procedure WaitForConnection;
@@ -67,7 +67,9 @@ type
   THamlibFakeRadioTests = class(TRadioTestCase)
   private
     FLoader: IHamlibLoader;
+    FServicesMade: Integer;
     function Fake: TObject;
+    function NewService: IRigService;
     procedure Connect(const APollMs: Cardinal = 0);
   protected
     procedure SetUp; override;
@@ -75,6 +77,8 @@ type
   published
     procedure ConnectReportsTheLink;
     procedure ConnectAppliesSettings;
+    procedure ReconnectDropsEarlierSettings;
+    procedure FailedConnectLeavesPortClosed;
     procedure RefusesSecondConnectAndBadModel;
     procedure SetsAndGetsFrequency;
     procedure SetsModes;
@@ -88,6 +92,8 @@ type
   end;
 
   THamlibDummyRigTests = class(TRadioTestCase)
+  private
+    function NewService: IRigService;
   protected
     procedure SetUp; override;
   published
@@ -174,9 +180,9 @@ begin
   FreeAndNil(FProbe);
 end;
 
-procedure TRadioTestCase.Attach(const AService: IRigService);
+procedure TRadioTestCase.Attach(const ACreateService: TRigServiceCreator);
 begin
-  FRadio := THamlibRadio.Create(AService);
+  FRadio := THamlibRadio.Create(ACreateService);
   FRadio.SetOnConnectionChanged(@FProbe.ConnectionChanged);
   FRadio.SetOnFrequencyChanged(@FProbe.FrequencyChanged);
   FRadio.SetOnError(@FProbe.ErrorReported);
@@ -306,6 +312,8 @@ begin
   Check(reCancelled, rcsCancelled, rekNone);
   Check(reTimeout, rcsTimeout, rekNone);
   Check(reTemporarilyUnavailable, rcsRejected, rekNone);
+  Check(reTemporarilyUnavailable, rcsRejected, rekCircuitOpen);
+  Check(reNotConnected, rcsRejected, rekNotConnected);
   Check(reNotConnected, rcsError, rekNotConnected);
   Check(reConnectFailed, rcsError, rekConnectFailed);
   Check(rePortBusy, rcsError, rekAccessDenied);
@@ -319,7 +327,14 @@ procedure THamlibFakeRadioTests.SetUp;
 begin
   inherited SetUp;
   FLoader := TFakeHamlibLoader.Create;
-  Attach(TRigService.Create(FLoader));
+  FServicesMade := 0;
+  Attach(@NewService);
+end;
+
+function THamlibFakeRadioTests.NewService: IRigService;
+begin
+  Inc(FServicesMade);
+  Result := TRigService.Create(FLoader);
 end;
 
 procedure THamlibFakeRadioTests.TearDown;
@@ -367,6 +382,54 @@ begin
   WaitForConnection;
   AssertEquals('38400',
     TFakeHamlibLoader(Fake).ConfValue['serial_speed']);
+end;
+
+procedure THamlibFakeRadioTests.ReconnectDropsEarlierSettings;
+var
+  Connection: TRadioConnection;
+begin
+  Connection := Default(TRadioConnection);
+  Connection.ModelId := 1;
+  SetLength(Connection.Settings, 1);
+  Connection.Settings[0].Name := 'ptt_type';
+  Connection.Settings[0].Value := 'RTS';
+  FRadio.Connect(Connection);
+  WaitForConnection;
+  AssertEquals('RTS', TFakeHamlibLoader(Fake).ConfValue['ptt_type']);
+  FRadio.Disconnect;
+
+  TFakeHamlibLoader(Fake).ResetSimulation;
+  FProbe.Connected := False;
+  Connection.Settings := nil;
+  FRadio.Connect(Connection);
+  WaitForConnection;
+  AssertEquals('a service per connection', 2, FServicesMade);
+  AssertEquals('no setting carried over', '',
+    TFakeHamlibLoader(Fake).ConfValue['ptt_type']);
+end;
+
+procedure THamlibFakeRadioTests.FailedConnectLeavesPortClosed;
+var
+  Connection: TRadioConnection;
+  Raised: Boolean;
+begin
+  Connection := Default(TRadioConnection);
+  Connection.ModelId := 1;
+  { Below HamlibComponent's 50 ms minimum. }
+  Connection.PollIntervalMs := 10;
+  Raised := False;
+  try
+    FRadio.Connect(Connection);
+  except
+    on Exception do
+      Raised := True;
+  end;
+  AssertTrue('a too short poll interval is refused', Raised);
+  AssertFalse('nothing left open', FRadio.IsConnected);
+  Connection.PollIntervalMs := 0;
+  FRadio.Connect(Connection);
+  WaitForConnection;
+  AssertTrue(FRadio.IsConnected);
 end;
 
 procedure THamlibFakeRadioTests.RefusesSecondConnectAndBadModel;
@@ -519,18 +582,23 @@ end;
 
 { THamlibDummyRigTests }
 
+function THamlibDummyRigTests.NewService: IRigService;
+begin
+  Result := SharedFactory.CreateService;
+end;
+
 procedure THamlibDummyRigTests.SetUp;
 const
   DummyModel = 1;
 var
   Connection: TRadioConnection;
-  Service: IRigService;
 begin
   inherited SetUp;
   try
     if SharedFactory = nil then
       SharedFactory := TRigServiceFactory.Create('');
-    Service := SharedFactory.CreateService;
+    { Loads the library and checks its version. }
+    NewService;
   except
     on E: Exception do
     begin
@@ -540,7 +608,7 @@ begin
       Ignore('Hamlib is not available: ' + E.Message);
     end;
   end;
-  Attach(Service);
+  Attach(@NewService);
   Connection := Default(TRadioConnection);
   Connection.ModelId := DummyModel;
   Connection.Port := '';

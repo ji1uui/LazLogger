@@ -27,6 +27,10 @@ uses
 type
   THamlibRadio = class;
 
+  { Makes a new service: from the process's TRigServiceFactory, or over a
+    fake loader in tests. }
+  TRigServiceCreator = function: IRigService of object;
+
   { One call waiting for its result. }
   TRadioRequest = class
   private
@@ -41,6 +45,8 @@ type
 
   THamlibRadio = class(TInterfacedObject, IRadioPort)
   private
+    FCreateService: TRigServiceCreator;
+    { The service of the current connection; nil while disconnected. }
     FService: IRigService;
     FPending: TList;
     FOnConnectionChanged: TRadioConnectionEvent;
@@ -50,10 +56,12 @@ type
     procedure ServiceFrequencyChanged(Sender: TObject; AFreq: Double);
     procedure ServiceError(Sender: TObject; AKind: TRigErrorKind;
       ANativeCode: Integer; const AMsg: string);
+    procedure ReleaseService;
   public
-    { Takes a service from TRigServiceFactory (one factory per process), or a
-      service over a fake loader in tests. }
-    constructor Create(const AService: IRigService);
+    { Each Connect takes a new service from ACreateService, so no driver
+      setting of an earlier connection carries over (a service keeps its
+      conf tokens for good). Create one TRigServiceFactory per process. }
+    constructor Create(const ACreateService: TRigServiceCreator);
     destructor Destroy; override;
     procedure Connect(const AConnection: TRadioConnection);
     procedure Disconnect;
@@ -67,7 +75,6 @@ type
     procedure SetOnConnectionChanged(AHandler: TRadioConnectionEvent);
     procedure SetOnFrequencyChanged(AHandler: TRadioFrequencyEvent);
     procedure SetOnError(AHandler: TRadioErrorEvent);
-    property Service: IRigService read FService;
   end;
 
 { The radio mode for an ADIF mode; False when the radio has none for it
@@ -163,7 +170,11 @@ begin
     rcsSuccess: Exit(RadioResultOk);
     rcsCancelled: Exit(RadioResultError(reCancelled, AMessage));
     rcsTimeout: Exit(RadioResultError(reTimeout, AMessage));
-    rcsRejected: Exit(RadioResultError(reTemporarilyUnavailable, AMessage));
+    { Refused before reaching the radio: the kind says why (not connected,
+      or the circuit breaker is open). }
+    rcsRejected:
+      if AKind = rekNone then
+        Exit(RadioResultError(reTemporarilyUnavailable, AMessage));
   end;
   case AKind of
     rekNotConnected, rekPowerOff, rekInvalidHandle:
@@ -298,16 +309,13 @@ end;
 
 { THamlibRadio }
 
-constructor THamlibRadio.Create(const AService: IRigService);
+constructor THamlibRadio.Create(const ACreateService: TRigServiceCreator);
 begin
   inherited Create;
-  if AService = nil then
-    raise EArgumentNilException.Create('THamlibRadio needs a service');
-  FService := AService;
+  if not Assigned(ACreateService) then
+    raise EArgumentNilException.Create('THamlibRadio needs a service creator');
+  FCreateService := ACreateService;
   FPending := TList.Create;
-  FService.SetOnConnectionChanged(@ServiceConnectionChanged);
-  FService.SetOnFrequencyChanged(@ServiceFrequencyChanged);
-  FService.SetOnError(@ServiceError);
 end;
 
 destructor THamlibRadio.Destroy;
@@ -321,16 +329,23 @@ begin
     for Index := 0 to FPending.Count - 1 do
       TRadioRequest(FPending[Index]).Detach;
   FreeAndNil(FPending);
-  if FService <> nil then
-  begin
-    FService.SetOnConnectionChanged(nil);
-    FService.SetOnFrequencyChanged(nil);
-    FService.SetOnError(nil);
-    if FService.IsOpen then
-      FService.Close;
-  end;
-  FService := nil;
+  ReleaseService;
   inherited Destroy;
+end;
+
+procedure THamlibRadio.ReleaseService;
+var
+  Service: IRigService;
+begin
+  Service := FService;
+  FService := nil;
+  if Service = nil then
+    Exit;
+  Service.SetOnConnectionChanged(nil);
+  Service.SetOnFrequencyChanged(nil);
+  Service.SetOnError(nil);
+  if Service.IsOpen then
+    Service.Close;
 end;
 
 procedure THamlibRadio.ServiceConnectionChanged(Sender: TObject; AConnected: Boolean);
@@ -365,28 +380,40 @@ end;
 procedure THamlibRadio.Connect(const AConnection: TRadioConnection);
 var
   Setting: TRadioSetting;
+  Service: IRigService;
 begin
-  if FService.IsOpen then
+  if FService <> nil then
     raise EInvalidOperation.Create('the radio is already connected');
   if AConnection.ModelId < 1 then
     raise SysUtils.EArgumentException.CreateFmt('invalid radio model %d',
       [AConnection.ModelId]);
+  Service := FCreateService();
   for Setting in AConnection.Settings do
-    FService.AddConfToken(Setting.Name, Setting.Value);
-  FService.Open(AConnection.ModelId, AConnection.Port);
-  if AConnection.PollIntervalMs > 0 then
-    FService.EnablePolling(AConnection.PollIntervalMs);
+    Service.AddConfToken(Setting.Name, Setting.Value);
+  Service.SetOnConnectionChanged(@ServiceConnectionChanged);
+  Service.SetOnFrequencyChanged(@ServiceFrequencyChanged);
+  Service.SetOnError(@ServiceError);
+  FService := Service;
+  try
+    Service.Open(AConnection.ModelId, AConnection.Port);
+    if AConnection.PollIntervalMs > 0 then
+      Service.EnablePolling(AConnection.PollIntervalMs);
+  except
+    { E.g. an unknown model or a too short poll interval: leave nothing
+      open, so the caller can correct the settings and connect again. }
+    ReleaseService;
+    raise;
+  end;
 end;
 
 procedure THamlibRadio.Disconnect;
 begin
-  if FService.IsOpen then
-    FService.Close;
+  ReleaseService;
 end;
 
 function THamlibRadio.IsConnected: Boolean;
 begin
-  Result := FService.IsOpen;
+  Result := (FService <> nil) and FService.IsOpen;
 end;
 
 { A call the service refused before queuing it reports to its callback now. }
@@ -396,7 +423,7 @@ procedure THamlibRadio.SetFrequency(const AFrequency: TFrequencyHz;
 var
   Request: TCommandRequest;
 begin
-  if not FService.IsOpen then
+  if not IsConnected then
   begin
     if Assigned(ACallback) then
       ACallback(RadioResultError(reNotConnected, 'the radio is not connected'));
@@ -421,7 +448,7 @@ procedure THamlibRadio.GetFrequency(ACallback: TRadioFrequencyCallback);
 var
   Request: TFrequencyRequest;
 begin
-  if not FService.IsOpen then
+  if not IsConnected then
   begin
     if Assigned(ACallback) then
       ACallback(RadioResultError(reNotConnected, 'the radio is not connected'),
@@ -455,7 +482,7 @@ begin
       ACallback(RadioResultError(reNotSupported, Reason));
     Exit;
   end;
-  if not FService.IsOpen then
+  if not IsConnected then
   begin
     if Assigned(ACallback) then
       ACallback(RadioResultError(reNotConnected, 'the radio is not connected'));
@@ -481,7 +508,7 @@ procedure THamlibRadio.GetMode(ACallback: TRadioModeCallback);
 var
   Request: TModeRequest;
 begin
-  if not FService.IsOpen then
+  if not IsConnected then
   begin
     if Assigned(ACallback) then
       ACallback(RadioResultError(reNotConnected, 'the radio is not connected'),
@@ -508,7 +535,7 @@ var
   Request: TCommandRequest;
   State: TRigPttState;
 begin
-  if not FService.IsOpen then
+  if not IsConnected then
   begin
     if Assigned(ACallback) then
       ACallback(RadioResultError(reNotConnected, 'the radio is not connected'));

@@ -42,7 +42,9 @@ T8 では、次の 5 点を決める必要がある。
    - 接続設定は `TRadioConnection`：機種番号、機種名、ポート、conf トークン、ポーリング間隔。
    - 結果は `TRadioResult`。エラーの種類は `TRadioError` の 9 種類（未接続、接続失敗、ポート使用中、タイムアウト、非対応、一時的に使えない、取り消し、失敗、なし）で、UI の表示（[04](../04_ARCHITECTURE.md) 4.2 節）に対応する。
 3. **アダプター**（`Muninn.Integrations.Hamlib` の `THamlibRadio`）
-   - `IRigService` を 1 つ受け取る。`TRigServiceFactory` はプロセスに 1 つ作り、無線機ごとに `CreateService` する。
+   - `IRigService` を作る関数（`TRigServiceCreator`）を受け取り、`Connect` のたびに新しいサービスを作る。サービスは conf トークンを `Close` の後も保持し、消す API が無いため、前の接続の設定（`ptt_type` など）を次の接続に持ち越さないようにする。`TRigServiceFactory` はプロセスに 1 つ作る。
+   - `Connect` が例外で終わったとき（機種の誤り、短すぎるポーリング間隔など）は、サービスを閉じて未接続に戻す。
+   - 接続前に拒否された命令（`rcsRejected`）は、理由の種類で分ける：未接続は `reNotConnected`、サーキットブレーカーは `reTemporarilyUnavailable`。
    - 中核の型と HamlibComponent の型の変換だけを行う。HamlibComponent の型は、このユニットの外に出さない。
    - 周波数は Hamlib の `Double` を四捨五入して整数 Hz にし、`TFrequencyHz` の範囲外なら失敗として報告する。
 4. **スレッドとコールバック**

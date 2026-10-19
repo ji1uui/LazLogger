@@ -86,9 +86,12 @@ type
   IRadioPort = interface
     ['{8B6E2A41-6C1D-4F8E-9E1B-3E6D2C7A9F10}']
     { Starts connecting; OnConnectionChanged and OnError report the outcome.
-      Raises EInvalidOperation when already connected and EArgumentException
-      for a model id below 1. }
+      Raises EInvalidOperation when already connected, EArgumentException
+      for a model id below 1, and the driver's exception for settings it
+      refuses; after an exception the port is not connected. Only the
+      settings given here apply. }
     procedure Connect(const AConnection: TRadioConnection);
+    { Does not fire OnConnectionChanged. }
     procedure Disconnect;
     { True from Connect until Disconnect, also while the link is down or
       still being made; OnConnectionChanged reports the link itself. }
