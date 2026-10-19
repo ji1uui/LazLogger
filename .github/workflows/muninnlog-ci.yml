@@ -5,10 +5,14 @@ on:
     branches: [master]
     paths:
       - "MuninnLog/**"
+      - "hamlib_component/src/**"
+      - "hamlib_component/test/FakeHamlibLoader.pas"
       - ".github/workflows/muninnlog-ci.yml"
   pull_request:
     paths:
       - "MuninnLog/**"
+      - "hamlib_component/src/**"
+      - "hamlib_component/test/FakeHamlibLoader.pas"
       - ".github/workflows/muninnlog-ci.yml"
 
 permissions:
@@ -40,11 +44,11 @@ jobs:
           sudo apt-get update
           sudo apt-get install --yes --no-install-recommends \
             fp-compiler fp-units-rtl fp-units-base fp-units-fcl fp-units-db \
-            libsqlite3-0
+            libsqlite3-0 libhamlib4t64
 
       - name: Install Free Pascal (macOS)
         if: runner.os == 'macOS'
-        run: brew install fpc
+        run: brew install fpc hamlib
 
       - name: Install Lazarus and Free Pascal (Windows)
         if: runner.os == 'Windows'
@@ -81,12 +85,32 @@ jobs:
           7z x -y -o"$dir" "$dir/$zip" sqlite3.dll
           echo "MUNINN_SQLITE_LIBRARY=$(cygpath -w "$PWD/$dir/sqlite3.dll")" >> "$GITHUB_ENV"
 
+      # Hamlib: see MuninnLog/docs/adr/0008-radio-port-hamlib.md
+      # Linux and macOS install it above. The radio tests must not skip it.
+      - name: Provide Hamlib (Windows)
+        if: runner.os == 'Windows'
+        env:
+          HAMLIB_VERSION: "4.6.5"
+          HAMLIB_SHA256: 2a7bfae280ec8aef1d42558b73eaef7f5f0d1dfa9fd8463c15adde5fdec63851
+        run: |
+          zip="hamlib-w64-$HAMLIB_VERSION.zip"
+          dir=build/hamlib
+          mkdir -p "$dir"
+          curl --fail --silent --show-error --location --retry 3 \
+            --output "$dir/$zip" \
+            "https://github.com/Hamlib/Hamlib/releases/download/$HAMLIB_VERSION/$zip"
+          echo "$HAMLIB_SHA256 *$dir/$zip" | sha256sum --check
+          7z x -y -o"$dir" "$dir/$zip" "hamlib-w64-$HAMLIB_VERSION/bin/*.dll"
+          # libhamlib-4.dll and the DLLs it needs are found on PATH.
+          cygpath -w "$PWD/$dir/hamlib-w64-$HAMLIB_VERSION/bin" >> "$GITHUB_PATH"
+
       - name: Build muninn-cli
         run: scripts/build.sh
 
       - name: Run unit and integration tests
         env:
           MUNINN_TEST_RESULTS_DIR: build/test-results
+          MUNINN_REQUIRE_HAMLIB: "1"
         run: scripts/test.sh
 
       - name: Upload test results

@@ -4,6 +4,8 @@
 FPC="${FPC:-fpc}"
 EXPECTED_FPC_VERSION="3.2.2"
 BUILD_DIR="build"
+# HamlibComponent lives next to MuninnLog in this repository.
+HAMLIB_COMPONENT_DIR="../hamlib_component"
 
 # -Sa: assertions, -Criot: range/IO/overflow/stack checks, -gl: line info.
 FPC_FLAGS=(-Mobjfpc -Sh -Sa -Criot -gl -Fusrc/core)

@@ -10,7 +10,7 @@
 |---|---|
 | 体制 | 開発者 1 名（プロダクトオーナー兼レビュアー）と、AI コーディングエージェント（Claude Code、Codex など）。人数が増えたら第 13 節を見直す |
 | リポジトリ | `ji1uui/LazLogger` の `MuninnLog/` 配下。公開リポジトリ |
-| 外部コンポーネント | HamlibComponent（別リポジトリ、Rev.6.0）、HuginnEngine（別途開発） |
+| 外部コンポーネント | HamlibComponent（同じリポジトリの `hamlib_component/`、Rev.6.1）、HuginnEngine（別途開発） |
 | ツールチェーン | Free Pascal 3.2.2、Lazarus 4.4（[ADR 0001](adr/0001-toolchain.md) で固定） |
 
 ## 2. 過去の教訓とプロセスへの反映
@@ -122,9 +122,9 @@ AI エージェントが作業の大部分を担う前提で、次を守る。
 
 | 項目 | 方針 |
 |---|---|
-| 取り込み方 | 版を固定して取り込む（git submodule、または版番号付きでソースを同梱）。M0 で方式を決める |
+| 取り込み方 | 同じリポジトリの `hamlib_component/src` をそのまま参照する（[ADR 0008](adr/0008-radio-port-hamlib.md)）。版は `hamlib_component/README.md` の Rev で確認する |
 | 更新 | HamlibComponent の新しい版は、MuninnLog 側の PR で取り込む。その PR では CI の無線機テストに合格することを条件にする |
-| 要望 | MuninnLog 側で必要になった機能（未決事項 Q10：PTT の送信時間の監視、CW 送信、ライブラリ読み込み先の API 指定など）は、HamlibComponent 側の Issue として管理する |
+| 要望 | MuninnLog 側で必要になった機能（例：CW 送信。[ADR 0008](adr/0008-radio-port-hamlib.md) の「旧未決事項 Q10 への答え」を参照）は、HamlibComponent 側の Issue として管理する |
 
 ### HuginnEngine
 
@@ -184,10 +184,10 @@ M0 の完了条件：3 OS の CI で中核ライブラリと `muninn-cli` がビ
 | T5 | SQLite スキーマ v1（[03_DATA_MODEL.md](03_DATA_MODEL.md) の QSO と主要なプロファイル）とマイグレーションの仕組み | T4 | 空の DB の作成、v1 への移行、強制終了後の整合性のテスト合格 |
 | T6 | ADIF の読み込み・書き出しと、往復変換のゴールデンテスト | T4 | 代表的な ADIF（WSJT-X、Hamlog 出力など）で往復が一致 |
 | T7 | `muninn-cli` の骨組み（import / export / version） | T5, T6 | CLI で ADIF → SQLite → ADIF が通る。終了コードの規則を実装 |
-| T8 | 無線機ポートと HamlibComponent アダプター、CI でのダミー機種テスト | T2 | ダミー機種で周波数・モードの取得と設定のテスト合格 |
-| T9 | HuginnEngine 通信仕様 v1 の草案と模擬エンジン | T2 | 仕様書が HuginnEngine 側と合意され、模擬エンジンとの結合テストが合格 |
+| T8 | 無線機ポートと HamlibComponent アダプター、CI でのダミー機種テスト | T2 | ダミー機種で周波数・モードの取得と設定のテスト合格。**完了**（[ADR 0008](adr/0008-radio-port-hamlib.md)） |
+| T9 | HuginnEngine 通信仕様 v1 の草案と模擬エンジン | T2 | 仕様書が HuginnEngine 側と合意され、模擬エンジンとの結合テストが合格。**保留**（開発者の判断、2026-10-19） |
 | T10 | 画面技術の試作（未決事項 Q2）：入力画面とバンドマップを LCL＋独自描画で作る | T2 | 3 OS で動く試作と、反応速度の測定値。ADR で決定 |
-| T11 | `Lazarus/` の扱いの決定（未決事項 Q9） | — | ADR で決定し、必要なら実施 |
+| T11 | `Lazarus/` の扱いの決定（未決事項 Q9） | — | ADR で決定し、必要なら実施。**完了**：参考にとどめ、凍結する（[ADR 0007](adr/0007-lazarus-prototype.md)） |
 
 T8〜T11 は T4〜T7 と並行して進められる。
 

@@ -8,7 +8,8 @@ uses
   Classes, consoletestrunner,
   Muninn.Storage.Schema.Tests,
   Muninn.Storage.QsoRepository.Tests,
-  Muninn.Cli.Tests;
+  Muninn.Cli.Tests,
+  Muninn.Integrations.Hamlib.Tests;
 
 var
   Runner: TTestRunner;

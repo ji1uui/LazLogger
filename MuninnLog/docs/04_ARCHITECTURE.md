@@ -83,14 +83,14 @@ M0 で通信仕様 v1 を合意し、MuninnLog 側は模擬エンジンでテス
 
 ## 4. 無線機アダプター（HamlibComponent）
 
-無線機制御には、別途開発している **HamlibComponent（Rev.6.0）** を使う（決定事項 D3）。
-以下は [README](references/HamlibComponent_README_Rev6.0.md) に基づく。設計書・ソースは未確認。
+無線機制御には、別途開発している **HamlibComponent（Rev.6.1）** を使う（決定事項 D3）。
+ソースは同じリポジトリの [`hamlib_component/`](../../hamlib_component/) にある。中核との境界は [ADR 0008](adr/0008-radio-port-hamlib.md)（決定事項 D20）で決めた。
 
 ### 4.1 コンポーネントの要点
 
 | 項目 | 内容 |
 |---|---|
-| 提供形態 | Lazarus パッケージ（`HamlibComponent.lpk`）。MuninnLog と同じプロセスで動き、Hamlib の共有ライブラリを実行時に動的ロードする |
+| 提供形態 | Lazarus パッケージ（`HamlibComponent.lpk`）。MuninnLog と同じプロセスで動き、Hamlib の共有ライブラリを実行時に動的ロードする。MuninnLog はパッケージを使わず、`hamlib_component/src` のユニットを `-Fu` で参照する |
 | 中核 | LCL に依存しない。コンソールプログラムやテストでも使える |
 | スレッド | Hamlib のハンドルに触れるのは専用ワーカースレッド 1 本だけ（試験で検証済み）。UI はブロックされない |
 | API | `IRigService`（ファサード）を `TRigServiceFactory` から作る。操作は非同期（`SetFrequencyAsync` など）で、結果は値型の結果レコードとしてコールバックに届く |
@@ -104,24 +104,26 @@ M0 で通信仕様 v1 を合意し、MuninnLog 側は模擬エンジンでテス
 
 | MuninnLog 側の要素 | HamlibComponent との対応 |
 |---|---|
-| 無線機ポート（中核が依存する窓口） | `IRigService` を包むアダプター。中核は HamlibComponent の型に直接依存しない |
+| 無線機ポート（中核が依存する窓口） | `IRadioPort`（`Muninn.Core.Radio`）。`THamlibRadio`（`Muninn.Integrations.Hamlib`）が `IRigService` を包んで実装する。中核は HamlibComponent の型に直接依存しない |
 | Station Facility のトランシーバの接続設定（[03](03_DATA_MODEL.md) 3.8 節） | 機種（カタログの番号と名前の両方を保存）、ポート、タイムアウトの方針、conf トークン（`ptt_type` など） |
 | QSO の周波数・モードの自動入力 | `CurrentState` とポーリング。スプリット中は送信周波数を `FREQ`、受信周波数を `FREQ_RX` に記録する。`CurrentFreq` は選択中の VFO の値であり、送信周波数とは限らない点に注意 |
 | 接続状態の表示 | `OnConnectionChanged` と `TRigErrorKind` を、UI の「未接続 / 非対応 / ポート使用中 / 一時的な障害」に対応させる |
 | 能力の表示 | 空の能力は「非対応」ではなく「未照会」として扱う（README の方針に合わせる） |
 | DX のスプリット設定 | `demo2/DxSplitSequence.pas` と同じく、途中で失敗したらスプリットを解除してから失敗を報告する |
-| SO2R | 無線機ごとに `IRigService` を 1 つ作る（同一プロセスで複数を使えるかは要確認） |
+| SO2R | `TRigServiceFactory` をプロセスに 1 つ作り、無線機ごとに `IRigService` と `THamlibRadio` を 1 つ作る（複数台の同時動作は SO2R の作業で試験する） |
 | 起動時の版の検査 | 検証範囲外の Hamlib を拒否された場合の案内画面を用意する |
 
-### 4.3 MuninnLog 側で補うもの、または確認が必要なもの
+### 4.3 MuninnLog 側で補うもの
+
+確認した結果は [ADR 0008](adr/0008-radio-port-hamlib.md) の「旧未決事項 Q10 への答え」にまとめた。
 
 | 項目 | 内容 | 対応 |
 |---|---|---|
-| PTT の送信時間の上限 | README の二段タイムアウトは I/O の保護であり、PTT を押したままになる事態の監視ではない | MuninnLog 側で送信時間の上限を監視し、超えたら PTT を解除する（コンポーネント側に機能があれば利用） |
-| CW 送信 | README の対応範囲に `rig_send_morse` 相当が無い | CW キーヤーは WinKeyer または HuginnEngine で行う。必要ならコンポーネントへの追加を検討 |
-| Hamlib ライブラリの同梱 | README は利用者が自分でインストールする前提（Windows は DLL の配置、macOS は Homebrew） | 一般利用者向けには MuninnLog に同梱する。macOS はアプリ内に同梱して署名・公証する。読み込み先を環境変数（`VELA_HAMLIB_PATH`）ではなく API で指定できるか確認する。Hamlib は LGPL のため、同梱時の表記と入手方法を整える |
+| PTT の送信時間の上限 | 二段タイムアウトは I/O の保護であり、PTT を押したままになる事態の監視ではない。コンポーネントに監視の機能は無い | MuninnLog 側で送信時間の上限を監視し、超えたら PTT を解除する（送信の機能を作るときに実装する） |
+| CW 送信 | コンポーネントに `rig_send_morse` 相当が無い | CW キーヤーは WinKeyer または HuginnEngine で行う。必要ならコンポーネントへの追加を検討 |
+| Hamlib ライブラリの同梱 | README は利用者が自分でインストールする前提（Windows は DLL の配置、macOS は Homebrew） | 一般利用者向けには MuninnLog に同梱する。macOS はアプリ内に同梱して署名・公証する。読み込み先は `TRigServiceFactory.Create(<パス>)` で指定する。Hamlib は LGPL のため、同梱時の表記と入手方法を整える |
 | `cthreads` | Unix では LCL アプリでも `uses` の先頭に必要 | MuninnLog の GUI・CLI の起点で必ず指定する |
-| コールバックの届け先 | README の例では UI スレッドに届く | CLI（GUI なし）でどのように届くかを確認する |
+| コールバックの届け先 | `TThread.Queue` でメインスレッドに届く | LCL を使わないプログラム（CLI、テスト）は `CheckSynchronize` を呼ぶ（テストで確認済み） |
 | 他のアプリとの無線機の共有 | WSJT-X などと同じシリアルポートは同時に開けない（`rekAccessDenied`） | Hamlib のネットワーク機種（rigctld 経由）で共有する構成を用意する |
 | HuginnEngine からの送信 | HuginnEngine は別プロセス。送信要求は MuninnLog の無線機アダプター経由とする（第 3 節） | FT8 の送信開始タイミングに対する遅延を測定して確認する |
 

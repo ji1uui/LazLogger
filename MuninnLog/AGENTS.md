@@ -82,6 +82,7 @@ app/cli ─┼─> src/core <─ src/storage
 | 動作確認 | `MuninnLog/build/muninn-cli --version`。ADIF の取り込みと書き出しは `muninn-cli import --db <ログブック> <ファイル.adi>`、`muninn-cli export --db <ログブック> --output <ファイル.adi>`（[ADR 0006](docs/adr/0006-cli-and-logbook-adif.md)） |
 | テスト | `MuninnLog/scripts/test.sh`。FPCUnit（[ADR 0002](docs/adr/0002-unit-test-framework.md)）で単体テストと結合テストのランナーをビルドして実行する。1 件でも失敗すれば終了コード 1。`MUNINN_TEST_RESULTS_DIR=<ディレクトリ>` を指定すると、`unit.xml` と `integration.xml` にも結果を書き出す。結合テストの前に `muninn-cli` もビルドし、別プロセスとして試験する |
 | SQLite | 結合テストと保存処理は SQLite 3.37.0 以降のライブラリを実行時に読み込む（[ADR 0003](docs/adr/0003-storage-sqlite.md)）。見つからない場合は `MUNINN_SQLITE_LIBRARY=<ライブラリのパス>` を指定する |
+| Hamlib | 無線機のテストは HamlibComponent（`../hamlib_component/src`）を参照し、Hamlib 4.5〜4.7 のダミー機種を使う（[ADR 0008](docs/adr/0008-radio-port-hamlib.md)）。ライブラリが無ければそのテストは無視される。`MUNINN_REQUIRE_HAMLIB=1` で失敗にする（CI はこれを指定する） |
 | CI | `.github/workflows/muninnlog-ci.yml`。Windows / macOS / Linux でビルド、単体テスト、結合テスト、動作確認を行う。テスト結果の XML は成果物（artifact）として保存する。合格がマージ条件 |
 
 Windows では Git Bash などの bash から `scripts/build.sh` を実行する。
