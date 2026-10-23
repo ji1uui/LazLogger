@@ -8,6 +8,7 @@ uses
   Classes, consoletestrunner,
   Muninn.Storage.Schema.Tests,
   Muninn.Storage.QsoRepository.Tests,
+  Muninn.Storage.Logbook.Tests,
   Muninn.Cli.Tests,
   Muninn.Integrations.Hamlib.Tests;
 
