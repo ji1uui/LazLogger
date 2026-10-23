@@ -48,6 +48,8 @@ type
     procedure RefusesToOpenAMissingFile;
     procedure RefusesAFileThatIsNotALogbook;
     procedure RefusesANewerLogbookUnchanged;
+    procedure RefusesAnEmptyFileUnchanged;
+    procedure RefusesAnotherDatabaseUnchanged;
     procedure KeepsTheOpenLogbookWhenOpeningFails;
     procedure RemembersRecentLogbooks;
     procedure ForgetsAMissingRecentLogbook;
@@ -249,6 +251,46 @@ begin
   Database := TSqliteDatabase.Open(Path);
   try
     AssertEquals('left unchanged', 9999, Database.QueryInt64('PRAGMA user_version'));
+  finally
+    Database.Free;
+  end;
+end;
+
+procedure TLogbookTests.RefusesAnEmptyFileUnchanged;
+var
+  Path: string;
+begin
+  Path := PathOf('empty.muninnlog');
+  TFileStream.Create(Path, fmCreate).Free;
+  ExpectError(lekNotALogbook, Path, False);
+  with TFileStream.Create(Path, fmOpenRead or fmShareDenyNone) do
+    try
+      AssertEquals('still empty', 0, Size);
+    finally
+      Free;
+    end;
+end;
+
+procedure TLogbookTests.RefusesAnotherDatabaseUnchanged;
+var
+  Path: string;
+  Database: TSqliteDatabase;
+begin
+  Path := PathOf('other.sqlite');
+  Database := TSqliteDatabase.Open(Path);
+  try
+    Database.Execute('CREATE TABLE notes (id INTEGER PRIMARY KEY, body TEXT)');
+  finally
+    Database.Free;
+  end;
+  ExpectError(lekNotALogbook, Path, False);
+  Database := TSqliteDatabase.Open(Path);
+  try
+    AssertEquals('no migration', 0, Database.QueryInt64('PRAGMA user_version'));
+    AssertEquals('no table added', 1, Database.QueryInt64(
+      'SELECT count(*) FROM sqlite_master WHERE type = ''table'''));
+    AssertEquals('journal mode kept', 'delete',
+      LowerCase(Database.QueryText('PRAGMA journal_mode')));
   finally
     Database.Free;
   end;

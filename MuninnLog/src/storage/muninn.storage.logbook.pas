@@ -88,11 +88,47 @@ begin
   end;
 end;
 
+{ True when APath already holds a MuninnLog logbook: a schema version of at
+  least 1 and a qso table. Only reads, so another SQLite database or a file
+  of another kind is not changed (no WAL switch, no migration). }
+function IsLogbookFile(const APath: string): Boolean;
+var
+  Database: TSqliteDatabase;
+begin
+  Database := TSqliteDatabase.Open(APath);
+  try
+    Result := (SchemaVersion(Database) >= 1) and (Database.QueryInt64(
+      'SELECT count(*) FROM sqlite_master WHERE type = ''table'' AND name = ''qso''') = 1);
+  finally
+    Database.Free;
+  end;
+end;
+
 function TSqliteLogbookStore.Open(const APath: string): ILogbook;
+var
+  IsLogbook: Boolean;
 begin
   { SQLite would create a missing file; opening must not. }
   if not FileExists(APath) then
     raise ELogbookError.CreateKind(lekNotFound, APath + ' does not exist');
+  try
+    IsLogbook := IsLogbookFile(APath);
+  except
+    on E: ESqliteError do
+      case E.ResultCode and $FF of
+        SQLITE_BUSY, SQLITE_LOCKED:
+          raise ELogbookError.CreateKind(lekBusy, E.Message);
+        SQLITE_NOTADB, SQLITE_CORRUPT:
+          raise ELogbookError.CreateKind(lekNotALogbook, E.Message);
+      else
+        raise ELogbookError.CreateKind(lekFailed, E.Message);
+      end;
+  end;
+  { An empty file, another application's database, or a logbook whose
+    creation was cut off before its first migration. }
+  if not IsLogbook then
+    raise ELogbookError.CreateKind(lekNotALogbook,
+      APath + ' is not a MuninnLog logbook');
   Result := OpenAsLogbook(APath);
 end;
 

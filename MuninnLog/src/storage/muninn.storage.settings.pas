@@ -24,6 +24,7 @@ procedure SaveRecentLogbooks(const ADirectory: string; const AList: TStrings);
 implementation
 
 uses
+  {$IFDEF WINDOWS}Windows,{$ELSE}BaseUnix,{$ENDIF}
   SysUtils;
 
 const
@@ -90,10 +91,14 @@ begin
   finally
     Lines.Free;
   end;
-  { RenameFile does not replace an existing file on Windows. }
-  if FileExists(FileName) and not DeleteFile(FileName) then
-    raise EInOutError.CreateFmt('Cannot replace %s', [FileName]);
-  if not RenameFile(TempName, FileName) then
+  { Replace in one step: at every moment the old or the new list exists. }
+  {$IFDEF WINDOWS}
+  if not MoveFileExW(PWideChar(UnicodeString(TempName)),
+    PWideChar(UnicodeString(FileName)),
+    MOVEFILE_REPLACE_EXISTING or MOVEFILE_WRITE_THROUGH) then
+  {$ELSE}
+  if FpRename(TempName, FileName) <> 0 then
+  {$ENDIF}
     raise EInOutError.CreateFmt('Cannot write %s', [FileName]);
 end;
 
