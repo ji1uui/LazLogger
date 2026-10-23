@@ -29,6 +29,10 @@ uses
 
 const
   RecentFileName = 'recent-logbooks.txt';
+  {$IFDEF WINDOWS}
+  { Not declared in FPC 3.2.2's Windows unit (winbase.h: 0x8). }
+  MOVEFILE_WRITE_THROUGH = $00000008;
+  {$ENDIF}
 
 function SettingsDirectory: string;
 var
