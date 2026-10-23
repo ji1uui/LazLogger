@@ -100,7 +100,9 @@ begin
   Logbook := TSqliteLogbookStore.Create.Open(APath);
   Writer := Logbook.CreateWriter;
   Recorder := TSavedRecorder.Create;
-  Recorder.Ids := TFileStream.Create(AIdsPath, fmCreate);
+  { Shared, so the test can read it while Windows is still tearing the killed
+    process down. }
+  Recorder.Ids := TFileStream.Create(AIdsPath, fmCreate or fmShareDenyNone);
   Writer.SetOnSaved(@Recorder.Saved);
   if not TMode.TryCreate('CW', '', Mode) then
     Halt(3);

@@ -319,6 +319,32 @@ begin
   AssertEquals('no band known', '', Worked[2].Band);
 end;
 
+{ Windows may still hold the killed helper's handle for a moment after
+  RunCommand returns: read without denying anyone, and retry briefly. }
+procedure ReadSharedLines(const APath: string; const ALines: TStrings);
+var
+  Stream: TFileStream;
+  Deadline: QWord;
+begin
+  Deadline := GetTickCount64 + 5000;
+  repeat
+    try
+      Stream := TFileStream.Create(APath, fmOpenRead or fmShareDenyNone);
+      try
+        ALines.LoadFromStream(Stream);
+        Exit;
+      finally
+        Stream.Free;
+      end;
+    except
+      on EFOpenError do
+        if GetTickCount64 >= Deadline then
+          raise;
+    end;
+    Sleep(50);
+  until False;
+end;
+
 procedure TQsoWriterTests.KeepsSavedQsosAfterAKill;
 var
   IdsPath, Helper, Output: string;
@@ -332,7 +358,7 @@ begin
   RunCommand(Helper, ['writer', FPath, IdsPath], Output, [poNoConsole]);
   Ids := TStringList.Create;
   try
-    Ids.LoadFromFile(IdsPath);
+    ReadSharedLines(IdsPath, Ids);
     AssertTrue('the helper saw QSOs saved', Ids.Count >= 50);
     Database := OpenLogDatabase(FPath);
     try
