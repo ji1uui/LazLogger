@@ -35,6 +35,7 @@ JA コンテスター全般を主な利用者とし、海外のコンテスト�
 | D19 | 既存の `Lazarus/` の試作は、クラス構成やロジックの参考にとどめる。MuninnLog から使わず、修復も削除もしない（凍結） | [ADR 0007](adr/0007-lazarus-prototype.md)（旧未決事項 Q9 を解消） |
 | D20 | 中核は無線機ポート `IRadioPort` に依存し、`THamlibRadio` が HamlibComponent（`hamlib_component/src` を直接参照）で実装する。データ用のモードは PKT-USB で設定する。CI は 3 OS で Hamlib のダミー機種を試験する | [ADR 0008](adr/0008-radio-port-hamlib.md)（旧未決事項 Q10 を解消） |
 | D21 | 画面は LCL＋独自描画で作る（WebView は使わない）。画面の判断は LCL に依存しない Presenter に置いて試験し、CI で 3 OS の反応速度を毎回測る | [ADR 0009](adr/0009-ui-technology.md)（旧未決事項 Q2 を解消） |
+| D22 | M0 の次は M1（日常ログ）に進む。最初の利用者は日常運用の利用者（開発者本人のアルファ運用から）とし、M2（Omoikane v1）はその後とする | 開発者の判断（2026-10-23、旧未決事項 Q1 を解消）。計画は [05](05_DEVELOPMENT_PROCESS.md) 第 13.2 節 |
 
 ## 3. 開発原則
 
@@ -116,7 +117,7 @@ JA コンテスター全般を主な利用者とし、海外のコンテスト�
 | **M4 運用中のコンテストと移動運用** | ESM、バンドマップ、パーシャルチェック、CW キーヤー、POTA / SOTA（GPS、複数公園、公園別出力） | 高度 CW デコード（学習機能は同意前提） |
 | **M5 拡張** | オンライン同期、アワード（Yata Logic）、規約パッケージの署名配布とオンライン更新、テーマエディタ、クラスタ、マルチオペ | |
 
-M1 と M2 の順序は未決事項 Q1 で決める。
+M1 と M2 の順序は、M1 を先とした（決定事項 D22）。
 
 作業の進め方（イテレーション、PR、CI、M0 のタスク分解）は [05_DEVELOPMENT_PROCESS.md](05_DEVELOPMENT_PROCESS.md) を参照。
 
@@ -139,9 +140,8 @@ M1 と M2 の順序は未決事項 Q1 で決める。
 
 | # | 問い | 影響 |
 |---|---|---|
-| Q1 | 最初に獲得する利用者は日常運用・FT8 ユーザーか、コンテスターか | M1 と M2 の順序 |
 | Q6 | HuginnEngine の提供形態（別プロセス / ライブラリ）と、開発体制・進捗 | `THuginnInterface` の設計、M3 の時期 |
 | Q7 | Yata Logic のスクリプト実行系（Pascal Script 系ライブラリの選定）と、署名鍵の管理者 | Omoikane の実装、配布の信頼モデル |
 | Q8 | Linux を正式サポートに含めるか | 配布とサポートの範囲 |
 
-旧 Q3（保存方式）は D10、旧 Q4（HamlibComponentの提供形態）は D12、旧 Q5（実装の置き場所）は `MuninnLog/` ディレクトリ、旧 Q9（`Lazarus/` の扱い）は D19、旧 Q10（HamlibComponent について確認したい点）は D20、旧 Q2（画面の技術）は D21 で解消した。
+旧 Q3（保存方式）は D10、旧 Q4（HamlibComponentの提供形態）は D12、旧 Q5（実装の置き場所）は `MuninnLog/` ディレクトリ、旧 Q9（`Lazarus/` の扱い）は D19、旧 Q10（HamlibComponent について確認したい点）は D20、旧 Q2（画面の技術）は D21、旧 Q1（最初に獲得する利用者）は D22 で解消した。
