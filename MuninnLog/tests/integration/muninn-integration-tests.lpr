@@ -9,6 +9,7 @@ uses
   Muninn.Storage.Schema.Tests,
   Muninn.Storage.QsoRepository.Tests,
   Muninn.Storage.Logbook.Tests,
+  Muninn.Storage.QsoWriter.Tests,
   Muninn.Cli.Tests,
   Muninn.Integrations.Hamlib.Tests;
 

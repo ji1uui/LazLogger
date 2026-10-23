@@ -9,7 +9,7 @@ unit Muninn.Storage.Logbook;
 interface
 
 uses
-  SysUtils, Muninn.Core.Logbook, Muninn.Storage.Sqlite;
+  SysUtils, Muninn.Core.Logbook, Muninn.Core.QsoWriter, Muninn.Storage.Sqlite;
 
 type
   TSqliteLogbook = class(TInterfacedObject, ILogbook)
@@ -21,6 +21,8 @@ type
     destructor Destroy; override;
     function Path: string;
     function QsoCount: Int64;
+    function LoadWorked: TWorkedEntries;
+    function CreateWriter: IQsoWriter;
     property Database: TSqliteDatabase read FDatabase;
   end;
 
@@ -30,10 +32,15 @@ type
     function CreateNew(const APath: string): ILogbook;
   end;
 
+const
+  { qso.source of QSOs typed in the entry line. }
+  EntrySource = 'entry';
+
 implementation
 
 uses
-  Muninn.Storage.Schema;
+  Muninn.Core.Frequency, Muninn.Core.Band, Muninn.Storage.Schema,
+  Muninn.Storage.QsoWriter;
 
 const
   SQLITE_BUSY = 5;
@@ -63,6 +70,46 @@ end;
 function TSqliteLogbook.QsoCount: Int64;
 begin
   Result := FDatabase.QueryInt64('SELECT count(*) FROM qso');
+end;
+
+function TSqliteLogbook.LoadWorked: TWorkedEntries;
+var
+  Statement: TSqliteStatement;
+  Count: Integer;
+  Frequency: TFrequencyHz;
+  Band: TBand;
+begin
+  Result := nil;
+  SetLength(Result, QsoCount);
+  Count := 0;
+  Statement := TSqliteStatement.Create(FDatabase,
+    'SELECT call, band, freq_hz, mode FROM qso');
+  try
+    while Statement.Step do
+    begin
+      if Count = Length(Result) then
+        SetLength(Result, Count * 2 + 16);
+      Result[Count].Call := UpperCase(Statement.ColumnText(0));
+      Result[Count].Band := LowerCase(Statement.ColumnText(1));
+      { A QSO with a frequency but no band (allowed by ADIF) gets the band of
+        its frequency. }
+      if (Result[Count].Band = '') and not Statement.ColumnIsNull(2) and
+        TFrequencyHz.TryFromHz(Statement.ColumnInt64(2), Frequency) and
+        TryBandOfFrequency(Frequency, Band) then
+        Result[Count].Band := BandAdifName(Band);
+      Result[Count].Mode := UpperCase(Statement.ColumnText(3));
+      Inc(Count);
+    end;
+  finally
+    Statement.Free;
+  end;
+  SetLength(Result, Count);
+end;
+
+function TSqliteLogbook.CreateWriter: IQsoWriter;
+begin
+  { Its own connection: the writer's thread is its only user. }
+  Result := TSqliteQsoWriter.Create(OpenLogDatabase(FDatabase.Path), EntrySource);
 end;
 
 { TSqliteLogbookStore }

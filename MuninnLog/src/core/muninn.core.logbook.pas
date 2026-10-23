@@ -9,9 +9,20 @@ unit Muninn.Core.Logbook;
 interface
 
 uses
-  SysUtils;
+  SysUtils, Muninn.Core.QsoWriter;
 
 type
+  { What the duplicate check needs from one logged QSO. }
+  TWorkedEntry = record
+    Call: string;
+    { ADIF band name in lower case; '' when neither band nor frequency was
+      recorded. }
+    Band: string;
+    { ADIF MODE (not SUBMODE). }
+    Mode: string;
+  end;
+  TWorkedEntries = array of TWorkedEntry;
+
   TLogbookErrorKind = (
     lekNotFound,
     lekAlreadyExists,
@@ -35,6 +46,10 @@ type
     ['{3E9B1C52-7A0D-4F6E-8B21-5C4D9E7F0A16}']
     function Path: string;
     function QsoCount: Int64;
+    { Every QSO's call, band and mode, for the duplicate and partial check. }
+    function LoadWorked: TWorkedEntries;
+    { A writer with its own connection to this logbook. }
+    function CreateWriter: IQsoWriter;
   end;
 
   ILogbookStore = interface
