@@ -34,6 +34,11 @@ type
     procedure CloseLogbookClick(Sender: TObject);
     procedure QuitClick(Sender: TObject);
     procedure UpdateEntryEnabled;
+    procedure FrequencyChanged(Sender: TObject);
+    procedure UpdateStatusBar;
+    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+    procedure UseLogbook;
+    procedure LeaveLogbook;
   private
     FTheme: TUiTheme;
     FBandmapModel: TBandmapModel;
@@ -43,7 +48,12 @@ type
     FRstSentEdit: TEdit;
     FRstReceivedEdit: TEdit;
     FModeCombo: TComboBox;
-    FFrequencyLabel: TLabel;
+    FFrequencyEdit: TEdit;
+    FSettingFrequency: Boolean;
+    FLogbookText: string;
+    FLogbookPath: string;
+    FQsoCount: Int64;
+    FSaveText: string;
     FStatusLabel: TLabel;
     FPartialList: TListBox;
     FLogList: TListBox;
@@ -82,6 +92,10 @@ type
     procedure ShowDuplicate(const AIsDuplicate: Boolean);
     procedure ShowLogged(const AQso: TLoggedQso);
     procedure ClearEntry;
+    procedure ShowSaveState(const ATicket: Int64; const AState: TQsoSaveState;
+      const AMessage: string);
+    procedure ShowSaveStatus(const APending: Integer; const ALastSavedUtcMs: Int64;
+      const ALastError: string);
     { ILogbookView }
     procedure ShowLogbook(const APath: string; const AQsoCount: Int64);
     procedure ShowNoLogbook;
@@ -115,6 +129,7 @@ begin
   Width := Scale96ToScreen(960);
   Height := Scale96ToScreen(600);
   KeyPreview := True;
+  OnCloseQuery := @FormCloseQuery;
   FBandmapModel := TBandmapModel.Create(7000000, 7040000);
   BuildMenu;
   BuildControls;
@@ -278,18 +293,71 @@ end;
 
 procedure TMainForm.ShowLogbook(const APath: string; const AQsoCount: Int64);
 begin
+  LeaveLogbook;
   Caption := ExtractFileName(APath) + ' - MuninnLog';
-  FStatusBar.SimpleText := Format('%s   %d QSOs', [APath, AQsoCount]);
+  FLogbookPath := APath;
+  FQsoCount := AQsoCount;
+  FLogbookText := Format('%s   %d QSOs', [FLogbookPath, FQsoCount]);
+  UseLogbook;
+  UpdateStatusBar;
   UpdateEntryEnabled;
   FocusCall;
 end;
 
 procedure TMainForm.ShowNoLogbook;
 begin
+  LeaveLogbook;
   if not FDemo then
     Caption := 'MuninnLog';
-  FStatusBar.SimpleText := 'No logbook open. Use File > New logbook or Open logbook.';
+  FLogbookText := 'No logbook open. Use File > New logbook or Open logbook.';
+  FSaveText := '';
+  UpdateStatusBar;
   UpdateEntryEnabled;
+end;
+
+procedure TMainForm.UseLogbook;
+begin
+  if (FLogbooks = nil) or not FLogbooks.HasLogbook then
+    Exit;
+  FLogList.Items.Clear;
+  FPresenter.AttachLog(FLogbooks.Logbook.CreateWriter, FLogbooks.Logbook.LoadWorked);
+  RefreshWorked;
+end;
+
+procedure TMainForm.LeaveLogbook;
+var
+  Pending: Integer;
+begin
+  if FPresenter.Writer = nil then
+    Exit;
+  Pending := FPresenter.PendingCount;
+  if not FPresenter.DetachLog(5000) then
+    MessageDlg('MuninnLog', Format('%d QSOs could not be saved before the ' +
+      'logbook was closed. Check the disk and enter them again.', [Pending]),
+      mtWarning, [mbOK], 0);
+  FLogList.Items.Clear;
+  RefreshWorked;
+end;
+
+procedure TMainForm.UpdateStatusBar;
+begin
+  if FSaveText = '' then
+    FStatusBar.SimpleText := FLogbookText
+  else
+    FStatusBar.SimpleText := FLogbookText + '   |   ' + FSaveText;
+end;
+
+procedure TMainForm.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+var
+  Pending: Integer;
+begin
+  Pending := FPresenter.PendingCount;
+  if (Pending = 0) or ((FPresenter.Writer <> nil) and
+    FPresenter.Writer.Flush(5000)) then
+    Exit;
+  CanClose := MessageDlg('MuninnLog', Format('%d QSOs are still waiting to be ' +
+    'saved. Quit anyway and lose them?', [FPresenter.PendingCount]),
+    mtWarning, [mbYes, mbNo], 0) = mrYes;
 end;
 
 procedure TMainForm.ShowLogbookError(const AMessage: string);
@@ -368,14 +436,10 @@ begin
   FModeCombo.OnChange := @ModeChanged;
   PlaceNext(FModeCombo);
 
-  FFrequencyLabel := TLabel.Create(Self);
-  FFrequencyLabel.Parent := FEntryPanel;
-  FFrequencyLabel.Align := alLeft;
-  FFrequencyLabel.Layout := tlCenter;
-  FFrequencyLabel.BorderSpacing.Left := Scale96ToFont(12);
-  FFrequencyLabel.Font.Size := 14;
-  FFrequencyLabel.Caption := '— kHz';
-  PlaceNext(FFrequencyLabel);
+  { Typed in kHz, or set by the band map and the radio. }
+  FFrequencyEdit := AddEdit(FEntryPanel, 'kHz', 96);
+  FFrequencyEdit.Font.Size := 12;
+  FFrequencyEdit.OnChange := @FrequencyChanged;
 
   FStatusLabel := TLabel.Create(Self);
   FStatusLabel.Parent := Self;
@@ -475,8 +539,24 @@ begin
     Exit;
   FPresenter.SetFrequency(Frequency);
   FBandmapModel.SetCurrentFrequency(Frequency);
-  FFrequencyLabel.Caption := FormatFloat('0.0', AHz / 1000) + ' kHz';
-  FBandmap.Invalidate;
+  FSettingFrequency := True;
+  try
+    FFrequencyEdit.Text := FormatFloat('0.###', AHz / 1000);
+  finally
+    FSettingFrequency := False;
+  end;
+  RefreshWorked;
+end;
+
+procedure TMainForm.FrequencyChanged(Sender: TObject);
+begin
+  if FSettingFrequency then
+    Exit;
+  if FPresenter.FrequencyTextChanged(FFrequencyEdit.Text) then
+  begin
+    FBandmapModel.SetCurrentFrequency(FPresenter.Frequency);
+    RefreshWorked;
+  end;
 end;
 
 procedure TMainForm.FocusCall;
@@ -541,16 +621,66 @@ begin
   ShowStatus;
 end;
 
+function SaveStateText(const AState: TQsoSaveState): string;
+begin
+  { Words, not only colours (ADR 0009). }
+  case AState of
+    qssMemoryOnly: Result := '[demo]';
+    qssPending: Result := '[saving]';
+    qssSaved: Result := '[saved]';
+  else
+    Result := '[NOT SAVED - retrying]';
+  end;
+end;
+
 procedure TMainForm.ShowLogged(const AQso: TLoggedQso);
 var
   Instant: TUtcInstant;
 begin
   RefreshWorked;
   Instant := TUtcInstant.FromUnixMs(AQso.TimeOnUtcMs);
-  FLogList.Items.Insert(0, Format('%s  %-12s %10s  %-8s %s %s',
+  FLogList.Items.InsertObject(0, Format('%s  %-12s %10s  %-8s %-3s %-3s  %s',
     [Instant.ToIso8601, AQso.Call.ToString,
      FormatFloat('0.0', AQso.Frequency.Hz / 1000), AQso.Mode.DisplayName,
-     AQso.RstSent, AQso.RstReceived]));
+     AQso.RstSent, AQso.RstReceived, SaveStateText(AQso.SaveState)]),
+    TObject(PtrInt(AQso.Ticket)));
+end;
+
+procedure TMainForm.ShowSaveState(const ATicket: Int64; const AState: TQsoSaveState;
+  const AMessage: string);
+var
+  Index, Mark: Integer;
+  Row: string;
+begin
+  for Index := 0 to FLogList.Items.Count - 1 do
+    if PtrInt(FLogList.Items.Objects[Index]) = ATicket then
+    begin
+      Row := FLogList.Items[Index];
+      Mark := LastDelimiter('[', Row);
+      if Mark > 0 then
+        FLogList.Items[Index] := Copy(Row, 1, Mark - 1) + SaveStateText(AState);
+      Break;
+    end;
+  if AState = qssSaved then
+  begin
+    Inc(FQsoCount);
+    FLogbookText := Format('%s   %d QSOs', [FLogbookPath, FQsoCount]);
+    UpdateStatusBar;
+  end;
+end;
+
+procedure TMainForm.ShowSaveStatus(const APending: Integer;
+  const ALastSavedUtcMs: Int64; const ALastError: string);
+begin
+  if ALastError <> '' then
+    FSaveText := Format('NOT SAVED: %s (%d waiting, retrying)', [ALastError, APending])
+  else if APending > 0 then
+    FSaveText := Format('saving %d', [APending])
+  else if ALastSavedUtcMs > 0 then
+    FSaveText := 'saved ' + Copy(TUtcInstant.FromUnixMs(ALastSavedUtcMs).ToIso8601, 12, 8) + ' UTC'
+  else
+    FSaveText := '';
+  UpdateStatusBar;
 end;
 
 procedure TMainForm.ClearEntry;

@@ -6,8 +6,8 @@ unit Muninn.UI.QsoEntry.Tests;
 interface
 
 uses
-  Classes, fpcunit, testregistry, Muninn.Core.Frequency, Muninn.Core.Mode,
-  Muninn.UI.QsoEntry;
+  Classes, SysUtils, fpcunit, testregistry, Muninn.Core.Frequency, Muninn.Core.Mode,
+  Muninn.Core.Qso, Muninn.Core.QsoWriter, Muninn.Core.Logbook, Muninn.UI.QsoEntry;
 
 type
   { Records what the presenter shows. }
@@ -19,7 +19,14 @@ type
     Total: Integer;
     Duplicate: Boolean;
     LoggedCalls: TStringList;
+    LoggedStates: array of TQsoSaveState;
     Clears: Integer;
+    StateTicket: Int64;
+    State: TQsoSaveState;
+    StateMessage: string;
+    Pending: Integer;
+    LastSaved: Int64;
+    LastError: string;
     constructor Create;
     destructor Destroy; override;
     procedure ShowCallsignState(const ANormalized, AProblem: string);
@@ -27,6 +34,30 @@ type
     procedure ShowDuplicate(const AIsDuplicate: Boolean);
     procedure ShowLogged(const AQso: TLoggedQso);
     procedure ClearEntry;
+    procedure ShowSaveState(const ATicket: Int64; const AState: TQsoSaveState;
+      const AMessage: string);
+    procedure ShowSaveStatus(const APending: Integer; const ALastSavedUtcMs: Int64;
+      const ALastError: string);
+  end;
+
+  { Keeps the submitted QSOs; the test reports results. }
+  TFakeWriter = class(TInterfacedObject, IQsoWriter)
+  public
+    Submitted: TList;
+    Tickets: array of Int64;
+    Full: Boolean;
+    OnSaved: TQsoSavedEvent;
+    OnFailed: TQsoSaveFailedEvent;
+    Flushed: Boolean;
+    constructor Create;
+    destructor Destroy; override;
+    function Submit(const AQso: TQsoRecord): Int64;
+    function PendingCount: Integer;
+    procedure SetOnSaved(AHandler: TQsoSavedEvent);
+    procedure SetOnFailed(AHandler: TQsoSaveFailedEvent);
+    function Flush(const ATimeoutMs: Cardinal): Boolean;
+    function Qso(const AIndex: Integer): TQsoRecord;
+    procedure Save(const AIndex: Integer);
   end;
 
   TQsoEntryPresenterTests = class(TTestCase)
@@ -48,13 +79,16 @@ type
     procedure RefusesInvalidCallsign;
     procedure RefusesWithoutFrequency;
     procedure FlagsDuplicateOnSameBandAndMode;
+    procedure HandsTheQsoToTheWriter;
+    procedure ShowsSavedAndFailed;
+    procedure KeepsTheEntryWhenTheQueueIsFull;
+    procedure UsesTheLogForDuplicatesAndPartials;
+    procedure DetachingForgetsTheLog;
+    procedure ParsesFrequencyText;
     procedure TellsWorkedForAnyFrequency;
   end;
 
 implementation
-
-uses
-  SysUtils;
 
 constructor TFakeEntryView.Create;
 begin
@@ -94,6 +128,90 @@ end;
 procedure TFakeEntryView.ClearEntry;
 begin
   Inc(Clears);
+end;
+
+procedure TFakeEntryView.ShowSaveState(const ATicket: Int64;
+  const AState: TQsoSaveState; const AMessage: string);
+begin
+  StateTicket := ATicket;
+  State := AState;
+  StateMessage := AMessage;
+end;
+
+procedure TFakeEntryView.ShowSaveStatus(const APending: Integer;
+  const ALastSavedUtcMs: Int64; const ALastError: string);
+begin
+  Pending := APending;
+  LastSaved := ALastSavedUtcMs;
+  LastError := ALastError;
+end;
+
+{ TFakeWriter }
+
+constructor TFakeWriter.Create;
+begin
+  inherited Create;
+  Submitted := TList.Create;
+end;
+
+destructor TFakeWriter.Destroy;
+var
+  Index: Integer;
+begin
+  for Index := 0 to Submitted.Count - 1 do
+    TQsoRecord(Submitted[Index]).Free;
+  Submitted.Free;
+  inherited Destroy;
+end;
+
+function TFakeWriter.Submit(const AQso: TQsoRecord): Int64;
+begin
+  if Full then
+  begin
+    AQso.Free;
+    raise EQsoQueueFull.Create('1000 QSOs are waiting to be saved');
+  end;
+  Submitted.Add(AQso);
+  Result := 100 + Submitted.Count;
+  SetLength(Tickets, Submitted.Count);
+  Tickets[High(Tickets)] := Result;
+end;
+
+function TFakeWriter.PendingCount: Integer;
+begin
+  Result := Submitted.Count;
+end;
+
+procedure TFakeWriter.SetOnSaved(AHandler: TQsoSavedEvent);
+begin
+  OnSaved := AHandler;
+end;
+
+procedure TFakeWriter.SetOnFailed(AHandler: TQsoSaveFailedEvent);
+begin
+  OnFailed := AHandler;
+end;
+
+function TFakeWriter.Flush(const ATimeoutMs: Cardinal): Boolean;
+begin
+  Flushed := True;
+  Result := Submitted.Count = 0;
+end;
+
+function TFakeWriter.Qso(const AIndex: Integer): TQsoRecord;
+begin
+  Result := TQsoRecord(Submitted[AIndex]);
+end;
+
+procedure TFakeWriter.Save(const AIndex: Integer);
+var
+  Ticket: Int64;
+begin
+  Ticket := Tickets[AIndex];
+  TQsoRecord(Submitted[AIndex]).Free;
+  Submitted.Delete(AIndex);
+  Delete(Tickets, AIndex, 1);
+  OnSaved(Ticket, 'id');
 end;
 
 function TQsoEntryPresenterTests.Clock: Int64;
@@ -243,6 +361,145 @@ begin
   AssertTrue(TMode.TryCreate('SSB', 'LSB', Ssb));
   FPresenter.SetMode(Ssb);
   AssertFalse('other mode', FPresenter.IsWorked('JA1ABC', Same));
+end;
+
+procedure TQsoEntryPresenterTests.HandsTheQsoToTheWriter;
+var
+  Writer: TFakeWriter;
+  WriterRef: IQsoWriter;
+  Qso: TQsoRecord;
+begin
+  Writer := TFakeWriter.Create;
+  WriterRef := Writer;
+  FPresenter.AttachLog(WriterRef, nil);
+  Tune(7010000);
+  FPresenter.CallsignChanged('jh1xyz');
+  AssertTrue(FPresenter.LogRequested('599', '579'));
+  AssertEquals(1, Writer.Submitted.Count);
+  Qso := Writer.Qso(0);
+  AssertEquals('JH1XYZ', Qso.Call);
+  AssertEquals(7010000, Qso.FrequencyHz);
+  AssertEquals('40m', Qso.Band);
+  AssertEquals('CW', Qso.Mode.Mode);
+  AssertEquals(1700000000000, Qso.TimeOn.UnixMs);
+  AssertEquals('599', Qso.OtherFields.Value('RST_SENT'));
+  AssertEquals('579', Qso.OtherFields.Value('RST_RCVD'));
+  AssertTrue('shown as pending', FPresenter.Logged[0].SaveState = qssPending);
+  AssertEquals(101, FPresenter.Logged[0].Ticket);
+  AssertEquals('pending count shown', 1, FViewObject.Pending);
+  AssertEquals('entry cleared at once', 1, FViewObject.Clears);
+end;
+
+procedure TQsoEntryPresenterTests.ShowsSavedAndFailed;
+var
+  Writer: TFakeWriter;
+  WriterRef: IQsoWriter;
+begin
+  Writer := TFakeWriter.Create;
+  WriterRef := Writer;
+  FPresenter.AttachLog(WriterRef, nil);
+  Tune(7010000);
+  FPresenter.CallsignChanged('JA1ABC');
+  AssertTrue(FPresenter.LogRequested('599', '599'));
+  Writer.OnFailed(101, 'disk full');
+  AssertTrue(FViewObject.State = qssFailed);
+  AssertEquals('disk full', FViewObject.StateMessage);
+  AssertEquals('disk full', FViewObject.LastError);
+  AssertTrue(FPresenter.Logged[0].SaveState = qssFailed);
+  Writer.Save(0);
+  AssertTrue('saved after the retry', FViewObject.State = qssSaved);
+  AssertEquals(101, FViewObject.StateTicket);
+  AssertTrue(FPresenter.Logged[0].SaveState = qssSaved);
+  AssertEquals(0, FViewObject.Pending);
+  AssertEquals(1700000000000, FViewObject.LastSaved);
+  AssertEquals('error cleared', '', FViewObject.LastError);
+end;
+
+procedure TQsoEntryPresenterTests.KeepsTheEntryWhenTheQueueIsFull;
+var
+  Writer: TFakeWriter;
+  WriterRef: IQsoWriter;
+begin
+  Writer := TFakeWriter.Create;
+  WriterRef := Writer;
+  Writer.Full := True;
+  FPresenter.AttachLog(WriterRef, nil);
+  Tune(7010000);
+  FPresenter.CallsignChanged('JA1ABC');
+  AssertFalse(FPresenter.LogRequested('599', '599'));
+  AssertEquals('entry kept', 0, FViewObject.Clears);
+  AssertEquals(0, FPresenter.LoggedCount);
+  AssertTrue('problem shown', Pos('not logged', FViewObject.Problem) = 1);
+end;
+
+procedure TQsoEntryPresenterTests.UsesTheLogForDuplicatesAndPartials;
+var
+  Worked: TWorkedEntries;
+  WriterRef: IQsoWriter;
+begin
+  SetLength(Worked, 2);
+  Worked[0].Call := 'JR1QQQ';
+  Worked[0].Band := '40m';
+  Worked[0].Mode := 'CW';
+  Worked[1].Call := 'JR1QQR';
+  Worked[1].Band := '';
+  Worked[1].Mode := 'CW';
+  WriterRef := TFakeWriter.Create;
+  FPresenter.AttachLog(WriterRef, Worked);
+  Tune(7010000);
+  FPresenter.CallsignChanged('JR1QQQ');
+  AssertTrue('worked on 40 m CW', FViewObject.Duplicate);
+  FPresenter.CallsignChanged('JR1QQR');
+  AssertFalse('no band: not a duplicate', FViewObject.Duplicate);
+  FPresenter.CallsignChanged('1QQ');
+  AssertEquals('both in the partial check', 2, FViewObject.Total);
+end;
+
+procedure TQsoEntryPresenterTests.DetachingForgetsTheLog;
+var
+  Worked: TWorkedEntries;
+  Writer: TFakeWriter;
+  WriterRef: IQsoWriter;
+begin
+  SetLength(Worked, 1);
+  Worked[0].Call := 'JR1QQQ';
+  Worked[0].Band := '40m';
+  Worked[0].Mode := 'CW';
+  Writer := TFakeWriter.Create;
+  WriterRef := Writer;
+  FPresenter.AttachLog(WriterRef, Worked);
+  AssertTrue(FPresenter.DetachLog(100));
+  AssertTrue('flushed', Writer.Flushed);
+  AssertTrue('handlers cleared', not Assigned(Writer.OnSaved));
+  AssertTrue(FPresenter.Writer = nil);
+  Tune(7010000);
+  FPresenter.CallsignChanged('JR1QQQ');
+  AssertFalse(FViewObject.Duplicate);
+end;
+
+procedure TQsoEntryPresenterTests.ParsesFrequencyText;
+
+  procedure Refuse(const AText: string);
+  begin
+    AssertFalse(AText, FPresenter.FrequencyTextChanged(AText));
+  end;
+
+begin
+  AssertTrue(FPresenter.FrequencyTextChanged('7010'));
+  FPresenter.CallsignChanged('JA1ABC');
+  AssertTrue(FPresenter.LogRequested('', ''));
+  AssertEquals(7010000, FPresenter.Logged[0].Frequency.Hz);
+  AssertTrue(FPresenter.FrequencyTextChanged(' 14074.5 '));
+  FPresenter.CallsignChanged('JA1ABD');
+  AssertTrue(FPresenter.LogRequested('', ''));
+  AssertEquals(14074500, FPresenter.Logged[1].Frequency.Hz);
+  AssertTrue('comma as decimal point', FPresenter.FrequencyTextChanged('3573,25'));
+  Refuse('');
+  Refuse('abc');
+  Refuse('-7010');
+  Refuse('$1F');
+  Refuse('7010.1234');
+  Refuse('0');
 end;
 
 initialization

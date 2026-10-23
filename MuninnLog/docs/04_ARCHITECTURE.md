@@ -180,7 +180,7 @@ example-contest.ylg   （ZIP）
 | 実行単位 | 内容 |
 |---|---|
 | UI スレッド | 画面の更新、利用者の操作。保存・通信・計算で待たない |
-| 保存スレッド | SQLite への書き込みを直列に行う。読み取りは別の接続で行う |
+| 保存スレッド | SQLite への書き込みを直列に行う。読み取りは別の接続で行う。入力した QSO の保存は `IQsoWriter`（[ADR 0011](adr/0011-qso-saving.md)） |
 | 無線機スレッド | 無線機命令の順序付きキュー |
 | 連携スレッド | HuginnEngine、WSJT-X、fldigi、GPS、オンラインサービスとの通信 |
 | HuginnEngine | 別プロセス。音声と信号処理 |
