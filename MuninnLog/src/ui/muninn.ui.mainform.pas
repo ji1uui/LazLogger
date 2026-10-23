@@ -1,10 +1,12 @@
 unit Muninn.UI.MainForm;
 
-{ The prototype's window (T10, ADR 0009): the QSO entry line, the partial
-  check list, the log, and the band map. The form only lays out controls and
-  forwards events; TQsoEntryPresenter decides what to show.
+{ The main window (T10 prototype, T12): the menu, the QSO entry line, the
+  partial check list, the log, the band map and the status bar. The form only
+  lays out controls and forwards events; TQsoEntryPresenter and
+  TLogbookPresenter decide what to show (ADR 0009, ADR 0010).
 
-  Keys: Enter logs the entry, Esc clears it. A click on the band map tunes. }
+  Keys: Enter logs the entry, Esc clears it. A click on the band map tunes.
+  The entry line works only while a logbook is open, or in the demo. }
 
 {$mode objfpc}{$H+}
 {$codepage utf8}
@@ -12,12 +14,26 @@ unit Muninn.UI.MainForm;
 interface
 
 uses
-  Classes, SysUtils, Forms, Controls, StdCtrls, ExtCtrls, Graphics,
-  Muninn.Core.Frequency, Muninn.Core.Mode, Muninn.UI.Bandmap,
-  Muninn.UI.BandmapView, Muninn.UI.QsoEntry, Muninn.UI.Theme;
+  Classes, SysUtils, Forms, Controls, StdCtrls, ExtCtrls, ComCtrls, Menus,
+  Dialogs, Graphics, Muninn.Core.Frequency, Muninn.Core.Mode,
+  Muninn.Core.Logbook, Muninn.UI.Bandmap, Muninn.UI.BandmapView,
+  Muninn.UI.QsoEntry, Muninn.UI.Logbook, Muninn.UI.Theme;
 
 type
-  TMainForm = class(TForm, IQsoEntryView)
+  TMainForm = class(TForm, IQsoEntryView, ILogbookView)
+  private
+    FLogbooks: TLogbookPresenter;
+    FDemo: Boolean;
+    FStatusBar: TStatusBar;
+    FRecentMenu: TMenuItem;
+    FCloseItem: TMenuItem;
+    procedure BuildMenu;
+    procedure NewLogbookClick(Sender: TObject);
+    procedure OpenLogbookClick(Sender: TObject);
+    procedure RecentLogbookClick(Sender: TObject);
+    procedure CloseLogbookClick(Sender: TObject);
+    procedure QuitClick(Sender: TObject);
+    procedure UpdateEntryEnabled;
   private
     FTheme: TUiTheme;
     FBandmapModel: TBandmapModel;
@@ -52,6 +68,13 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure ApplyTheme(const ATheme: TUiTheme);
+    { Logbooks from AStore; the recent list comes from ARecent and is saved
+      with ASaveRecent. Without this call (or in the demo) there is no menu
+      for logbooks. }
+    procedure AttachLogbooks(const AStore: ILogbookStore; const ARecent: TStrings;
+      const ASaveRecent: TRecentLogbooksSaver);
+    { The prototype's demo: the entry line works without a logbook. }
+    procedure EnableDemo;
     procedure Tune(const AHz: Int64);
     { IQsoEntryView }
     procedure ShowCallsignState(const ANormalized, AProblem: string);
@@ -59,7 +82,13 @@ type
     procedure ShowDuplicate(const AIsDuplicate: Boolean);
     procedure ShowLogged(const AQso: TLoggedQso);
     procedure ClearEntry;
+    { ILogbookView }
+    procedure ShowLogbook(const APath: string; const AQsoCount: Int64);
+    procedure ShowNoLogbook;
+    procedure ShowLogbookError(const AMessage: string);
+    procedure ShowRecentLogbooks(const APaths: TStrings);
 
+    property Logbooks: TLogbookPresenter read FLogbooks;
     property Presenter: TQsoEntryPresenter read FPresenter;
     property BandmapModel: TBandmapModel read FBandmapModel;
     property Bandmap: TBandmapControl read FBandmap;
@@ -81,21 +110,24 @@ begin
   { Built in code: there is no form resource. }
   inherited CreateNew(AOwner);
   FTheme := DarkTheme;
-  Caption := 'MuninnLog — UI prototype';
+  Caption := 'MuninnLog';
   Position := poScreenCenter;
   Width := Scale96ToScreen(960);
   Height := Scale96ToScreen(600);
   KeyPreview := True;
   FBandmapModel := TBandmapModel.Create(7000000, 7040000);
+  BuildMenu;
   BuildControls;
   FPresenter := TQsoEntryPresenter.Create(Self, @UtcNowMs);
   FModeCombo.ItemIndex := 0;
   ModeChanged(nil);
+  ShowNoLogbook;
 end;
 
 destructor TMainForm.Destroy;
 begin
-  { The presenter holds this form as its view. }
+  { The presenters hold this form as their view. }
+  FreeAndNil(FLogbooks);
   FreeAndNil(FPresenter);
   inherited Destroy;
   FBandmapModel.Free;
@@ -129,6 +161,159 @@ begin
   PlaceNext(Result);
 end;
 
+procedure TMainForm.BuildMenu;
+var
+  MainMenu: TMainMenu;
+  FileMenu: TMenuItem;
+
+  function AddItem(const AParent: TMenuItem; const ACaption: string;
+    const AKey: Word; const AHandler: TNotifyEvent): TMenuItem;
+  begin
+    Result := TMenuItem.Create(Self);
+    Result.Caption := ACaption;
+    if AKey <> 0 then
+      { ssModifier is Ctrl, or Command on macOS. }
+      Result.ShortCut := ShortCut(AKey, [ssModifier]);
+    Result.OnClick := AHandler;
+    AParent.Add(Result);
+  end;
+
+begin
+  MainMenu := TMainMenu.Create(Self);
+  Menu := MainMenu;
+  FileMenu := TMenuItem.Create(Self);
+  FileMenu.Caption := '&File';
+  MainMenu.Items.Add(FileMenu);
+  AddItem(FileMenu, '&New logbook...', VK_N, @NewLogbookClick);
+  AddItem(FileMenu, '&Open logbook...', VK_O, @OpenLogbookClick);
+  FRecentMenu := AddItem(FileMenu, 'Open &recent', 0, nil);
+  FCloseItem := AddItem(FileMenu, '&Close logbook', 0, @CloseLogbookClick);
+  AddItem(FileMenu, '-', 0, nil);
+  AddItem(FileMenu, '&Quit', VK_Q, @QuitClick);
+end;
+
+procedure TMainForm.AttachLogbooks(const AStore: ILogbookStore;
+  const ARecent: TStrings; const ASaveRecent: TRecentLogbooksSaver);
+begin
+  FreeAndNil(FLogbooks);
+  FLogbooks := TLogbookPresenter.Create(AStore, Self, ASaveRecent);
+  FLogbooks.SetRecentLogbooks(ARecent);
+end;
+
+procedure TMainForm.EnableDemo;
+begin
+  FDemo := True;
+  Caption := 'MuninnLog — demo';
+  UpdateEntryEnabled;
+end;
+
+procedure TMainForm.UpdateEntryEnabled;
+begin
+  FEntryPanel.Enabled := FDemo or ((FLogbooks <> nil) and FLogbooks.HasLogbook);
+  FCloseItem.Enabled := (FLogbooks <> nil) and FLogbooks.HasLogbook;
+end;
+
+function LogbookDialogFilter: string;
+begin
+  Result := 'MuninnLog logbook (*.muninnlog)|*.muninnlog|' +
+    'SQLite file (*.sqlite)|*.sqlite|All files|*';
+end;
+
+procedure TMainForm.NewLogbookClick(Sender: TObject);
+var
+  Dialog: TSaveDialog;
+begin
+  if FLogbooks = nil then
+    Exit;
+  Dialog := TSaveDialog.Create(Self);
+  try
+    Dialog.Title := 'New logbook';
+    Dialog.Filter := LogbookDialogFilter;
+    Dialog.DefaultExt := 'muninnlog';
+    Dialog.Options := Dialog.Options + [ofOverwritePrompt];
+    if Dialog.Execute then
+      FLogbooks.NewRequested(Dialog.FileName);
+  finally
+    Dialog.Free;
+  end;
+end;
+
+procedure TMainForm.OpenLogbookClick(Sender: TObject);
+var
+  Dialog: TOpenDialog;
+begin
+  if FLogbooks = nil then
+    Exit;
+  Dialog := TOpenDialog.Create(Self);
+  try
+    Dialog.Title := 'Open logbook';
+    Dialog.Filter := LogbookDialogFilter;
+    Dialog.Options := Dialog.Options + [ofFileMustExist];
+    if Dialog.Execute then
+      FLogbooks.OpenRequested(Dialog.FileName);
+  finally
+    Dialog.Free;
+  end;
+end;
+
+procedure TMainForm.RecentLogbookClick(Sender: TObject);
+var
+  Index: Integer;
+begin
+  Index := (Sender as TMenuItem).Tag;
+  if (FLogbooks <> nil) and (Index < FLogbooks.Recent.Count) then
+    FLogbooks.OpenRequested(FLogbooks.Recent[Index]);
+end;
+
+procedure TMainForm.CloseLogbookClick(Sender: TObject);
+begin
+  if FLogbooks <> nil then
+    FLogbooks.CloseRequested;
+end;
+
+procedure TMainForm.QuitClick(Sender: TObject);
+begin
+  Close;
+end;
+
+procedure TMainForm.ShowLogbook(const APath: string; const AQsoCount: Int64);
+begin
+  Caption := ExtractFileName(APath) + ' - MuninnLog';
+  FStatusBar.SimpleText := Format('%s   %d QSOs', [APath, AQsoCount]);
+  UpdateEntryEnabled;
+  FocusCall;
+end;
+
+procedure TMainForm.ShowNoLogbook;
+begin
+  if not FDemo then
+    Caption := 'MuninnLog';
+  FStatusBar.SimpleText := 'No logbook open. Use File > New logbook or Open logbook.';
+  UpdateEntryEnabled;
+end;
+
+procedure TMainForm.ShowLogbookError(const AMessage: string);
+begin
+  MessageDlg('MuninnLog', AMessage, mtError, [mbOK], 0);
+end;
+
+procedure TMainForm.ShowRecentLogbooks(const APaths: TStrings);
+var
+  Index: Integer;
+  Item: TMenuItem;
+begin
+  FRecentMenu.Clear;
+  for Index := 0 to APaths.Count - 1 do
+  begin
+    Item := TMenuItem.Create(Self);
+    Item.Caption := APaths[Index];
+    Item.Tag := Index;
+    Item.OnClick := @RecentLogbookClick;
+    FRecentMenu.Add(Item);
+  end;
+  FRecentMenu.Enabled := APaths.Count > 0;
+end;
+
 procedure TMainForm.PlaceNext(const AControl: TControl);
 begin
   { Left-aligned controls line up by Left: give each a larger one. }
@@ -137,11 +322,20 @@ begin
 end;
 
 procedure TMainForm.BuildControls;
+
+  procedure AddStatusBar;
+  begin
+    FStatusBar := TStatusBar.Create(Self);
+    FStatusBar.Parent := Self;
+    FStatusBar.SimplePanel := True;
+  end;
+
 var
   Body: TPanel;
   Splitter: TSplitter;
   ModeLabel: TLabel;
 begin
+  AddStatusBar;
   FEntryPanel := TPanel.Create(Self);
   FEntryPanel.Parent := Self;
   FEntryPanel.Align := alTop;

@@ -201,9 +201,9 @@ jobs:
         run: |
           if [ "$RUNNER_OS" = Linux ]; then
             xvfb-run -a -s "-screen 0 1280x800x24" \
-              build/muninn-gui --measure build/gui-measure.txt
+              build/muninn-gui --demo --measure build/gui-measure.txt
           else
-            build/muninn-gui --measure build/gui-measure.txt
+            build/muninn-gui --demo --measure build/gui-measure.txt
           fi
           cat build/gui-measure.txt
           {

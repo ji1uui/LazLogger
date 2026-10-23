@@ -35,7 +35,7 @@
 | `TBandmapModel`（`Muninn.UI.Bandmap`） | 周波数と画面上の位置の変換、ラベルが重ならない配置、ズーム、スクロール、クリックした局の判定 | 使わない（単体テストあり） |
 | `TBandmapControl`（`Muninn.UI.BandmapView`） | `TCustomControl` の `Paint` で描く。ダブルバッファー。大きさはフォントに合わせて決め、DPI に追従する | 使う |
 | `TMainForm`（`Muninn.UI.MainForm`） | 入力欄、パーシャルチェックの一覧、交信の一覧、バンドマップ。部品の配置とイベントの転送だけを行う | 使う |
-| `muninn-gui`（`app/gui`） | デモデータで起動する。`--measure` で反応速度を測る。`--light` でライトテーマ | 使う |
+| `muninn-gui`（`app/gui`） | デモデータで起動する（T12 以降は `--demo`、[ADR 0010](0010-gui-logbook-and-settings.md)）。`--measure` で反応速度を測る。`--light` でライトテーマ | 使う |
 
 - 交信済みの局は色に加えて斜体で、強調する局は色に加えて枠で示す（色だけに頼らない）。
 - 試作の途中で、5000 局を描くと 1 回に 70〜400 ms かかることが分かった。

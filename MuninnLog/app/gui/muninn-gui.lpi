@@ -44,7 +44,7 @@
       <Filename Value="../../build/muninn-gui"/>
     </Target>
     <SearchPaths>
-      <OtherUnitFiles Value="../../src/core;../../src/ui"/>
+      <OtherUnitFiles Value="../../src/core;../../src/storage;../../src/ui"/>
       <UnitOutputDirectory Value="../../build/gui-units/$(TargetCPU)-$(TargetOS)-$(LCLWidgetType)"/>
     </SearchPaths>
     <Parsing>

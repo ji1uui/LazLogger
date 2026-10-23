@@ -20,6 +20,8 @@ const
 
 type
   ESchemaError = class(Exception);
+  { The database was written by a newer MuninnLog. }
+  ESchemaNewerError = class(ESchemaError);
 
   TMigration = record
     Version: Integer;
@@ -200,7 +202,7 @@ var
 begin
   Version := SchemaVersion(ADatabase);
   if Version > ALatestVersion then
-    raise ESchemaError.CreateFmt(
+    raise ESchemaNewerError.CreateFmt(
       '%s has schema version %d, but this MuninnLog supports up to %d. ' +
       'Use a newer MuninnLog.', [ADatabase.Path, Version, ALatestVersion]);
 end;

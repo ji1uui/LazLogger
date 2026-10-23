@@ -11,10 +11,11 @@ Presenter と LCL の画面（View）を置く。
 | ユニット | LCL | 内容 |
 |---|---|---|
 | `Muninn.UI.QsoEntry` | 使わない | 入力欄の Presenter（検査、パーシャルチェック、重複、記録） |
+| `Muninn.UI.Logbook` | 使わない | ログブックを開く・作る・閉じる Presenter、最近使ったログブック（[ADR 0010](../../docs/adr/0010-gui-logbook-and-settings.md)） |
 | `Muninn.UI.Bandmap` | 使わない | バンドマップのモデル（位置の変換、ラベルの配置、ズーム） |
 | `Muninn.UI.Clock` | 使わない | 反応速度の測定用のマイクロ秒カウンター |
 | `Muninn.UI.Theme` | 使う | 独自描画の色（ダーク / ライト） |
 | `Muninn.UI.BandmapView` | 使う | 独自描画のバンドマップ |
-| `Muninn.UI.MainForm` | 使う | 試作の画面 |
+| `Muninn.UI.MainForm` | 使う | メイン画面（メニュー、入力欄、一覧、バンドマップ、状態表示） |
 
 LCL を使わないユニットは単体テスト（`tests/unit`）から試験する。LCL を使うユニットは単体テストから参照しない。
